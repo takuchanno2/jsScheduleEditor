@@ -349,7 +349,10 @@ var adjustPositionDownward = function (elm, top, bottom) {
             var nt = $(tasks[i]).top(); // next top
             if (nt < cb) {
                 var newTop = nt + (cb - nt);
-                if (n.top(newTop) !== null) break;
+                if (n.top(newTop) !== null) {
+                    refreshTaskTimeText(n);
+                    break;
+                }
             }
         }
 
@@ -374,7 +377,10 @@ var adjustPositionUpward = function (elm, top, bottom) {
 
             if (ct < no) {
                 var newTop = nt - (no - ct);
-                if (n.top(newTop) !== null) break;
+                if (n.top(newTop) !== null) {
+                    refreshTaskTimeText(n);
+                    break;
+                }
             }
         }
 
@@ -467,12 +473,12 @@ var fn_top = function (top) {
         if (top <= 0) {
             var newHeight = newBottom;
 
-            if (newBottom <= 0) {
+            if (newHeight <= 0) {
                 this.remove();
                 return null;
             } else {
                 this.css("top", 0);
-                this.height(newBottom);
+                this.height(newHeight);
 
                 setTaskBorder(this, 0);
                 return 0;
