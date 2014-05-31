@@ -111,6 +111,7 @@ body {
 #schedule-editor .schedule-editor-table #task-list .task .task-content .task-head .task-time {
   color: #666;
   float: right;
+  font-size: 0.9em;
 }
 #schedule-editor .schedule-editor-table #task-list .task .task-content.topmost {
   border-color: black;
@@ -154,7 +155,7 @@ body {
   padding-right: 2px;
 }
 #schedule-editor .schedule-editor-table #edit-balloon #balloon-task-memo {
-  height: 5em;
+  height: 6em;
 }
 #schedule-editor .schedule-editor-table #edit-balloon .balloon-button {
   width: 100px;

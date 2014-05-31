@@ -27,13 +27,18 @@ $(function () {
         activateTask(null);
     });
 
-    taskTemplate = $("#task-template");
-    taskTemplate.removeAttr("id");
-    taskTemplate.remove();
-
+    initTaskTemplate();
     initTable();
     initBalloon();
 });
+
+var initTaskTemplate = function () {
+    taskTemplate = $("#task-template");
+    taskTemplate.removeAttr("id");
+    taskTemplate.find(".task-name").empty();
+    taskTemplate.find(".task-memo").empty();
+    taskTemplate.remove();
+};
 
 var initTable = function () {
     var taskGrid = $("#task-grid");
@@ -69,9 +74,19 @@ var initTable = function () {
     });
 };
 
+var timeValueToString = function (tv) {
+    return Math.floor(tv / 2) + ":" + ((tv % 2) ? "30" : "00");
+};
+
 var initBalloon = function () {
+    var realtimeEvents = "keydown keyup keypress change";
     var taskTypeBox = $("#balloon-task-type");
     taskTypeBox.change(function () { $(".task.active").dataAttr("task-type", $(this).val()); });
+
+    $("#balloon-task-type").change(function () { $(".task.active .task-type").text(taskTypes[$(this).val()]); });
+
+    $("#balloon-task-name").on(realtimeEvents, function () { $(".task.active .task-name").text($(this).val()); });
+    $("#balloon-task-memo").on(realtimeEvents, function () { $(".task.active .task-memo").text($(this).val()); });
 
     $("#balloon-time-begin").change(function () { balloonTimeBoxChanged(true); });
     $("#balloon-time-end").change(function () { balloonTimeBoxChanged(false); });
@@ -95,7 +110,7 @@ var initBalloon = function () {
     var timeEndBox = $("#balloon-time-end");
     for (var i = timeBegin; i <= timeEnd; i++) {
         var option = $("<option>", {
-            "text": String(Math.floor(i / 2)) + ":" + ((i % 2) ? "30" : "00"),
+            "text": timeValueToString(i),
             "value": String(i),
         });
 
@@ -112,7 +127,7 @@ var balloonTimeBoxChanged = function (changedBeginTime) {
     var task = $(".task.active");
     var timeBeginBox = $("#balloon-time-begin");
     var timeEndBox = $("#balloon-time-end");
-    var totalHoursBox = $("#balloon-total-hours");
+    var timeSpanBox = $("#balloon-time-span");
     var timeBegin = parseInt(timeBeginBox.val());
     var timeEnd = parseInt(timeEndBox.val());
 
@@ -146,13 +161,15 @@ var balloonTimeBoxChanged = function (changedBeginTime) {
 
     task.top(newTop);
     task.height(newHeight);
-    totalHoursBox.text((timeEnd - timeBegin) / 2);
+    timeSpanBox.text((timeEnd - timeBegin) / 2);
+
+    refreshTaskTimeText(task);
 };
 
 var createNewTask = function (top, height, original) {
     var newTask = original.clone(true);
-    var taskContent = newTask.children(".task-content");
-    var closeButton = taskContent.children(".close");
+    var closeButton = newTask.find(".close");
+    var taskType = newTask.find(".task-type");
 
     newTask.top(top);
     newTask.height(height);
@@ -161,6 +178,8 @@ var createNewTask = function (top, height, original) {
 
     closeButton.click(function () { removeTask(newTask); });
 
+    taskType.text(taskTypes[0]);
+
     var commonOption = {
         "grid": [0, taskGridHeight],
         "containment": "parent",
@@ -168,7 +187,9 @@ var createNewTask = function (top, height, original) {
 
     // appendしてからdraggableしないと、挙動がおかしくなる
     $("#task-list").append(newTask);
+    refreshTaskTimeText(newTask, top, height);
     newTask.show();
+    
 
     var taskWidth = newTask.width();
 
@@ -235,6 +256,8 @@ var addTask = function () {
                 }
                 break;
         }
+
+        refreshTaskTimeText(curr);
     });
 
     activateTask(newTask);
@@ -293,6 +316,18 @@ var editTaskEvent = function (e, ui) {
     }
 
     setTaskBorder(curr, ui.position.top);
+    refreshTaskTimeText(curr);
+};
+
+var refreshTaskTimeText = function (elm, top, height) {
+    var timeSpan = getTimeSpanFromPosition(elm, top, height);
+    var tiemBeginArea = elm.find(".task-time-begin");
+    var timeEndArea = elm.find(".task-time-end");
+    var timeSpanArea = elm.find(".task-time-span");
+
+    tiemBeginArea.text(timeValueToString(timeSpan[0]));
+    timeEndArea.text(timeValueToString(timeSpan[1]));
+    timeSpanArea.text(((timeSpan[1] - timeSpan[0]) / 2).toFixed(1));
 };
 
 var stopEditingEvent = function (e, ui) {
@@ -355,10 +390,13 @@ var removeTask = function (task) {
     task.remove();
 };
 
-var getTimeSpanFromPosition = function (task) {
+var getTimeSpanFromPosition = function (task, top, height) {
+    if (top === undefined) top = task.top();
+    if (height === undefined) height = task.height();
+
     return [
-        scheduleTimeSpan[0] * 2 + Math.round(task.top() / taskGridHeight),
-        scheduleTimeSpan[0] * 2 + Math.round(task.bottom() / taskGridHeight)
+        scheduleTimeSpan[0] * 2 + Math.round(top / taskGridHeight),
+        scheduleTimeSpan[0] * 2 + Math.round((top + height) / taskGridHeight)
     ];
 };
 
@@ -383,17 +421,19 @@ var showBalloon = function () {
     var balloon = $("#edit-balloon");
 
     var taskNameBox = $("#balloon-task-name");
-    taskNameBox.val(task.data("task-name"));
+
+    taskNameBox.val(task.find(".task-name").text());
+    $("#balloon-task-memo").text(task.find(".task-memo").text());
     $("#balloon-task-type").val(task.data("task-type"));
 
     var timeSpan = getTimeSpanFromPosition(task);
     var timeBeginBox = $("#balloon-time-begin");
     var timeEndBox = $("#balloon-time-end");
-    var totalHoursBox = $("#balloon-total-hours");
+    var timeSpanBox = $("#balloon-time-span");
 
     timeBeginBox.val(timeSpan[0]);
     timeEndBox.val(timeSpan[1]);
-    totalHoursBox.text((timeSpan[1] - timeSpan[0]) / 2);
+    timeSpanBox.text(((timeSpan[1] - timeSpan[0]) / 2).toFixed(1));
 
     balloon.css("top", task.top() + taskGridHeight);
     balloon.show();
