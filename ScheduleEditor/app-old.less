@@ -1,0 +1,239 @@
+﻿@border-width: 1px;
+@border-width-bold: 2px;
+
+@hour-area-width: 30px;
+@task-grid-height: 30px;
+
+@task-width: 300px;
+
+/*** カラーリング ***/
+@grid-background: hsl(60, 30%, 95%);
+@grid-background-core: hsl(160, 30%, 92%);
+@grid-hour-background: hsl(60, 60%, 87%);
+@grid-hour-background-core: hsl(160, 50%, 87%);
+
+/*** 吹き出しの設定 ***/
+@balloon-background-color: #FAFAFA;
+@balloon-border-color: #888;
+@balloon-border-width: 1px;
+@balloon-arrow-size: 20px;
+
+body {
+  padding: 10px;
+}
+
+#schedule-editor {
+  padding: 50px;
+  text-align: center;
+
+  .default-border {
+    border-color: black;
+    border-style: solid;
+  }
+
+  .schedule-editor-table {
+    text-align: left;
+    padding: 0px;
+    position: relative;
+    display: inline-block;
+    box-sizing: border-box;
+    .default-border();
+    border-width: @border-width-bold;
+
+    #task-grid {
+      .grid-cell {
+        width: @hour-area-width + @task-width;
+        height: @task-grid-height;
+        overflow: hidden;
+
+        .half-hour-cell, .task-cell {
+          height: 100%;
+          vertical-align: top;
+          cursor: default;
+        }
+
+        .half-hour-cell {
+          width: @hour-area-width;
+          padding: 5px;
+          float: left;
+          text-align: right;
+          .default-border();
+          border-width: @border-width @border-width 0px 0px;
+          background-color: @grid-hour-background;
+
+          &.core {
+            background-color: @grid-hour-background-core;
+          }
+        }
+
+        .task-cell {
+          width: @task-width;
+          float: right;
+          .default-border();
+          border-width: @border-width 0px 0px 0px;
+          background-color: @grid-background;
+
+          &.core {
+            background-color: @grid-background-core;
+          }
+        }
+
+        &:first-child .half-hour-cell,
+        &:first-child .task-cell {
+          border-top-width: 0px;
+        }
+
+        &:nth-child(even) .half-hour-cell {
+          border-top-width: 0px;
+        }
+
+        &.ui-selecting .half-hour-cell, 
+        &.ui-selecting .task-cell {
+          background-color: #FC4;
+        }
+
+        &.ui-selected .half-hour-cell,
+        &.ui-selected .task-cell {
+          background-color: #F91;
+        }
+      }
+    }
+
+    #task-list {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      pointer-events: none;
+       cursor: default;
+      left: 0px;
+      top: 0px;
+      padding-left: @hour-area-width;
+
+      .task {
+        position: absolute;
+        width: @task-width;
+        border-width: 0px;
+        padding: 0px;
+        pointer-events: auto;
+        z-index: 10;
+
+        &.active {
+          z-index: 15;
+        }
+
+        .task-content {
+          width: 100%;
+          height: 100%;
+          padding: 5px;
+          .default-border();
+          border-width: @border-width 0px 0px 0px;
+
+          button.close {
+            padding-right: 10px;
+          }
+
+          &.topmost {
+            .default-border();
+            border-width: 0px 0px 0px 0px;
+          }
+        }
+      }
+
+      .background-yuv (@y, @u, @v) {
+        @r: @y + 1.574800 * @v;
+        @g: @y - 0.187324 * @u - 0.468124 * @v;
+        @b: @y + 1.855600 * @u;
+        background-color: rgb(@r, @g, @b);
+      }
+
+      .define-colors-by-type(0, 3, 120);
+
+      .define-colors-by-type (@i, @end, @offset) when (@i = @end) {
+      }
+
+      .define-colors-by-type (@i, @end, @offset) when (@i < @end) {
+        @radian: (2 * pi()) * ((@offset / 360) + (@i / @end));
+
+        @u: 65 * sin(@radian);
+        @v: 65 * cos(@radian);
+
+        .task[data-task-type="@{i}"] {
+          .background-yuv(220, @u, @v);
+        }
+
+        .task.active[data-task-type="@{i}"] {
+          .background-yuv(190, @u, @v);
+        }
+
+        .define-colors-by-type(@i + 1, @end, @offset);
+      }
+    }
+
+    #edit-balloon {
+      box-sizing: content-box;
+      position: absolute;
+      left: 80px;
+      width: 300px;
+      z-index: 100;
+      display: none;
+      padding: 20px;
+      margin-top: @balloon-arrow-size;
+      background-color: @balloon-background-color;
+      border: @balloon-border-width solid @balloon-border-color;
+      border-radius: 10px;
+      box-shadow: 1px 1px 3px #000;
+
+      [class*="col-"] {
+        padding-left: 2px;
+        padding-right: 2px;
+      }
+
+      .balloon-button {
+        width: 100px;
+      }
+
+      .relative {
+        position: relative;
+
+        .right-bottom {
+          position: absolute;
+          right: 0px;
+          bottom: 0px;
+        }
+      }
+
+      &:after, &:before {
+        bottom: 100%;
+        left: 20%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+      }
+
+      &:after {
+        border-color: rgba(136, 183, 213, 0);
+        border-bottom-color: @balloon-background-color;
+        border-width: @balloon-arrow-size;
+        margin-left: -@balloon-arrow-size;
+      }
+
+      &:before {
+        border-color: rgba(194, 225, 245, 0);
+        border-bottom-color: @balloon-border-color;
+        border-width: @balloon-arrow-size + @balloon-border-width;
+        margin-left: -(@balloon-arrow-size + @balloon-border-width);
+      }
+    }
+
+    #task-template {
+      display: none;
+    }
+  }
+}
+
+.ui-selectable-helper {
+  display: none;
+}
