@@ -150,7 +150,7 @@ var balloonTimeBoxChanged = function (changedBeginTime) {
 };
 
 var createNewTask = function (top, height, original) {
-    var newTask = original.clone();
+    var newTask = original.clone(true);
     var taskContent = newTask.children(".task-content");
     var closeButton = taskContent.children(".close");
 
@@ -159,7 +159,6 @@ var createNewTask = function (top, height, original) {
     newTask.mousedown(function () { activateTask($(this)); });
     newTask.click(showBalloon);
 
-    taskContent.text("謎のタスク");
     closeButton.click(function () { removeTask(newTask); });
 
     var commonOption = {
@@ -172,7 +171,7 @@ var createNewTask = function (top, height, original) {
     newTask.show();
 
     var taskWidth = newTask.width();
-    
+
     newTask.draggable($.extend(commonOption, {
         "start": startDragEvent,
         "stop": stopEditingEvent,
@@ -224,7 +223,7 @@ var addTask = function () {
             case "inside":
                 var upperTaskHeight = newTask.top() - curr.top();
                 var lowerTaskHeight = curr.bottom() - newTask.bottom();
-                
+
                 if (upperTaskHeight > 0) {
                     curr.height(upperTaskHeight);
                 } else {
@@ -274,8 +273,9 @@ var editTaskEvent = function (e, ui) {
     }
 
     // ここで設定しなくてもjQueryが勝手に設定してくれるが、一応ここで先に設定しておく
+    ui.position.top = taskGridHeight * Math.round(ui.position.top / taskGridHeight);
     curr.top(ui.position.top);
-    if (e.type === "resize"){
+    if (e.type === "resize") {
         curr.height(ui.size.height);
     }
 
@@ -478,8 +478,8 @@ var fn_bottom = function () {
     return Math.round(this.top() + this.height());
 };
 
-var fn_dataAttr = function(key, value) {
-    if(value !== undefined){
+var fn_dataAttr = function (key, value) {
+    if (value !== undefined) {
         this.data(key, value);
         this.attr("data-" + key, value);
     } else {

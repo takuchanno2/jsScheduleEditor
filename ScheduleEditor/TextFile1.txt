@@ -61,3 +61,5 @@
 
 // $.fn.position()の呼び出しが高コスト、offset()じゃダメか、css("top")じゃダメか、top()の呼び出しを減らせないか検討
 // sortも高コスト
+
+// pull-right, pull-leftも出来るだけcssで指定する方がいいかな

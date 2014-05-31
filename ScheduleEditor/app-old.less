@@ -87,7 +87,7 @@ body {
           border-top-width: 0px;
         }
 
-        &.ui-selecting .half-hour-cell, 
+        &.ui-selecting .half-hour-cell,
         &.ui-selecting .task-cell {
           background-color: #FC4;
         }
@@ -104,7 +104,7 @@ body {
       height: 100%;
       position: absolute;
       pointer-events: none;
-       cursor: default;
+      cursor: default;
       left: 0px;
       top: 0px;
       padding-left: @hour-area-width;
@@ -125,11 +125,22 @@ body {
           width: 100%;
           height: 100%;
           padding: 5px;
+          overflow: hidden;
           .default-border();
           border-width: @border-width 0px 0px 0px;
 
-          button.close {
-            padding-right: 10px;
+          .task-head {
+            margin-bottom: 10px; 
+
+            .task-title {
+              margin: 0px 25px 2px 0px;
+              font-size: 1.1em;
+            }
+
+            .task-time {
+              color: #666;
+              float: right;
+            }
           }
 
           &.topmost {
@@ -186,6 +197,10 @@ body {
       [class*="col-"] {
         padding-left: 2px;
         padding-right: 2px;
+      }
+
+      #balloon-task-memo {
+        height: 5em;
       }
 
       .balloon-button {
