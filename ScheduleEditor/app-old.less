@@ -4,7 +4,7 @@
 @hour-area-width: 30px;
 @task-grid-height: 30px;
 
-@task-width: 400px;
+@task-width: 350px;
 
 /*** カラーリング ***/
 @grid-background: hsl(60, 30%, 95%);
@@ -169,15 +169,15 @@ body {
       .define-colors-by-type (@i, @end, @offset) when (@i < @end) {
         @radian: (2 * pi()) * ((@offset / 360) + (@i / @end));
 
-        @u: 65 * sin(@radian);
-        @v: 65 * cos(@radian);
+        @sin: sin(@radian);
+        @cos: cos(@radian);
 
         .task[data-task-type="@{i}"] {
-          .background-yuv(220, @u, @v);
+          .background-yuv(210, 50 * @sin, 50 * @cos);
         }
 
         .task.active[data-task-type="@{i}"] {
-          .background-yuv(190, @u, @v);
+          .background-yuv(185, 90 * @sin, 90 * @cos);
         }
 
         .define-colors-by-type(@i + 1, @end, @offset);
@@ -187,7 +187,7 @@ body {
     #edit-balloon {
       box-sizing: content-box;
       position: absolute;
-      left: 80px;
+      left: 100px;
       width: 300px;
       z-index: 100;
       display: none;
