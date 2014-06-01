@@ -4,7 +4,7 @@
 @hour-area-width: 30px;
 @task-grid-height: 30px;
 
-@task-width: 350px;
+@task-width: 300px;
 
 /*** カラーリング ***/
 @grid-background: hsl(60, 30%, 95%);
@@ -173,11 +173,11 @@ body {
         @cos: cos(@radian);
 
         .task[data-task-type="@{i}"] {
-          .background-yuv(210, 50 * @sin, 50 * @cos);
+          .background-yuv(200, 55 * @sin, 55 * @cos);
         }
 
         .task.active[data-task-type="@{i}"] {
-          .background-yuv(185, 90 * @sin, 90 * @cos);
+          .background-yuv(170, 95 * @sin, 95 * @cos);
         }
 
         .define-colors-by-type(@i + 1, @end, @offset);

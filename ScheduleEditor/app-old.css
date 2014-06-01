@@ -22,7 +22,7 @@ body {
   border-width: 2px;
 }
 #schedule-editor .schedule-editor-table #task-grid .grid-cell {
-  width: 380px;
+  width: 330px;
   height: 30px;
   overflow: hidden;
 }
@@ -46,7 +46,7 @@ body {
   background-color: #cdeee3;
 }
 #schedule-editor .schedule-editor-table #task-grid .grid-cell .task-cell {
-  width: 350px;
+  width: 300px;
   float: right;
   border-color: black;
   border-style: solid;
@@ -83,7 +83,7 @@ body {
 }
 #schedule-editor .schedule-editor-table #task-list .task {
   position: absolute;
-  width: 350px;
+  width: 300px;
   border-width: 0px;
   padding: 0px;
   pointer-events: auto;
@@ -120,28 +120,28 @@ body {
   border-width: 0px 0px 0px 0px;
 }
 #schedule-editor .schedule-editor-table #task-list .task[data-task-type="0"] {
-  background-color: #abd6ff;
+  background-color: #9dccff;
 }
 #schedule-editor .schedule-editor-table #task-list .task.active[data-task-type="0"] {
-  background-color: #72bfff;
+  background-color: #5fb1ff;
 }
 #schedule-editor .schedule-editor-table #task-list .task[data-task-type="1"] {
-  background-color: #8eeba4;
+  background-color: #7de395;
 }
 #schedule-editor .schedule-editor-table #task-list .task.active[data-task-type="1"] {
-  background-color: #3ee665;
+  background-color: #28d952;
 }
 #schedule-editor .schedule-editor-table #task-list .task[data-task-type="2"] {
-  background-color: #f9ce82;
+  background-color: #f3c470;
 }
 #schedule-editor .schedule-editor-table #task-list .task.active[data-task-type="2"] {
-  background-color: #ffb328;
+  background-color: #f5a311;
 }
 #schedule-editor .schedule-editor-table #task-list .task[data-task-type="3"] {
-  background-color: #ffb9ff;
+  background-color: #ffadfb;
 }
 #schedule-editor .schedule-editor-table #task-list .task.active[data-task-type="3"] {
-  background-color: #ff8cff;
+  background-color: #ff7bff;
 }
 #schedule-editor .schedule-editor-table #edit-balloon {
   box-sizing: content-box;
