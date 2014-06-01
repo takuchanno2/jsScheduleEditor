@@ -9,6 +9,43 @@
   <link rel="stylesheet" href="Content/themes/base/jquery-ui.css" type="text/css" />
   <link rel="stylesheet" href="app-old.css" type="text/css" />
 
+  <script>
+    const scheduleTimeSpan = [8, 20];
+    const coreTimeSpan = [9.5, 16.5];
+    const taskTypes = ["研究系", "勉強系", "その他", "実働外"];
+    const initialSchedule =
+      [
+  {
+    "type": 0,
+    "name": "Kenkyu-kei",
+    "time-begin": 9.5,
+    "time-end": 11,
+    "memo": "hogehoge"
+  },
+  {
+    "type": "1",
+    "name": "Benkyo-kei",
+    "time-begin": 11,
+    "time-end": 12.5,
+    "memo": "piyopiyo"
+  },
+  {
+    "type": "2",
+    "name": "Fuyu no Sonota",
+    "time-begin": 12.5,
+    "time-end": 14,
+    "memo": "foofoo"
+  },
+  {
+    "type": "3",
+    "name": "Jitsudo-gai",
+    "time-begin": 14,
+    "time-end": 15.5,
+    "memo": "barbar"
+  }
+      ];
+  </script>
+
   <script src="Scripts/jquery-2.1.1.js"></script>
   <script src="Scripts/jquery-ui-1.10.4.js"></script>
   <script src="Scripts/bootstrap.js"></script>

@@ -1,8 +1,4 @@
-﻿const scheduleTimeSpan = [8, 20];
-const coreTimeSpan = [9.5, 16.5];
-const taskTypes = ["研究系", "勉強系", "その他", "実働外"];
-
-var taskGridHeight;
+﻿var taskGridHeight;
 var taskGridHeightTotal;
 var taskTemplate;
 
@@ -33,6 +29,8 @@ $(function () {
     initTaskTemplate();
     initTable();
     initBalloon();
+
+    restoreTasks(initialSchedule);
 });
 
 var initTaskTemplate = function () {
