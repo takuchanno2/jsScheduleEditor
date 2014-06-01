@@ -6,6 +6,8 @@ var taskGridHeight;
 var taskGridHeightTotal;
 var taskTemplate;
 
+var lastState = null;
+
 $(function () {
     $.fn.extend({
         "top": fn_top,
@@ -96,7 +98,7 @@ var initBalloon = function () {
     $("#balloon-time-end").change(function () { balloonTimeBoxChanged(false); });
 
     $("#balloon-ok-button").click(function () { activateTask(null); });
-    $("#balloon-cancel-button").click(function () { activateTask(null); });
+    $("#balloon-cancel-button").click(function () { if (lastState) restoreTasks(lastState); lastState = null; });
     $("#balloon-delete-button").click(function () { removeTask($(".task.active")); });
 
     // タスクの種類のコンボボックスを作る
@@ -191,7 +193,7 @@ var createNewTask = function (top, height, original) {
 };
 
 var registerTaskEvents = function (newTask) {
-    newTask.mousedown(function () { activateTask($(this)); });
+    newTask.mousedown(function () { lastState = dumpTasks(); activateTask($(this)); });
     newTask.click(showBalloon);
 
     newTask.find(".close").click(function () { removeTask(newTask); });
@@ -229,6 +231,8 @@ var addTask = function () {
     var top = firstCell.top();
     var height = taskGridHeight * selectedCells.length;
     var bottom = top + height;
+
+    lastState = dumpTasks();
 
     var newTask = createNewTask(top, height, taskTemplate);
 
