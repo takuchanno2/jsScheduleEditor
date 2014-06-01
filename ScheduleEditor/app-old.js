@@ -1,4 +1,4 @@
-﻿const scheduleTimeSpan = [7, 20];
+﻿const scheduleTimeSpan = [8, 20];
 const coreTimeSpan = [9.5, 16.5];
 const taskTypes = ["研究系", "勉強系", "その他"];
 
@@ -17,7 +17,7 @@ $(function () {
 
     $(".add-task").click(addTask);
     $(".output").click(output);
-    $(".clear").click(clear);
+    $(".clear").click(clearTasks);
 
     $(".schedule-editor-table").click(function () { return false; });
 
@@ -46,12 +46,13 @@ var initTable = function () {
 
     var coreBegin = Math.round(coreTimeSpan[0] * 2);
     var coreEnd = Math.round(coreTimeSpan[1] * 2);
+    var fragment = $(document.createDocumentFragment());
     for (var i = Math.round(scheduleTimeSpan[0] * 2), end = Math.round(scheduleTimeSpan[1] * 2) ; i < end; i++) {
         var inCoreTime = (coreBegin <= i) && (i < coreEnd);
 
         var cell = $("<div />", {
             "class": "grid-cell",
-        }).appendTo(taskGrid);
+        }).appendTo(fragment);
 
         $("<div />", {
             "text": ((i % 2) ? nbsp : String(i / 2)),
@@ -62,6 +63,8 @@ var initTable = function () {
             "class": "task-cell" + (inCoreTime ? " core" : ""),
         }).appendTo(cell);
     }
+
+    taskGrid.append(fragment);
 
     taskGridHeight = Math.round($(".grid-cell:first").outerHeight());
     taskGridHeightTotal = Math.round(taskGrid.height());
@@ -178,7 +181,7 @@ var createNewTask = function (top, height, original) {
 
     closeButton.click(function () { removeTask(newTask); });
 
-    taskType.text(taskTypes[0]);
+    taskType.text(taskTypes[newTask.data("task-type")]);
 
     var commonOption = {
         "grid": [0, taskGridHeight],
@@ -189,7 +192,6 @@ var createNewTask = function (top, height, original) {
     $("#task-list").append(newTask);
     refreshTaskTimeText(newTask, top, height);
     newTask.show();
-    
 
     var taskWidth = newTask.width();
 
@@ -334,12 +336,15 @@ var stopEditingEvent = function (e, ui) {
     showBalloon();
 };
 
+var sortByTopInAsc = function (a, b) { return ($(a).top() - $(b).top()); };
+var sortByTopInDesc = function (a, b) { return ($(b).top() - $(a).top()); }
+
 // 要素elmが、top～bottomの間のスペースを確保していると考えて、それより下の要素を適当にずらす
 var adjustPositionDownward = function (elm, top, bottom) {
-    // 自分より下で、上に配置されている方が先に来るようにソート。ただし、自分が必ず先頭に来るように。
+    // 自分より下で、上に配置されている方が先に来るようにソート
     var tasks = $(".task")
    .filter(function () { return (this !== elm[0]) && (top <= $(this).top()); })
-   .sort(function (a, b) { return ($(a).top() - $(b).top()); });
+   .sort(sortByTopInAsc);
 
     // currより下の要素と重なりがないか確認
     var cb = bottom; // current bottom
@@ -362,10 +367,10 @@ var adjustPositionDownward = function (elm, top, bottom) {
 
 // 要素elmが、top～bottomの間のスペースを確保していると考えて、それより上の要素を適当にずらす
 var adjustPositionUpward = function (elm, top, bottom) {
-    // 自分より上で、下に配置されている方が先に来るようにソート。ただし、自分が必ず先頭に来るように。
+    // 自分より上で、下に配置されている方が先に来るようにソート
     var tasks = $(".task")
    .filter(function () { return (this !== elm[0]) && ($(this).bottom() <= bottom); })
-   .sort(function (a, b) { return ($(b).top() - $(a).top()); });
+   .sort(sortByTopInDesc);
 
     // currより上の要素と重なりがないか確認
     var ct = top;
@@ -460,7 +465,35 @@ var fn_height = function (height) {
         if (height === 0) throw new Error("'height' property is somehow zero.");
         return result;
     }
-}
+};
+
+var dumpTasks = function () {
+    /* ソートするのはサーバに送信するときだけでいい
+    var tasks = $(".task")
+   .filter(function () { return (this !== elm[0]) && ($(this).bottom() <= bottom); })
+   .sort(sortByTopInDesc);
+   */
+
+    var dump = [];
+    $(".task").each(function () {
+        var curr = $(this);
+        var timeSpan = getTimeSpanFromPosition(curr);
+        dump.push({
+            "type": curr.data("task-type"),
+            "name": curr.find(".task-name").text(),
+            "time-begin": (timeSpan[0] / 2),
+            "time-end": (timeSpan[1] / 2),
+            "memo": curr.find(".task-memo").text(),
+        });
+    });
+    
+    return dump;
+};
+
+var restoreTasks = function (dump) {
+
+    clearTasks();
+};
 
 // 引数なしの時は、cssのtopを返す
 // 引数があるときは、その値をcssのtopに設定
@@ -533,18 +566,20 @@ var fn_dataAttr = function (key, value) {
     }
 };
 
-var clear = function () {
-    taskid = 0;
+var clearTasks = function () {
     activateTask(null);
     $(".task").remove();
 };
 
 var output = function () {
     var out = $("#out");
+    out.text(JSON.stringify(dumpTasks()));
+    /*
     out.empty();
     $(".task").each(function () {
         out.append($(this).text() + "<br />");
     });
+    */
 };
 
 // 上で交差してる: "upside"
