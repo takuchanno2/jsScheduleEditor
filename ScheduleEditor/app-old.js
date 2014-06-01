@@ -85,11 +85,23 @@ var timeValueToString = function (tv) {
 var initBalloon = function () {
     var realtimeEvents = "keydown keyup keypress change";
     var taskTypeBox = $("#balloon-task-type");
-    taskTypeBox.change(function () { $(".task.active").dataAttr("task-type", $(this).val()); });
+    var taskNameBox = $("#balloon-task-name");
 
-    $("#balloon-task-type").change(function () { $(".task.active .task-type").text(taskTypes[$(this).val()]); });
+    taskTypeBox.change(function () {
+        var value = $(this).val();
+        $(".task.active").dataAttr("task-type", value);
+        $(".task.active .task-type").text(taskTypes[value]);
+        $("#balloon-task-name").autocomplete({
+            "source": taskAutoComplete[value],
+            "minLength": 0,
+        });
+    });
 
-    $("#balloon-task-name").on(realtimeEvents, function () { $(".task.active .task-name").text($(this).val()); });
+    $("#balloon-task-name").focus(function () {
+        taskNameBox.autocomplete("search");
+    });
+
+    taskNameBox.on(realtimeEvents, function () { $(".task.active .task-name").text($(this).val()); });
     $("#balloon-task-memo").on(realtimeEvents, function () { $(".task.active .task-memo").text($(this).val()); });
 
     $("#balloon-time-begin").change(function () { balloonTimeBoxChanged(true); });
@@ -446,7 +458,13 @@ var showBalloon = function () {
 
     taskNameBox.val(task.find(".task-name").text());
     $("#balloon-task-memo").val(task.find(".task-memo").text());
-    $("#balloon-task-type").val(task.data("task-type"));
+
+    var taskType = task.data("task-type");
+    $("#balloon-task-type").val(taskType);
+    taskNameBox.autocomplete({
+        "source": taskAutoComplete[taskType],
+        "minLength": 0,
+    });
 
     var timeSpan = getTimeSpanFromPosition(task);
     var timeBeginBox = $("#balloon-time-begin");
