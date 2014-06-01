@@ -17,6 +17,7 @@ $(function () {
 
     $(".add-task").click(addTask);
     $(".output").click(output);
+    $(".input").click(input);
     $(".clear").click(clearTasks);
 
     $(".schedule-editor-table").click(function () { return false; });
@@ -176,22 +177,29 @@ var createNewTask = function (top, height, original) {
 
     newTask.top(top);
     newTask.height(height);
+
+    taskType.text(taskTypes[newTask.data("task-type")]);
+
+    // append+showしてからdraggableイベント追加しないと、挙動がおかしくなる
+    $("#task-list").append(newTask);
+    refreshTaskTimeText(newTask, top, height);
+    newTask.show();
+
+    registerTaskEvents(newTask);
+    
+    return newTask;
+};
+
+var registerTaskEvents = function (newTask) {
     newTask.mousedown(function () { activateTask($(this)); });
     newTask.click(showBalloon);
 
-    closeButton.click(function () { removeTask(newTask); });
-
-    taskType.text(taskTypes[newTask.data("task-type")]);
+    newTask.find(".close").click(function () { removeTask(newTask); });
 
     var commonOption = {
         "grid": [0, taskGridHeight],
         "containment": "parent",
     };
-
-    // appendしてからdraggableしないと、挙動がおかしくなる
-    $("#task-list").append(newTask);
-    refreshTaskTimeText(newTask, top, height);
-    newTask.show();
 
     var taskWidth = newTask.width();
 
@@ -200,6 +208,9 @@ var createNewTask = function (top, height, original) {
         "stop": stopEditingEvent,
         "drag": editTaskEvent,
     }));
+    // draggableが何故か"position: relative"をくっ付けるので削除
+    newTask.css("position", "");
+
     newTask.resizable($.extend(commonOption, {
         "handles": "n, s, ne, se, sw, nw",
         "start": startResizeEvent,
@@ -208,8 +219,6 @@ var createNewTask = function (top, height, original) {
         "maxWidth": taskWidth,
         "minWidth": taskWidth,
     }));
-
-    return newTask;
 };
 
 var addTask = function () {
@@ -491,8 +500,39 @@ var dumpTasks = function () {
 };
 
 var restoreTasks = function (dump) {
+    var fragment = $(document.createDocumentFragment());
+
+    dump.forEach(function (val) {
+        createNewTask2(val, fragment);
+    });
 
     clearTasks();
+    $("#task-list").append(fragment);
+};
+
+var createNewTask2 = function (dump, appendTo) {
+    var newTask = taskTemplate.clone(true);
+
+    var top = (dump["time-begin"] - scheduleTimeSpan[0]) * 2 * taskGridHeight;
+    var bottom = (dump["time-end"] - scheduleTimeSpan[0]) * 2 * taskGridHeight;
+    var height = bottom - top;
+    newTask.top(top);
+    newTask.height(height);
+
+    newTask.dataAttr("task-type", dump["type"]);
+    newTask.find(".task-type").text(taskTypes[dump["type"]]);
+
+    newTask.find(".task-name").text(dump["name"]);
+    newTask.find(".task-memo").text(dump["memo"]);
+
+    // append+showしてからdraggableイベント追加しないと、挙動がおかしくなる
+    appendTo.append(newTask);
+    refreshTaskTimeText(newTask, top, height);
+    newTask.show();
+
+    registerTaskEvents(newTask);
+
+    return newTask;
 };
 
 // 引数なしの時は、cssのtopを返す
@@ -573,13 +613,17 @@ var clearTasks = function () {
 
 var output = function () {
     var out = $("#out");
-    out.text(JSON.stringify(dumpTasks()));
+    out.text(JSON.stringify(dumpTasks(), null, "  "));
     /*
     out.empty();
     $(".task").each(function () {
         out.append($(this).text() + "<br />");
     });
     */
+};
+
+var input = function () {
+    restoreTasks(JSON.parse($("#out").text()));
 };
 
 // 上で交差してる: "upside"
