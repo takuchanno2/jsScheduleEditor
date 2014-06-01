@@ -445,7 +445,7 @@ var showBalloon = function () {
     var taskNameBox = $("#balloon-task-name");
 
     taskNameBox.val(task.find(".task-name").text());
-    $("#balloon-task-memo").text(task.find(".task-memo").text());
+    $("#balloon-task-memo").val(task.find(".task-memo").text());
     $("#balloon-task-type").val(task.data("task-type"));
 
     var timeSpan = getTimeSpanFromPosition(task);
