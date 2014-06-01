@@ -125,16 +125,22 @@ body {
   background-color: #8bc3ff;
 }
 #schedule-editor .schedule-editor-table #task-list .task[data-task-type="1"] {
-  background-color: #a9f674;
+  background-color: #83fca0;
 }
 #schedule-editor .schedule-editor-table #task-list .task.active[data-task-type="1"] {
-  background-color: #8bd856;
+  background-color: #65de82;
 }
 #schedule-editor .schedule-editor-table #task-list .task[data-task-type="2"] {
-  background-color: #ffbedc;
+  background-color: #ffd774;
 }
 #schedule-editor .schedule-editor-table #task-list .task.active[data-task-type="2"] {
-  background-color: #ffa0be;
+  background-color: #f1b956;
+}
+#schedule-editor .schedule-editor-table #task-list .task[data-task-type="3"] {
+  background-color: #ffbcff;
+}
+#schedule-editor .schedule-editor-table #task-list .task.active[data-task-type="3"] {
+  background-color: #ff9efa;
 }
 #schedule-editor .schedule-editor-table #edit-balloon {
   box-sizing: content-box;
