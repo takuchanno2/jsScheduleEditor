@@ -17,11 +17,10 @@
     <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="app-old.css">
-      <DependentUpon>app-old.less</DependentUpon>
+    <Content Include="app.css">
+      <DependentUpon>app.less</DependentUpon>
     </Content>
-    <Content Include="app-old.less" />
-    <Content Include="app.css" />
+    <Content Include="app.less" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -89,16 +88,16 @@
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.tooltip.min.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="index-old.html" />
     <Content Include="index.html" />
+    <Content Include="index-old.html" />
     <Content Include="packages.config" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
-    <Content Include="app-old.css.map">
-      <DependentUpon>app-old.css</DependentUpon>
+    <Content Include="app.css.map">
+      <DependentUpon>app.css</DependentUpon>
     </Content>
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
