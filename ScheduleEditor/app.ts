@@ -33,6 +33,10 @@ class Task {
     }
 }
 
+enum GeometricRelation {
+    unrelated, equal, upside, downside, inside, outside, 
+}
+
 class TaskElement {
     private typeLabel: JQuery;
     private nameLabel: JQuery;
@@ -60,7 +64,42 @@ class TaskElement {
     }
 
     public set top(value: number) {
+        // setterとしてのfn_topの戻り値を見ているのは、adjust……だけ。
+        // nullかどうかチェックしてるのみ
+
         throw new Error();
+
+        //value = Math.round(value);
+        //var newBottom = Math.round(value + this.height);
+
+        //if (value <= 0) {
+        //    var newHeight = newBottom;
+
+        //    if (newHeight <= 0) {
+        //        this.remove();
+        //        return null;
+        //    } else {
+        //        this.jQueryElement.css("top", 0);
+        //        this.height = newHeight;
+
+        //        setTaskBorder(this, 0);
+        //        return 0;
+        //    }
+        //} else if (newBottom > taskGridHeightTotal) {
+        //    var newHeight = Math.round(taskGridHeightTotal - value);
+
+        //    if (newHeight <= 0) {
+        //        this.remove();
+        //        return null;
+        //    } else {
+        //        this.height = newHeight;
+        //    }
+        //}
+
+        //this.jQueryElement.css("top", value);
+        //setTaskBorder(this, value);
+
+        //return this;
     }
 
     public get bottom(): number {
@@ -78,6 +117,39 @@ class TaskElement {
     public set height(value: number) {
         if (value === 0) throw new Error("Tried to set height zero.");
         this.jQueryElement.height(value);
+    }
+
+    public getGeometricRelation(counterpart: TaskElement): GeometricRelation {
+        var thisTop = this.top;
+        var cpTop = counterpart.top;
+        var thisBottom = this.bottom;
+        var cpBottom = counterpart.bottom;
+
+        if (thisTop == cpTop) {
+            if (thisBottom < cpBottom) {
+                return GeometricRelation.inside;
+            } else if (thisBottom > cpBottom) {
+                return GeometricRelation.outside;
+            } else {
+                return GeometricRelation.equal;
+            }
+        } else if (thisTop > cpTop) {
+            if (thisBottom <= cpBottom) {
+                return GeometricRelation.inside;
+            } else if (thisTop < cpBottom) {
+                return GeometricRelation.upside;
+            } else {
+                return GeometricRelation.unrelated;
+            }
+        } else {
+            if (thisBottom >= cpBottom) {
+                return GeometricRelation.outside;
+            } else if (thisBottom > cpTop) {
+                return GeometricRelation.downside;
+            } else {
+                return GeometricRelation.unrelated;
+            }
+        }
     }
 
     public fromTask(task: Task): void {
