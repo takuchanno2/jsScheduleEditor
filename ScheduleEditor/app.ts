@@ -59,6 +59,8 @@ class TaskElement {
         this.timeBeginLabel = jQueryElement.find(".task-time-begin");
         this.timeEndLabel = jQueryElement.find(".task-time-end");
         this.timeSpanLabel = jQueryElement.find(".task-time-span");
+
+        this.applyPositionToTimeSpan();
     }
 
     public get type(): number { return this._taskType; }
