@@ -38,6 +38,9 @@ enum GeometricRelation {
 }
 
 class TaskElement {
+    private _taskType: number;
+    private _timeSpan: TimeSpan;
+
     private typeLabel: JQuery;
     private nameLabel: JQuery;
     private memoLabel: JQuery;
@@ -58,39 +61,28 @@ class TaskElement {
         this.timeSpanLabel = jQueryElement.find(".task-time-span");
     }
 
-    public get type(): number {
-        throw new Error();
-    }
-
-    public get typeString(): string {
-        return taskTypeTable[this.type];
-    }
-
+    public get type(): number { return this._taskType; }
+    public get typeString(): string { return taskTypeTable[this.type]; }
     public set type(value: number) {
-        throw new Error();
+        this._taskType = value;
+        this.jQueryElement.attr("data-task-type", value);
     }
 
-    public get name(): string {
-        return this.nameLabel.text();
-    }
+    public get name(): string { return this.nameLabel.text(); }
+    public set name(value: string) { this.nameLabel.text(value); }
 
-    public set name(value: string) {
-        this.nameLabel.text(value);
-    }
-
-    public get memo(): string {
-        return this.memoLabel.text();
-    }
-
-    public set memo(value: string) {
-        this.memoLabel.text(value);
-    }
+    public get memo(): string { return this.memoLabel.text(); }
+    public set memo(value: string) { this.memoLabel.text(value); }
 
     public get timeSpan(): TimeSpan {
-        throw new Error();
+        return this._timeSpan;
     }
 
     public set timeSpan(value: TimeSpan) {
+        throw new Error();
+    }
+
+    public applyPositionToTimeSpan() {
         throw new Error();
     }
 
@@ -156,6 +148,8 @@ class TaskElement {
     }
 
     public getGeometricRelation(counterpart: TaskElement): GeometricRelation {
+        // timeSpanを使うように置き換えるべき
+
         var thisTop = this.top;
         var cpTop = counterpart.top;
         var thisBottom = this.bottom;
