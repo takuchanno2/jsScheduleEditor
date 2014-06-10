@@ -15,13 +15,17 @@ class Task {
         public timespan: TimeSpan,
         public memo: string
         ) { }
+
+    public getTypeString(): string {
+        return taskTypeTable[this.type];
+    }
 }
 
 declare var scheduleTimeSpan: number[];
 declare var coreTimeSpan: number[];
-declare var taskTypes: string[];
+declare var taskTypeTable: string[];
 declare var taskAutoComplete: string[][];
-declare var initialSchedule: Task[]; // JSON型なので……
+declare var initialSchedule: Task[]; 
 
 var taskGridHeight: number;
 var taskGridHeightTotal: number;
@@ -35,8 +39,8 @@ interface JQuery{
 
     bottom(): number;
 
-    dataAttr(key: string): string;
-    dataAttr(key: string, value: string): JQuery;
+    dataAttr(key: string): any;
+    dataAttr(key: string, value: any): JQuery;
 }
 
 $(function () {
@@ -59,6 +63,10 @@ $(function () {
     $("#schedule-editor").click(function () {
         // このイベントが呼ばれるとタスクが非アクティブになるので、適宜stopPropagationすること
         activateTask(null);
+    });
+
+    initialSchedule.forEach((v) => {
+        v.getTypeString = Task.prototype.getTypeString;
     });
 
     initTaskTemplate();
@@ -125,7 +133,7 @@ var initBalloon = function () {
     taskTypeBox.change(function () {
         var value = $(this).val();
         $(".task.active").dataAttr("task-type", value);
-        $(".task.active .task-type").text(taskTypes[value]);
+        $(".task.active .task-type").text(taskTypeTable[value]);
         $("#balloon-task-name").autocomplete({
             "source": taskAutoComplete[value],
             "minLength": 0,
@@ -147,7 +155,7 @@ var initBalloon = function () {
     $("#balloon-delete-button").click(function () { removeTask($(".task.active")); });
 
     // タスクの種類のコンボボックスを作る
-    taskTypes.forEach(function (val: string, i: number) {
+    taskTypeTable.forEach(function (val: string, i: number) {
         $("<option>", {
             "text": val,
             "value": String(i),
@@ -225,7 +233,7 @@ var createNewTask = function (top, height, original) {
     newTask.top(top);
     newTask.height(height);
 
-    taskType.text(taskTypes[newTask.data("task-type")]);
+    taskType.text(taskTypeTable[newTask.data("task-type")]);
 
     // append+showしてからdraggableイベント追加しないと、挙動がおかしくなる
     $("#task-list").append(newTask);
@@ -554,7 +562,7 @@ var dumpTasks = function (): Task[] {
     return dump;
 };
 
-var restoreTasks = function (dump) {
+var restoreTasks = function (dump: Task[]) {
     var fragment = $(document.createDocumentFragment());
 
     dump.forEach(function (val) {
@@ -574,11 +582,11 @@ var createNewTask2 = function (dump: Task, appendTo) {
     newTask.top(top);
     newTask.height(height);
 
-    newTask.dataAttr("task-type", dump["type"]);
-    newTask.find(".task-type").text(taskTypes[dump["type"]]);
+    newTask.dataAttr("task-type", dump.type);
+    newTask.find(".task-type").text(dump.getTypeString());
 
-    newTask.find(".task-name").text(dump["name"]);
-    newTask.find(".task-memo").text(dump["memo"]);
+    newTask.find(".task-name").text(dump.name);
+    newTask.find(".task-memo").text(dump.memo);
 
     // append+showしてからdraggableイベント追加しないと、挙動がおかしくなる
     appendTo.append(newTask);
@@ -679,7 +687,13 @@ var output = function () {
 };
 
 var input = function () {
-    restoreTasks(JSON.parse($("#out").text()));
+    var tasks: Task[] = JSON.parse($("#out").text());
+    
+    tasks.forEach((v) => {
+        v.getTypeString = Task.prototype.getTypeString;
+    })
+
+    restoreTasks(tasks);
 };
 
 // 上で交差してる: "upside"
@@ -724,4 +738,3 @@ function log() {
         text: $.makeArray(arguments).join(" ")
     }).prependTo(logarea);
 };
-

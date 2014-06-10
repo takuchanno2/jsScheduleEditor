@@ -15,6 +15,9 @@ var Task = (function () {
         this.timespan = timespan;
         this.memo = memo;
     }
+    Task.prototype.getTypeString = function () {
+        return taskTypeTable[this.type];
+    };
     return Task;
 })();
 
@@ -46,6 +49,10 @@ $(function () {
     $("#schedule-editor").click(function () {
         // このイベントが呼ばれるとタスクが非アクティブになるので、適宜stopPropagationすること
         activateTask(null);
+    });
+
+    initialSchedule.forEach(function (v) {
+        v.getTypeString = Task.prototype.getTypeString;
     });
 
     initTaskTemplate();
@@ -116,7 +123,7 @@ var initBalloon = function () {
     taskTypeBox.change(function () {
         var value = $(this).val();
         $(".task.active").dataAttr("task-type", value);
-        $(".task.active .task-type").text(taskTypes[value]);
+        $(".task.active .task-type").text(taskTypeTable[value]);
         $("#balloon-task-name").autocomplete({
             "source": taskAutoComplete[value],
             "minLength": 0
@@ -154,7 +161,7 @@ var initBalloon = function () {
     });
 
     // タスクの種類のコンボボックスを作る
-    taskTypes.forEach(function (val, i) {
+    taskTypeTable.forEach(function (val, i) {
         $("<option>", {
             "text": val,
             "value": String(i)
@@ -232,7 +239,7 @@ var createNewTask = function (top, height, original) {
     newTask.top(top);
     newTask.height(height);
 
-    taskType.text(taskTypes[newTask.data("task-type")]);
+    taskType.text(taskTypeTable[newTask.data("task-type")]);
 
     // append+showしてからdraggableイベント追加しないと、挙動がおかしくなる
     $("#task-list").append(newTask);
@@ -590,11 +597,11 @@ var createNewTask2 = function (dump, appendTo) {
     newTask.top(top);
     newTask.height(height);
 
-    newTask.dataAttr("task-type", dump["type"]);
-    newTask.find(".task-type").text(taskTypes[dump["type"]]);
+    newTask.dataAttr("task-type", dump.type);
+    newTask.find(".task-type").text(dump.getTypeString());
 
-    newTask.find(".task-name").text(dump["name"]);
-    newTask.find(".task-memo").text(dump["memo"]);
+    newTask.find(".task-name").text(dump.name);
+    newTask.find(".task-memo").text(dump.memo);
 
     // append+showしてからdraggableイベント追加しないと、挙動がおかしくなる
     appendTo.append(newTask);
@@ -697,7 +704,13 @@ var output = function () {
 };
 
 var input = function () {
-    restoreTasks(JSON.parse($("#out").text()));
+    var tasks = JSON.parse($("#out").text());
+
+    tasks.forEach(function (v) {
+        v.getTypeString = Task.prototype.getTypeString;
+    });
+
+    restoreTasks(tasks);
 };
 
 // 上で交差してる: "upside"
