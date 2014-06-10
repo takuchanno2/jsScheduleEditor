@@ -10,8 +10,8 @@
   <link rel="stylesheet" href="app.css" type="text/css" />
 
   <script>
-    const scheduleTimeSpan = [8, 20];
-    const coreTimeSpan = [9.5, 16.5];
+    const scheduleTimeSpanJSON = { "begin": 8, "end": 20 };
+    const coreTimeSpanJSON = { "begin": 9.5, "end": 16.5 };
     const taskTypeTable = ["研究系", "勉強系", "その他", "実働外"];
     const taskAutoComplete = [
       ["Apple", "Banana", "Canada", "Django", "Egypt", "Fuji-yama", "Gorbachev"],
@@ -19,7 +19,7 @@
       ["Others", "Sonota"],
       ["遅刻", "昼寝", "夜寝", "朝寝"],
     ];
-    const initialSchedule =
+    const initialTasksJSON =
       [
   {
     "type": 0,

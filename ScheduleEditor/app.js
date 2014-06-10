@@ -5,6 +5,17 @@ var TimeSpan = (function () {
         this.begin = begin;
         this.end = end;
     }
+    Object.defineProperty(TimeSpan.prototype, "span", {
+        get: function () {
+            return (this.end - this.begin);
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    TimeSpan.fromJSONObject = function (obj) {
+        return new TimeSpan(obj.begin, obj.end);
+    };
     return TimeSpan;
 })();
 
@@ -15,16 +26,96 @@ var Task = (function () {
         this.timespan = timespan;
         this.memo = memo;
     }
-    Task.prototype.getTypeString = function () {
-        return taskTypeTable[this.type];
+    Object.defineProperty(Task.prototype, "typeString", {
+        get: function () {
+            return taskTypeTable[this.type];
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Task.fromJSONObject = function (obj) {
+        return new Task(obj.type, obj.name, new TimeSpan(obj.timespan.begin, obj.timespan.end), obj.memo);
     };
     return Task;
 })();
 
+var TaskElement = (function () {
+    function TaskElement(jQueryElement) {
+        if (typeof jQueryElement === "undefined") { jQueryElement = null; }
+        this.jQueryElement = jQueryElement;
+        if (jQueryElement === null) {
+            jQueryElement = taskTemplate.clone();
+        }
+
+        this.typeLabel = jQueryElement.find(".task-type");
+        this.nameLabel = jQueryElement.find(".task-name");
+        this.memoLabel = jQueryElement.find(".task-memo");
+        this.timeBeginLabel = jQueryElement.find(".task-time-begin");
+        this.timeEndLabel = jQueryElement.find(".task-time-end");
+        this.timeSpanLabel = jQueryElement.find(".task-time-span");
+    }
+    Object.defineProperty(TaskElement.prototype, "top", {
+        get: function () {
+            if (this.jQueryElement.is(":hidden"))
+                throw new Error("Tried to access 'top' property of an invisible element.");
+            return Math.round(this.jQueryElement.position().top);
+        },
+        set: function (value) {
+            throw new Error();
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+
+    Object.defineProperty(TaskElement.prototype, "bottom", {
+        get: function () {
+            if (this.jQueryElement.is(":hidden"))
+                throw new Error("Tried to access 'bottom' property of an invisible element.");
+            return Math.round(this.top + this.height);
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(TaskElement.prototype, "height", {
+        get: function () {
+            if (this.jQueryElement.is(":hidden"))
+                throw new Error("Tried to access 'height' property of an invisible element.");
+            var height = this.jQueryElement.height();
+            if (height === 0)
+                throw new Error("The height is somehow zero.");
+            return Math.round(height);
+        },
+        set: function (value) {
+            if (value === 0)
+                throw new Error("Tried to set height zero.");
+            this.jQueryElement.height(value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+
+    TaskElement.prototype.fromTask = function (task) {
+        throw new Error();
+    };
+
+    TaskElement.prototype.toTask = function () {
+        throw new Error();
+        return null;
+    };
+    return TaskElement;
+})();
+
+var scheduleTimeSpan = TimeSpan.fromJSONObject(scheduleTimeSpanJSON);
+var coreTimeSpan = TimeSpan.fromJSONObject(coreTimeSpanJSON);
 var taskGridHeight;
 var taskGridHeightTotal;
 var taskTemplate;
 
+var initialTasks = [];
 var lastState = null;
 
 $(function () {
@@ -51,15 +142,15 @@ $(function () {
         activateTask(null);
     });
 
-    initialSchedule.forEach(function (v) {
-        v.getTypeString = Task.prototype.getTypeString;
+    initialTasksJSON.forEach(function (v) {
+        initialTasks.push(Task.fromJSONObject(v));
     });
 
     initTaskTemplate();
     initTable();
     initBalloon();
 
-    restoreTasks(initialSchedule);
+    restoreTasks(initialTasks);
 });
 
 var initTaskTemplate = function () {
@@ -74,10 +165,10 @@ var initTable = function () {
     var taskGrid = $("#task-grid");
     var nbsp = String.fromCharCode(160);
 
-    var coreBegin = Math.round(coreTimeSpan[0] * 2);
-    var coreEnd = Math.round(coreTimeSpan[1] * 2);
+    var coreBegin = Math.round(coreTimeSpan.begin * 2);
+    var coreEnd = Math.round(coreTimeSpan.end * 2);
     var fragment = $(document.createDocumentFragment());
-    for (var i = Math.round(scheduleTimeSpan[0] * 2), end = Math.round(scheduleTimeSpan[1] * 2); i < end; i++) {
+    for (var i = Math.round(scheduleTimeSpan.begin * 2), end = Math.round(scheduleTimeSpan.end * 2); i < end; i++) {
         var inCoreTime = (coreBegin <= i) && (i < coreEnd);
 
         var cell = $("<div />", {
@@ -112,7 +203,7 @@ var initTable = function () {
 };
 
 var timeValueToString = function (tv) {
-    return Math.floor(tv / 2) + ":" + ((tv % 2) ? "30" : "00");
+    return Math.floor(tv) + ":" + ((Math.round(tv * 2.0) % 2) ? "30" : "00");
 };
 
 var initBalloon = function () {
@@ -169,20 +260,21 @@ var initBalloon = function () {
     });
 
     // 時間を選択するコンボボックスを作る
-    var timeBegin = Math.round(scheduleTimeSpan[0] * 2);
-    var timeEnd = Math.round(scheduleTimeSpan[1] * 2);
     var timeBeginBox = $("#balloon-time-begin");
     var timeEndBox = $("#balloon-time-end");
-    for (var i = timeBegin; i <= timeEnd; i++) {
+
+    var timeBegin = Math.round(scheduleTimeSpan.begin * 2);
+    var timeEnd = Math.round(scheduleTimeSpan.end * 2);
+    for (var i = 0, end = Math.round(scheduleTimeSpan.span * 2.0); i <= end; i++) {
         var option = $("<option>", {
             "text": timeValueToString(i),
-            "value": String(i)
+            "value": String(scheduleTimeSpan.begin + (i / 2.0))
         });
 
-        if (i < timeEnd) {
+        if (i < end) {
             option.clone().appendTo(timeBeginBox);
         }
-        if (i > timeBegin) {
+        if (i > 0) {
             option.clone().appendTo(timeEndBox);
         }
     }
@@ -207,26 +299,26 @@ var balloonTimeBoxChanged = function (changedBeginTime) {
         }
     }
 
-    var scheduleBegin = Math.round(scheduleTimeSpan[0] * 2);
+    var scheduleBegin = Math.round(scheduleTimeSpan.begin * 2);
 
     timeBegin = timeBeginBox.val();
     timeEnd = timeEndBox.val();
 
     // 時間修正前の開始時間・終了時間
     var lastTimeSpan = getTimeSpanFromPosition(task);
-    var newTop = taskGridHeight * (timeBegin - scheduleBegin);
-    var newHeight = taskGridHeight * (timeEnd - timeBegin);
+    var newTop = 2.0 * taskGridHeight * (timeBegin - scheduleTimeSpan.begin);
+    var newHeight = 2.0 * taskGridHeight * (timeEnd - timeBegin);
 
-    if (timeBegin < lastTimeSpan[0]) {
+    if (timeBegin < lastTimeSpan.begin) {
         adjustPositionUpward(task, newTop, newTop + newHeight);
     }
-    if (timeEnd > lastTimeSpan[1]) {
+    if (timeEnd > lastTimeSpan.end) {
         adjustPositionDownward(task, newTop, newTop + newHeight);
     }
 
     task.top(newTop);
     task.height(newHeight);
-    timeSpanBox.text((timeEnd - timeBegin) / 2);
+    timeSpanBox.text(timeEnd - timeBegin);
 
     refreshTaskTimeText(task);
 };
@@ -405,9 +497,9 @@ var refreshTaskTimeText = function (elm, top, height) {
     var timeEndArea = elm.find(".task-time-end");
     var timeSpanArea = elm.find(".task-time-span");
 
-    tiemBeginArea.text(timeValueToString(timeSpan[0]));
-    timeEndArea.text(timeValueToString(timeSpan[1]));
-    timeSpanArea.text(((timeSpan[1] - timeSpan[0]) / 2).toFixed(1));
+    tiemBeginArea.text(timeValueToString(timeSpan.begin));
+    timeEndArea.text(timeValueToString(timeSpan.end));
+    timeSpanArea.text(timeSpan.span.toFixed(1));
 };
 
 var stopEditingEvent = function (e, ui) {
@@ -491,10 +583,7 @@ var getTimeSpanFromPosition = function (task, top, height) {
     if (height === undefined)
         height = task.height();
 
-    return [
-        scheduleTimeSpan[0] * 2 + Math.round(top / taskGridHeight),
-        scheduleTimeSpan[0] * 2 + Math.round((top + height) / taskGridHeight)
-    ];
+    return new TimeSpan(scheduleTimeSpan.begin + (top / (2.0 * taskGridHeight)), scheduleTimeSpan.begin + ((top + height) / (2.0 * taskGridHeight)));
 };
 
 var activateTask = function (task) {
@@ -534,13 +623,13 @@ var showBalloon = function () {
     var timeEndBox = $("#balloon-time-end");
     var timeSpanBox = $("#balloon-time-span");
 
-    timeBeginBox.val(String(timeSpan[0]));
-    timeEndBox.val(String(timeSpan[1]));
-    timeSpanBox.text(((timeSpan[1] - timeSpan[0]) / 2).toFixed(1));
+    timeBeginBox.val(String(timeSpan.begin));
+    timeEndBox.val(String(timeSpan.end));
+    timeSpanBox.text(timeSpan.span.toFixed(1));
 
     balloon.css("top", task.top() + taskGridHeight);
     balloon.show();
-    taskNameBox.focus();
+    $("#balloon-ok-button").focus();
 };
 
 var hideBalloon = function () {
@@ -571,7 +660,7 @@ var dumpTasks = function () {
     $(".task").each(function () {
         var curr = $(this);
         var timeSpan = getTimeSpanFromPosition(curr);
-        dump.push(new Task(curr.data("task-type"), curr.find(".task-name").text(), new TimeSpan((timeSpan[0] / 2), (timeSpan[1] / 2)), curr.find(".task-memo").text()));
+        dump.push(new Task(curr.data("task-type"), curr.find(".task-name").text(), timeSpan, curr.find(".task-memo").text()));
     });
 
     return dump;
@@ -591,14 +680,14 @@ var restoreTasks = function (dump) {
 var createNewTask2 = function (dump, appendTo) {
     var newTask = taskTemplate.clone(true);
 
-    var top = (dump.timespan.begin - scheduleTimeSpan[0]) * 2 * taskGridHeight;
-    var bottom = (dump.timespan.end - scheduleTimeSpan[0]) * 2 * taskGridHeight;
+    var top = (dump.timespan.begin - scheduleTimeSpan.begin) * 2 * taskGridHeight;
+    var bottom = (dump.timespan.end - scheduleTimeSpan.begin) * 2 * taskGridHeight;
     var height = bottom - top;
     newTask.top(top);
     newTask.height(height);
 
     newTask.dataAttr("task-type", dump.type);
-    newTask.find(".task-type").text(dump.getTypeString());
+    newTask.find(".task-type").text(dump.typeString);
 
     newTask.find(".task-name").text(dump.name);
     newTask.find(".task-memo").text(dump.memo);
@@ -673,7 +762,7 @@ var setTaskBorder = function (elm, top) {
 // top+heightの高さを返す
 var fn_bottom = function () {
     if (this.css("display") === "none")
-        throw new Error("Try to access 'bottom' property though this is invisible.");
+        throw new Error("Try to access 'bottom' property of an invisible element.");
     return Math.round(this.top() + this.height());
 };
 
@@ -704,10 +793,11 @@ var output = function () {
 };
 
 var input = function () {
-    var tasks = JSON.parse($("#out").text());
+    var tasksJSON = JSON.parse($("#out").text());
+    var tasks = [];
 
-    tasks.forEach(function (v) {
-        v.getTypeString = Task.prototype.getTypeString;
+    tasksJSON.forEach(function (v) {
+        tasks.push(Task.fromJSONObject(v));
     });
 
     restoreTasks(tasks);
