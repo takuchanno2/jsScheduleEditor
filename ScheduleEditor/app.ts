@@ -58,6 +58,42 @@ class TaskElement {
         this.timeSpanLabel = jQueryElement.find(".task-time-span");
     }
 
+    public get type(): number {
+        throw new Error();
+    }
+
+    public get typeString(): string {
+        return taskTypeTable[this.type];
+    }
+
+    public set type(value: number) {
+        throw new Error();
+    }
+
+    public get name(): string {
+        return this.nameLabel.text();
+    }
+
+    public set name(value: string) {
+        this.nameLabel.text(value);
+    }
+
+    public get memo(): string {
+        return this.memoLabel.text();
+    }
+
+    public set memo(value: string) {
+        this.memoLabel.text(value);
+    }
+
+    public get timeSpan(): TimeSpan {
+        throw new Error();
+    }
+
+    public set timeSpan(value: TimeSpan) {
+        throw new Error();
+    }
+
     public get top(): number {
         if (this.jQueryElement.is(":hidden")) throw new Error("Tried to access 'top' property of an invisible element.");
         return Math.round(this.jQueryElement.position().top);
@@ -313,9 +349,11 @@ var initBalloon = function () {
     var timeBegin = Math.round(scheduleTimeSpan.begin * 2);
     var timeEnd = Math.round(scheduleTimeSpan.end * 2);
     for (var i = 0, end = Math.round(scheduleTimeSpan.span * 2.0); i <= end; i++) {
+        var currTime = scheduleTimeSpan.begin + (i / 2.0);
+
         var option = $("<option>", {
-            "text": timeValueToString(i),
-            "value": String(scheduleTimeSpan.begin + (i / 2.0)),
+            "text": timeValueToString(currTime),
+            "value": String(currTime),
         });
 
         if (i < end) {
@@ -613,6 +651,7 @@ var removeTask = function (task) {
     task.remove();
 };
 
+// 移植済み
 var getTimeSpanFromPosition = function (task: JQuery, top: number = undefined, height: number = undefined) {
     if (top === undefined) top = task.top();
     if (height === undefined) height = task.height();
@@ -673,6 +712,7 @@ var hideBalloon = function () {
     $("#edit-balloon").hide();
 };
 
+// 移植済み
 var originalHeight = $.fn.height;
 var fn_height = function (height) {
     if (height !== undefined) {
@@ -743,6 +783,7 @@ var createNewTask2 = function (dump: Task, appendTo) {
     return newTask;
 };
 
+// *** 移植済み？ ***
 // 引数なしの時は、cssのtopを返す
 // 引数があるときは、その値をcssのtopに設定
 // マイナスの値を設定しようとしたり、グリッドの高さを超えそうなときは適宜設定
@@ -799,6 +840,7 @@ var setTaskBorder = function (elm, top) {
     }
 };
 
+// *** 移植済み ***
 // top+heightの高さを返す
 var fn_bottom = function () {
     if (this.css("display") === "none") throw new Error("Try to access 'bottom' property of an invisible element.");
@@ -842,6 +884,7 @@ var input = function () {
     restoreTasks(tasks);
 };
 
+// *** 移植済み ***
 // 上で交差してる: "upside"
 // 下で交差してる: "downside"
 // 含んでいる: "outside"
