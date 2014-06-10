@@ -1,5 +1,22 @@
 ﻿/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
 /// <reference path="Scripts/typings/jqueryui/jqueryui.d.ts" />
+var TimeSpan = (function () {
+    function TimeSpan(begin, end) {
+        this.begin = begin;
+        this.end = end;
+    }
+    return TimeSpan;
+})();
+
+var Task = (function () {
+    function Task(type, name, timespan, memo) {
+        this.type = type;
+        this.name = name;
+        this.timespan = timespan;
+        this.memo = memo;
+    }
+    return Task;
+})();
 
 var taskGridHeight;
 var taskGridHeightTotal;
@@ -547,13 +564,7 @@ var dumpTasks = function () {
     $(".task").each(function () {
         var curr = $(this);
         var timeSpan = getTimeSpanFromPosition(curr);
-        dump.push({
-            "type": curr.data("task-type"),
-            "name": curr.find(".task-name").text(),
-            "time-begin": (timeSpan[0] / 2),
-            "time-end": (timeSpan[1] / 2),
-            "memo": curr.find(".task-memo").text()
-        });
+        dump.push(new Task(curr.data("task-type"), curr.find(".task-name").text(), new TimeSpan((timeSpan[0] / 2), (timeSpan[1] / 2)), curr.find(".task-memo").text()));
     });
 
     return dump;
@@ -573,8 +584,8 @@ var restoreTasks = function (dump) {
 var createNewTask2 = function (dump, appendTo) {
     var newTask = taskTemplate.clone(true);
 
-    var top = (dump["time-begin"] - scheduleTimeSpan[0]) * 2 * taskGridHeight;
-    var bottom = (dump["time-end"] - scheduleTimeSpan[0]) * 2 * taskGridHeight;
+    var top = (dump.timespan.begin - scheduleTimeSpan[0]) * 2 * taskGridHeight;
+    var bottom = (dump.timespan.end - scheduleTimeSpan[0]) * 2 * taskGridHeight;
     var height = bottom - top;
     newTask.top(top);
     newTask.height(height);

@@ -1,17 +1,33 @@
 ﻿/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
 /// <reference path="Scripts/typings/jqueryui/jqueryui.d.ts" />
 
+class TimeSpan {
+    constructor(
+        public begin: number,
+        public end: number
+        ) { }
+}
+
+class Task {
+    constructor(
+        public type: number,
+        public name: string,
+        public timespan: TimeSpan,
+        public memo: string
+        ) { }
+}
+
 declare var scheduleTimeSpan: number[];
 declare var coreTimeSpan: number[];
 declare var taskTypes: string[];
 declare var taskAutoComplete: string[][];
-declare var initialSchedule: any[]; // JSON型なので……
+declare var initialSchedule: Task[]; // JSON型なので……
 
 var taskGridHeight: number;
 var taskGridHeightTotal: number;
 var taskTemplate: JQuery;
 
-var lastState: any = null;
+var lastState: Task[] = null;
 
 interface JQuery{
     top(): number;
@@ -516,24 +532,23 @@ var fn_height = function (height) {
     }
 };
 
-var dumpTasks = function () {
+var dumpTasks = function (): Task[] {
     /* ソートするのはサーバに送信するときだけでいい
     var tasks = $(".task")
    .filter(function () { return (this !== elm[0]) && ($(this).bottom() <= bottom); })
    .sort(sortByTopInDesc);
    */
 
-    var dump = [];
+    var dump: Task[] = [];
     $(".task").each(function () {
         var curr = $(this);
         var timeSpan = getTimeSpanFromPosition(curr);
-        dump.push({
-            "type": curr.data("task-type"),
-            "name": curr.find(".task-name").text(),
-            "time-begin": (timeSpan[0] / 2),
-            "time-end": (timeSpan[1] / 2),
-            "memo": curr.find(".task-memo").text(),
-        });
+        dump.push(new Task(
+            curr.data("task-type"),
+            curr.find(".task-name").text(),
+            new TimeSpan((timeSpan[0] / 2), (timeSpan[1] / 2)),
+            curr.find(".task-memo").text()
+            ));
     });
 
     return dump;
@@ -550,11 +565,11 @@ var restoreTasks = function (dump) {
     $("#task-list").append(fragment);
 };
 
-var createNewTask2 = function (dump, appendTo) {
+var createNewTask2 = function (dump: Task, appendTo) {
     var newTask = taskTemplate.clone(true);
 
-    var top = (dump["time-begin"] - scheduleTimeSpan[0]) * 2 * taskGridHeight;
-    var bottom = (dump["time-end"] - scheduleTimeSpan[0]) * 2 * taskGridHeight;
+    var top = (dump.timespan.begin - scheduleTimeSpan[0]) * 2 * taskGridHeight;
+    var bottom = (dump.timespan.end - scheduleTimeSpan[0]) * 2 * taskGridHeight;
     var height = bottom - top;
     newTask.top(top);
     newTask.height(height);
