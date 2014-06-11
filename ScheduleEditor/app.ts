@@ -45,7 +45,7 @@ enum GeometricRelation {
 }
 
 class TaskElement {
-    private static taskTemplate: JQuery;
+    private static jQueryElementTemplate: JQuery;
 
     private _taskType: number;
     private _timeSpan: TimeSpan;
@@ -59,7 +59,7 @@ class TaskElement {
 
     constructor(public jQueryElement: JQuery = null) {
         if (jQueryElement === null) {
-            jQueryElement = TaskElement.taskTemplate.clone();
+            jQueryElement = TaskElement.jQueryElementTemplate.clone();
         }
 
         this.typeLabel = jQueryElement.find(".task-type");
@@ -209,11 +209,13 @@ class TaskElement {
     }
 
     public static prepareTemplate() {
-        this.taskTemplate = $("#task-template");
-        this.taskTemplate.removeAttr("id");
-        this.taskTemplate.find(".task-name").empty();
-        this.taskTemplate.find(".task-memo").empty();
-        this.taskTemplate.remove();
+        this.jQueryElementTemplate = $("#task-template");
+        this.jQueryElementTemplate.removeAttr("id");
+        this.jQueryElementTemplate.find(".task-name").empty();
+        this.jQueryElementTemplate.find(".task-memo").empty();
+        this.jQueryElementTemplate.remove();
+
+        taskTemplate = this.jQueryElementTemplate;
     }
 }
 
@@ -222,6 +224,8 @@ declare var coreTimeSpanJSON: TimeSpan;
 declare var taskTypeTable: string[];
 declare var taskAutoComplete: string[][];
 declare var initialTasksJSON: any[]; 
+
+var taskTemplate: JQuery;
 
 var scheduleTimeSpan: TimeSpan = TimeSpan.fromJSONObject(scheduleTimeSpanJSON);
 var coreTimeSpan: TimeSpan = TimeSpan.fromJSONObject(coreTimeSpanJSON);
