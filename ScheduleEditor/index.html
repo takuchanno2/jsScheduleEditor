@@ -75,61 +75,66 @@
 
         <div id="schedule-editor">
           <div class="schedule-editor-table">
-            <div id="task-grid">
-              <div id="task-template" class="task" data-task-type="0">
-                <div class="task-content">
-                  <div class="task-head clearfix">
-                    <button type="button" class="close">&times;</button>
-                    <div class="task-title">
-                      <b class="task-type">種類</b>
-                      <span class="task-name">タスク名タスク名</span>
-                      <span class="task-time">
-                        <span class="task-time-begin">10:00</span> - <span class="task-time-end">12:00</span>
-                        (<span class="task-time-span">2.0</span> 時間)
-                      </span>
-                    </div>
-                  </div>
-                  <p class="task-memo">タスクに関する説明</p>
-                </div>
+            <div id="table-header">
+              <div class="grid-cell">
+                <div class="task-cell">予定</div>
+                <div class="half-hour-cell"></div>
+                <div class="task-cell">実施</div>
               </div>
             </div>
-            <div id="task-list"></div>
-
-            <div id="edit-balloon">
-              <form>
-                <div class="form-group">
-                  <label class="control-label">タスク</label>
-                  <div class="clearfix">
-                    <div class="col-xs-4"><select id="balloon-task-type" name="task-type" class="form-control"></select></div>
-                    <div class="col-xs-8"><input id="balloon-task-name" name="task-name" type="text" placeholder="タスク名" class="form-control" /> </div>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <div>
-                    <label class="control-label">時間</label>
-                    <div class="pull-right"><span id="balloon-time-span">2.0</span> 時間</div>
-                  </div>
-                  <div class="clearfix">
-                    <div class="col-xs-6">
-                      <select id="balloon-time-begin" name="time-begin" class="form-control"></select>
+            <div id="table-content">
+              <div id="task-grid"></div>
+              <div id="task-list">
+                <div id="task-template" class="task" data-task-type="0">
+                  <div class="task-content">
+                    <div class="task-head clearfix">
+                      <button type="button" class="close">&times;</button>
+                      <div class="task-title">
+                        <b class="task-type">種類</b>
+                        <span class="task-name">タスク名タスク名</span>
+                        <span class="task-time">
+                          <span class="task-time-begin">10:00</span> - <span class="task-time-end">12:00</span>
+                          (<span class="task-time-span">2.0</span> 時間)
+                        </span>
+                      </div>
                     </div>
-                    <div class="col-xs-6">
-                      <select id="balloon-time-end" name="time-end" class="form-control"></select>
-                    </div>
+                    <p class="task-memo">タスクに関する説明</p>
                   </div>
                 </div>
-
-                <div class="form-group">
-                  <textarea id="balloon-task-memo" name="task-memo" class="form-control" placeholder="メモ"></textarea>
-                </div>
-
-                <div class="text-center relative">
-                  <button type="submit" id="balloon-ok-button" class="btn btn-primary balloon-button">確定</button>
-                  <button type="button" id="balloon-cancel-button" class="btn btn-default balloon-button">キャンセル</button>
-                  <div class="right-bottom"><button type="button" id="balloon-delete-button" class="btn btn-xs btn-link">削除</button></div>
-                </div>
-              </form>
+              </div>
+              <div id="edit-balloon">
+                <form>
+                  <div class="form-group">
+                    <label class="control-label">タスク</label>
+                    <div class="clearfix">
+                      <div class="col-xs-4"><select id="balloon-task-type" name="task-type" class="form-control"></select></div>
+                      <div class="col-xs-8"><input id="balloon-task-name" name="task-name" type="text" placeholder="タスク名" class="form-control" /> </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div>
+                      <label class="control-label">時間</label>
+                      <div class="pull-right"><span id="balloon-time-span">2.0</span> 時間</div>
+                    </div>
+                    <div class="clearfix">
+                      <div class="col-xs-6">
+                        <select id="balloon-time-begin" name="time-begin" class="form-control"></select>
+                      </div>
+                      <div class="col-xs-6">
+                        <select id="balloon-time-end" name="time-end" class="form-control"></select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <textarea id="balloon-task-memo" name="task-memo" class="form-control" placeholder="メモ"></textarea>
+                  </div>
+                  <div class="text-center relative">
+                    <button type="submit" id="balloon-ok-button" class="btn btn-primary balloon-button">確定</button>
+                    <button type="button" id="balloon-cancel-button" class="btn btn-default balloon-button">キャンセル</button>
+                    <div class="right-bottom"><button type="button" id="balloon-delete-button" class="btn btn-xs btn-link">削除</button></div>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>
