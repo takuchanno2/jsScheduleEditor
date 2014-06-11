@@ -11,6 +11,13 @@ class TimeSpan {
         return (this.end - this.begin);
     }
 
+    public get beginString(): string { return TimeSpan.timeToString(this.begin); }
+    public get endString(): string { return TimeSpan.timeToString(this.end); }
+
+    private static timeToString(time: number): string {
+        return String(Math.floor(time)) + ":" + (((time * 2) % 2 == 0) ? "00" : "30");
+    }
+
     public static fromJSONObject(obj: any): TimeSpan {
         return new TimeSpan(obj.begin, obj.end);
     }
@@ -38,6 +45,8 @@ enum GeometricRelation {
 }
 
 class TaskElement {
+    private static taskTemplate: JQuery;
+
     private _taskType: number;
     private _timeSpan: TimeSpan;
 
@@ -50,7 +59,7 @@ class TaskElement {
 
     constructor(public jQueryElement: JQuery = null) {
         if (jQueryElement === null) {
-            jQueryElement = taskTemplate.clone();
+            jQueryElement = TaskElement.taskTemplate.clone();
         }
 
         this.typeLabel = jQueryElement.find(".task-type");
@@ -81,7 +90,9 @@ class TaskElement {
     }
 
     public set timeSpan(value: TimeSpan) {
-        throw new Error();
+        this._timeSpan = value;
+        this.top = taskGridHeight * value.begin * 2;
+        this.height = taskGridHeight * value.span * 2;
     }
 
     public applyPositionToTimeSpan() {
@@ -184,6 +195,10 @@ class TaskElement {
         }
     }
 
+    //　jQueryの要素にイベントを登録する
+    public registerEvents() {
+    }
+
     public fromTask(task: Task): void {
         throw new Error();
     }
@@ -191,6 +206,14 @@ class TaskElement {
     public toTask(): Task {
         throw new Error();
         return null;
+    }
+
+    public static prepareTemplate() {
+        this.taskTemplate = $("#task-template");
+        this.taskTemplate.removeAttr("id");
+        this.taskTemplate.find(".task-name").empty();
+        this.taskTemplate.find(".task-memo").empty();
+        this.taskTemplate.remove();
     }
 }
 
@@ -204,7 +227,6 @@ var scheduleTimeSpan: TimeSpan = TimeSpan.fromJSONObject(scheduleTimeSpanJSON);
 var coreTimeSpan: TimeSpan = TimeSpan.fromJSONObject(coreTimeSpanJSON);
 var taskGridHeight: number;
 var taskGridHeightTotal: number;
-var taskTemplate: JQuery;
 
 var initialTasks: Task[] = [];
 var lastState: Task[] = null;
@@ -245,20 +267,12 @@ $(function () {
         initialTasks.push(Task.fromJSONObject(v));
     });
 
-    initTaskTemplate();
+    TaskElement.prepareTemplate();
     initTable();
     initBalloon();
 
     restoreTasks(initialTasks);
 });
-
-var initTaskTemplate = function () {
-    taskTemplate = $("#task-template");
-    taskTemplate.removeAttr("id");
-    taskTemplate.find(".task-name").empty();
-    taskTemplate.find(".task-memo").empty();
-    taskTemplate.remove();
-};
 
 var initTable = function () {
     var taskGrid = $("#task-grid");
