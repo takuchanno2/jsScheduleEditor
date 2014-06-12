@@ -37,13 +37,16 @@ body {
     position: relative;
     display: inline-block;
     box-sizing: border-box;
-    
     .default-border();
     border-width: @border-width-bold;
 
-    #task-grid {
+    #table-content {
+      position: relative;
+    }
+
+    #task-grid, #table-header {
       .grid-cell {
-        width: @hour-area-width + @task-width;
+        width: @hour-area-width + @task-width + @task-width;
         height: @task-grid-height;
         overflow: hidden;
 
@@ -57,9 +60,9 @@ body {
           width: @hour-area-width;
           padding: 5px;
           float: left;
-          text-align: right;
+          text-align: center;
           .default-border();
-          border-width: @border-width @border-width 0px 0px;
+          border-width: @border-width @border-width-bold 0px @border-width-bold;
           background-color: @grid-hour-background;
 
           &.core {
@@ -69,7 +72,7 @@ body {
 
         .task-cell {
           width: @task-width;
-          float: right;
+          float: left;
           .default-border();
           border-width: @border-width 0px 0px 0px;
           background-color: @grid-background;
@@ -83,11 +86,9 @@ body {
         &:first-child .task-cell {
           border-top-width: 0px;
         }
-
         &:nth-child(even) .half-hour-cell {
           border-top-width: 0px;
         }
-
         &.ui-selecting .half-hour-cell,
         &.ui-selecting .task-cell {
           background-color: #FC4;
@@ -100,15 +101,30 @@ body {
       }
     }
 
+    #table-header {
+      .grid-cell{
+          .default-border();
+          border-width: 0px 0px @border-width-bold 0px;
+
+        .half-hour-cell, .task-cell {
+          background-color: hsl(60, 60%, 87%);
+          font-weight: bold;
+          text-align: center;
+          font-size: 110%;
+          line-height: @task-grid-height;
+          border-width: 0px 0px 0px 0px;
+        }
+      }
+    }
+
     #task-list {
-      width: 100%;
+      width: @task-width;
       height: 100%;
       position: absolute;
       pointer-events: none;
       cursor: default;
-      left: 0px;
+      right: 0px;
       top: 0px;
-      padding-left: @hour-area-width;
 
       .task {
         position: absolute;
@@ -128,12 +144,11 @@ body {
           padding: 5px;
           word-wrap: break-word;
           overflow: hidden;
-
           .default-border();
           border-width: @border-width 0px 0px 0px;
 
           .task-head {
-            margin-bottom: 10px; 
+            margin-bottom: 10px;
 
             .task-title {
               margin: 0px 25px 2px 0px;

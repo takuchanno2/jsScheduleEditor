@@ -352,6 +352,10 @@ var initTable = function () {
         }).appendTo(fragment);
 
         $("<div />", {
+            "class": "task-cell" + (inCoreTime ? " core" : ""),
+        }).appendTo(cell);
+
+        $("<div />", {
             "text": ((i % 2) ? nbsp : String(i / 2)),
             "class": "half-hour-cell" + (inCoreTime ? " core" : ""),
         }).appendTo(cell);
