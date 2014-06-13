@@ -125,45 +125,45 @@ class TaskElement {
         return Math.round(this.jQueryElement.position().top);
     }
 
-    //public set top(value: number) {
-    //    // setterとしてのfn_topの戻り値を見ているのは、adjust……だけ。
-    //    // nullかどうかチェックしてるのみ
+    public set top(value: number) {
+        // setterとしてのfn_topの戻り値を見ているのは、adjust……だけ。
+        // nullかどうかチェックしてるのみ
 
-    //    // throw new Error();
-    //    this.jQueryElement.css("top", value);
+        // throw new Error();
+        this.jQueryElement.css("top", value);
 
-    //    //value = Math.round(value);
-    //    //var newBottom = Math.round(value + this.height);
+        //value = Math.round(value);
+        //var newBottom = Math.round(value + this.height);
 
-    //    //if (value <= 0) {
-    //    //    var newHeight = newBottom;
+        //if (value <= 0) {
+        //    var newHeight = newBottom;
 
-    //    //    if (newHeight <= 0) {
-    //    //        this.remove();
-    //    //        return null;
-    //    //    } else {
-    //    //        this.jQueryElement.css("top", 0);
-    //    //        this.height = newHeight;
+        //    if (newHeight <= 0) {
+        //        this.remove();
+        //        return null;
+        //    } else {
+        //        this.jQueryElement.css("top", 0);
+        //        this.height = newHeight;
 
-    //    //        setTaskBorder(this, 0);
-    //    //        return 0;
-    //    //    }
-    //    //} else if (newBottom > taskGridHeightTotal) {
-    //    //    var newHeight = Math.round(taskGridHeightTotal - value);
+        //        setTaskBorder(this, 0);
+        //        return 0;
+        //    }
+        //} else if (newBottom > taskGridHeightTotal) {
+        //    var newHeight = Math.round(taskGridHeightTotal - value);
 
-    //    //    if (newHeight <= 0) {
-    //    //        this.remove();
-    //    //        return null;
-    //    //    } else {
-    //    //        this.height = newHeight;
-    //    //    }
-    //    //}
+        //    if (newHeight <= 0) {
+        //        this.remove();
+        //        return null;
+        //    } else {
+        //        this.height = newHeight;
+        //    }
+        //}
 
-    //    //this.jQueryElement.css("top", value);
-    //    //setTaskBorder(this, value);
+        //this.jQueryElement.css("top", value);
+        //setTaskBorder(this, value);
 
-    //    //return this;
-    //}
+        //return this;
+    }
 
     public get bottom(): number {
         if (!this.visible) throw new Error("Tried to access 'bottom' property of an invisible element.");
@@ -177,10 +177,10 @@ class TaskElement {
         return Math.round(height);
     }
 
-    //public set height(value: number) {
-    //    if (value === 0) throw new Error("Tried to set height zero.");
-    //    this.jQueryElement.height(value);
-    //}
+    public set height(value: number) {
+        if (value === 0) throw new Error("Tried to set height zero.");
+        this.jQueryElement.height(value);
+    }
 
     public getGeometricRelation(counterpart: TaskElement): GeometricRelation {
         if (this.timeSpan.begin == counterpart.timeSpan.begin) {
