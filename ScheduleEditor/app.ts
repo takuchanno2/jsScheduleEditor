@@ -45,8 +45,6 @@ enum GeometricRelation {
 }
 
 class TaskElement {
-    private static jQueryElementTemplate: JQuery;
-
     private _taskType: number;
     private _timeSpan: TimeSpan;
 
@@ -57,10 +55,11 @@ class TaskElement {
     private timeEndLabel: JQuery;
     private timeSpanLabel: JQuery;
 
-    constructor(public jQueryElement: JQuery = null) {
-        if (jQueryElement === null) {
-            jQueryElement = TaskElement.jQueryElementTemplate.clone();
-        }
+    constructor(
+        private parent: TaskElementCollection,
+        private id: number,
+        private jQueryElement: JQuery
+        ) {
 
         this.typeLabel = jQueryElement.find(".task-type");
         this.nameLabel = jQueryElement.find(".task-name");
@@ -190,6 +189,36 @@ class TaskElement {
 
     //　jQueryの要素にイベントを登録する
     public registerEvents() {
+        if (this.jQueryElement.is(":hidden")) throw new Error("Event registration of hidden elements is now allowed.");
+
+        this.jQueryElement.mousedown(function () { lastState = dumpTasks(); activateTask($(this)); });
+        this.jQueryElement.click(showBalloon);
+
+        this.jQueryElement.find(".close").click(function () { removeTask(this.jQueryElement); });
+
+        var commonOption = {
+            "grid": [0, taskGridHeight],
+            "containment": "parent",
+        };
+
+        var taskWidth = this.jQueryElement.width();
+
+        this.jQueryElement.draggable($.extend(commonOption, {
+            "start": startDragEvent,
+            "stop": stopEditingEvent,
+            "drag": editTaskEvent,
+        }));
+        // draggableが何故か"position: relative"をくっ付けるので削除
+        this.jQueryElement.css("position", "");
+
+        this.jQueryElement.resizable($.extend(commonOption, {
+            "handles": "n, s, ne, se, sw, nw",
+            "start": startResizeEvent,
+            "stop": stopEditingEvent,
+            "resize": editTaskEvent,
+            "maxWidth": taskWidth,
+            "minWidth": taskWidth,
+        }));
     }
 
     public fromTask(task: Task): void {
@@ -198,6 +227,36 @@ class TaskElement {
 
     public toTask(): Task {
         throw new Error();
+        return null;
+    }
+
+
+}
+
+class TaskElementCollection {
+    private static jQueryElementTemplate: JQuery;
+
+    public elements: TaskElement[] = [];
+
+    public create(copyFrom: TaskElement = null): TaskElement {
+        return null;
+    }
+
+    public activate(element: TaskElement) {
+        
+    }
+
+    public remove(element: TaskElement) {
+    }
+
+    public dump(): Task[]{
+        return null;
+    }
+
+    public restore(dump: Task[]) {
+    }
+
+    public get active(): TaskElement {
         return null;
     }
 
@@ -264,7 +323,7 @@ $(function () {
         initialTasks.push(Task.fromJSONObject(v));
     });
 
-    TaskElement.prepareTemplate();
+    TaskElementCollection.prepareTemplate();
     initTable();
     initBalloon();
 
