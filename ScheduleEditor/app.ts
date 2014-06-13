@@ -161,33 +161,26 @@ class TaskElement {
     }
 
     public getGeometricRelation(counterpart: TaskElement): GeometricRelation {
-        // timeSpanを使うように置き換えるべき
-
-        var thisTop = this.top;
-        var cpTop = counterpart.top;
-        var thisBottom = this.bottom;
-        var cpBottom = counterpart.bottom;
-
-        if (thisTop == cpTop) {
-            if (thisBottom < cpBottom) {
+        if (this.timeSpan.begin == counterpart.timeSpan.begin) {
+            if (this.timeSpan.end < counterpart.timeSpan.end) {
                 return GeometricRelation.inside;
-            } else if (thisBottom > cpBottom) {
+            } else if (this.timeSpan.end > counterpart.timeSpan.end) {
                 return GeometricRelation.outside;
             } else {
                 return GeometricRelation.equal;
             }
-        } else if (thisTop > cpTop) {
-            if (thisBottom <= cpBottom) {
+        } else if (this.timeSpan.begin > counterpart.timeSpan.begin) {
+            if (this.timeSpan.end <= counterpart.timeSpan.end) {
                 return GeometricRelation.inside;
-            } else if (thisTop < cpBottom) {
+            } else if (this.timeSpan.begin < counterpart.timeSpan.end) {
                 return GeometricRelation.upside;
             } else {
                 return GeometricRelation.unrelated;
             }
         } else {
-            if (thisBottom >= cpBottom) {
+            if (this.timeSpan.end >= counterpart.timeSpan.end) {
                 return GeometricRelation.outside;
-            } else if (thisBottom > cpTop) {
+            } else if (this.timeSpan.end > counterpart.timeSpan.begin) {
                 return GeometricRelation.downside;
             } else {
                 return GeometricRelation.unrelated;
