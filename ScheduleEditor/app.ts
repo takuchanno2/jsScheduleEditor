@@ -846,7 +846,7 @@ var restoreTasks = function (dump: Task[]) {
     clearTasks();
     $("#task-list").append(fragment);
 
-    fragment.children().each(function () {
+    $(".task").each(function () {
         var curr: TaskElement = $(this).data("task-element");
         curr.show();
         curr.registerEvents();
