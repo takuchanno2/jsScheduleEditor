@@ -10,8 +10,8 @@
   <link rel="stylesheet" href="app.css" type="text/css" />
 
   <script>
-    const scheduleTimeSpanJSON = { "begin": 8, "end": 20 };
-    const coreTimeSpanJSON = { "begin": 9.5, "end": 16.5 };
+    const scheduleTimeSpan = [8, 20];
+    const coreTimeSpan = [9.5, 16.5];
     const taskTypeTable = ["研究系", "勉強系", "その他", "実働外"];
     const taskAutoComplete = [
       ["Apple", "Banana", "Canada", "Django", "Egypt", "Fuji-yama", "Gorbachev"],
@@ -24,7 +24,7 @@
   {
     "type": 0,
     "name": "Kenkyu-kei",
-    "timespan": {
+    "timeSpan": {
         "begin": 9.5,
         "end": 11
     },
@@ -33,7 +33,7 @@
   {
     "type": "1",
     "name": "Benkyo-kei",
-    "timespan": {
+    "timeSpan": {
         "begin": 11,
         "end": 12.5
     },
@@ -42,7 +42,7 @@
   {
     "type": "2",
     "name": "Fuyu no Sonota",
-    "timespan": {
+    "timeSpan": {
         "begin": 12.5,
         "end": 14
     },"memo": "foofoo"
@@ -50,7 +50,7 @@
   {
     "type": "3",
     "name": "Jitsudo-gai",
-    "timespan": {
+    "timeSpan": {
         "begin": 14,
         "end": 15.5
     },
