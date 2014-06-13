@@ -302,6 +302,10 @@ interface JQuery{
     dataAttr(key: string, value: any): JQuery;
 }
 
+interface Window {
+    collectGarbage(): void;
+}
+
 $(function () {
     $.fn.extend({
         "top": fn_top,
@@ -315,6 +319,13 @@ $(function () {
     $(".output").click(output);
     $(".input").click(input);
     $(".clear").click(clearTasks);
+    $(".bench").click(() => {
+        for (var i = 0; i < 1000; i++) {
+            restoreTasks(initialTasks);
+        }
+
+        window.collectGarbage();
+    });
 
     $(".schedule-editor-table").click(function () { return false; });
 
@@ -538,7 +549,7 @@ var addTask = function () {
     var selectedCells = $(".ui-selected");
     if (selectedCells.length <= 0) return;
 
-    var timeBegin = TimeSpan.scheduleTime.begin + (selectedCells.first().top() / taskGridHeight);
+    var timeBegin = TimeSpan.scheduleTime.begin + (selectedCells.first().top() / taskGridHeight / 2.0);
     var timeEnd = timeBegin + selectedCells.length / 2.0;
 
     lastState = dumpTasks();
@@ -589,7 +600,7 @@ var addTask = function () {
 
     TaskElement.addToContainer(taskList, newTask);
 
-    activateTask(newTask);
+    activateTask(newTask.jQueryElement);
     showBalloon();
 };
 
@@ -829,22 +840,17 @@ var restoreTasks = function (dump: Task[]) {
     var fragment = $(document.createDocumentFragment());
 
     dump.forEach(function (taskJSON) {
-        // fragment.append(TaskElement.fromTask(Task.fromJSONObject(taskJSON)).jQueryElement)
-
-        var element = TaskElement.fromTask(Task.fromJSONObject(taskJSON));
-        fragment.append(element.jQueryElement);
-        element.show();
-        element.registerEvents();
+        fragment.append(TaskElement.fromTask(Task.fromJSONObject(taskJSON)).jQueryElement)
     });
 
     clearTasks();
     $("#task-list").append(fragment);
 
-    //$(".task").each(function () {
-    //    var curr: TaskElement = $(this).data("task-element");
-    //    curr.show();
-    //    curr.registerEvents();
-    //});
+    fragment.children().each(function () {
+        var curr: TaskElement = $(this).data("task-element");
+        curr.show();
+        curr.registerEvents();
+    });
 };
 
 // *** 移植済み？ ***
