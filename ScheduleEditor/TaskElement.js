@@ -100,7 +100,6 @@ var TaskElement = (function () {
         configurable: true
     });
 
-
     TaskElement.prototype.applyPositionToTimeSpan = function () {
         throw new Error();
     };
@@ -267,8 +266,6 @@ var TaskElement = (function () {
             "drag": editTaskEvent
         }));
 
-        // draggableが何故か"position: relative"をくっ付けるので削除
-        // this.jQueryElement.css("position", "");
         this.jQueryElement.resizable($.extend(commonOption, {
             "handles": "n, s, ne, se, sw, nw",
             "start": startResizeEvent,

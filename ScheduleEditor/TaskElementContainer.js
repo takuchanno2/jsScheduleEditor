@@ -78,12 +78,18 @@ var TaskElementContainer = (function () {
         set: function (value) {
             if (this._activeElement) {
                 this._activeElement.active = false;
-                this._activeElement.jQueryElement.removeClass("active");
             }
 
             this._activeElement = value;
             if (value) {
-                this._activeElement.jQueryElement.addClass("active");
+                this._activeElement.active = true;
+                if (this.balloon.visible) {
+                    this.balloon.update();
+                }
+            } else {
+                if (this.balloon.visible) {
+                    this.balloon.hide();
+                }
             }
         },
         enumerable: true,

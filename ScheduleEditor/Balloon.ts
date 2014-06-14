@@ -46,10 +46,10 @@ class Balloon {
         this.nameBox.on(realtimeEvents, () => { this.elementContainer.activeElement.name = this.nameBox.val(); });
         this.memoBox.on(realtimeEvents, () => { this.elementContainer.activeElement.memo = this.memoBox.val(); });
 
-        this.timeBeginBox.change((e) => { this.timeBoxChanged(e); });
-        this.timeEndBox.change((e) => { this.timeBoxChanged(e); });
+        this.timeBeginBox.change((e) => { this.onTimeBoxChange(e); });
+        this.timeEndBox.change((e) => { this.onTimeBoxChange(e); });
 
-        this.okButton.click(() => { activateTask(null); });
+        this.okButton.click(() => { taskElementContainer.activeElement = null; });
         this.cancelButton.click(() => { if (lastState) this.elementContainer.restore(lastState); lastState = null; });
         this.deleteButton.click(() => { this.elementContainer.remove(this.elementContainer.activeElement); });
 
@@ -82,6 +82,16 @@ class Balloon {
     }
 
     public show() {
+        this.update();
+        this.jQueryElement.show();
+        this.okButton.focus();
+    }
+
+    public hide() {
+        this.jQueryElement.hide();
+    }
+
+    public update() {
         var element = this.elementContainer.activeElement;
 
         this.nameBox.val(element.name);
@@ -98,15 +108,13 @@ class Balloon {
         this.timeSpanLabel.text(element.timeSpan.span.toFixed(1));
 
         this.jQueryElement.css("top", element.top + taskGridHeight);
-        this.jQueryElement.show();
-        this.okButton.focus();
     }
 
-    public hide() {
-        this.jQueryElement.hide();
+    public get visible() {
+        return (this.jQueryElement.css("display") !== "none");
     }
 
-    private timeBoxChanged(e: JQueryEventObject){
+    private onTimeBoxChange(e: JQueryEventObject){
         var timeBegin: number = Number(this.timeBeginBox.val());
         var timeEnd: number = Number(this.timeEndBox.val());
 

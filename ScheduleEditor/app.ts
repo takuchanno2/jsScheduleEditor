@@ -57,7 +57,7 @@ $(() => {
     // グリッドの外側をクリックしたら、タスクを非アクティブに
     $("#schedule-editor").click(function () {
         // このイベントが呼ばれるとタスクが非アクティブになるので、適宜stopPropagationすること
-        activateTask(null);
+        taskElementContainer.activeElement = null;
     });
 
     initialTasksJSON.forEach((v) => {
@@ -108,7 +108,7 @@ var initTable = function () {
     taskGrid.selectable({
         "filter": ".grid-cell",
         // .schedule-editorのmouseupでタスクを非アクティブにされないように
-        "start": function (e, ui) { activateTask(null); },
+        "start": function (e, ui) { taskElementContainer.activeElement = null; },
         "stop": function (e, ui) { addTask(); $(".ui-selected").removeClass("ui-selected"); },
     });
 };
@@ -166,31 +166,21 @@ var addTask = function () {
     taskElementContainer.balloon.show();
 };
 
-var activateTask = function (task: JQuery) {
-    if (task) {
-        taskElementContainer.activeElement = task.taskElement();
-    } else {
-        taskElementContainer.balloon.hide();
-    }
-
-    // $(".ui-selected").removeClass("ui-selected");
-
-    return true;
-};
-
 var startDragEvent = function (e, ui) {
-    var curr = ui.helper;
+    var curr: JQuery = ui.helper;
 
     curr.data("original-top", ui.position.top);
-    activateTask(curr);
+
     taskElementContainer.balloon.hide();
+    taskElementContainer.activeElement = curr.taskElement();
+    
 };
 
 var startResizeEvent = function (e, ui) {
-    var curr = ui.helper;
+    var curr: JQuery = ui.helper;
 
-    activateTask(curr);
     taskElementContainer.balloon.hide();
+    taskElementContainer.activeElement = curr.taskElement();
 };
 
 var editTaskEvent = function (e, ui) {
@@ -294,25 +284,6 @@ var adjustPositionUpward = function (elm, top, bottom) {
 
         ct = $(tasks[j]).top(); // current top
     }
-};
-
-var removeTask = function (task: JQuery) {
-    if (task.hasClass("active")) {
-        activateTask(null);
-    }
-
-    taskElementContainer.remove(task.taskElement());
-};
-
-// 移植済み
-var getTimeSpanFromPosition = function (task: JQuery, top: number = undefined, height: number = undefined) {
-    if (top === undefined) top = task.top();
-    if (height === undefined) height = task.height();
-
-    return new TimeSpan(
-        TimeSpan.scheduleTime.begin + (top / (2.0 * taskGridHeight)),
-        TimeSpan.scheduleTime.begin + ((top + height) / (2.0 * taskGridHeight))
-        );
 };
 
 // 移植済み

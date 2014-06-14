@@ -99,3 +99,5 @@
 // TaskElementContainerがBalloonを持っていることにする
 
 // クラスの依存関係を少なくする → ObserverPatternを使う
+
+// タスクの追加の挙動が怪しい

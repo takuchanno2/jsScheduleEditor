@@ -61,10 +61,7 @@ class TaskElement {
     public get memo(): string { return this.memoLabel.text(); }
     public set memo(value: string) { this.memoLabel.text(value); }
 
-    public get timeSpan(): TimeSpan {
-        return this._timeSpan;
-    }
-
+    public get timeSpan(): TimeSpan {　return this._timeSpan;　}
     public set timeSpan(value: TimeSpan) {
         this._timeSpan = value;
 
@@ -208,8 +205,6 @@ class TaskElement {
             "stop": stopEditingEvent,
             "drag": editTaskEvent,
         }));
-        // draggableが何故か"position: relative"をくっ付けるので削除
-        // this.jQueryElement.css("position", "");
 
         this.jQueryElement.resizable($.extend(commonOption, {
             "handles": "n, s, ne, se, sw, nw",

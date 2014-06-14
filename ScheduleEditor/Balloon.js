@@ -41,14 +41,14 @@ var Balloon = (function () {
         });
 
         this.timeBeginBox.change(function (e) {
-            _this.timeBoxChanged(e);
+            _this.onTimeBoxChange(e);
         });
         this.timeEndBox.change(function (e) {
-            _this.timeBoxChanged(e);
+            _this.onTimeBoxChange(e);
         });
 
         this.okButton.click(function () {
-            activateTask(null);
+            taskElementContainer.activeElement = null;
         });
         this.cancelButton.click(function () {
             if (lastState)
@@ -87,6 +87,16 @@ var Balloon = (function () {
         }
     }
     Balloon.prototype.show = function () {
+        this.update();
+        this.jQueryElement.show();
+        this.okButton.focus();
+    };
+
+    Balloon.prototype.hide = function () {
+        this.jQueryElement.hide();
+    };
+
+    Balloon.prototype.update = function () {
         var element = this.elementContainer.activeElement;
 
         this.nameBox.val(element.name);
@@ -103,15 +113,17 @@ var Balloon = (function () {
         this.timeSpanLabel.text(element.timeSpan.span.toFixed(1));
 
         this.jQueryElement.css("top", element.top + taskGridHeight);
-        this.jQueryElement.show();
-        this.okButton.focus();
     };
 
-    Balloon.prototype.hide = function () {
-        this.jQueryElement.hide();
-    };
+    Object.defineProperty(Balloon.prototype, "visible", {
+        get: function () {
+            return (this.jQueryElement.css("display") !== "none");
+        },
+        enumerable: true,
+        configurable: true
+    });
 
-    Balloon.prototype.timeBoxChanged = function (e) {
+    Balloon.prototype.onTimeBoxChange = function (e) {
         var timeBegin = Number(this.timeBeginBox.val());
         var timeEnd = Number(this.timeEndBox.val());
 
