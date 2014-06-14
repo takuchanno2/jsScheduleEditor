@@ -109,7 +109,7 @@ var initTable = function () {
         "filter": ".grid-cell",
         // .schedule-editorのmouseupでタスクを非アクティブにされないように
         "start": function (e, ui) { activateTask(null); },
-        "stop": function (e, ui) { addTask(); },
+        "stop": function (e, ui) { addTask(); $(".ui-selected").removeClass("ui-selected"); },
     });
 };
 
@@ -173,7 +173,7 @@ var activateTask = function (task: JQuery) {
         taskElementContainer.balloon.hide();
     }
 
-    $(".ui-selected").removeClass("ui-selected");
+    // $(".ui-selected").removeClass("ui-selected");
 
     return true;
 };

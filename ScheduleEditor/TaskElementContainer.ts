@@ -5,7 +5,9 @@
 
 class TaskElementContainer {
     private elements: TaskElement[] = [];
-    private _activeTask: TaskElement = null;
+    private _activeElement: TaskElement = null;
+    private previousState = null;
+
     public balloon: Balloon;
 
     public constructor(private jQueryContainer: JQuery) {
@@ -13,11 +15,15 @@ class TaskElementContainer {
     }
 
     public add(element: TaskElement, active = true) {
-        this.elements.push(element);
+        element.onMouseDown = this.onElementMouseDown;
+        element.onClick = this.onElementClick;
+        element.onCloseButtonClick = this.onElementCloseButtonClick;
 
+        this.elements.push(element);
         this.jQueryContainer.append(element.jQueryElement);
+
         element.show();
-        element.registerEvents();
+        element.registerDefaultEvents();
 
         if (active) {
             this.activeElement = element;
@@ -45,40 +51,37 @@ class TaskElementContainer {
     }
 
     public restore(dump: Task[]) {
-        var fragment = $(document.createDocumentFragment());
-
         this.clear();
-
-        dump.forEach((t) => {
-            var element = TaskElement.fromTask(t);
-            this.elements.push(element);
-            fragment.append(element.jQueryElement)
-        });
-        
-        this.jQueryContainer.append(fragment);
-
-        this.elements.forEach((e) => {
-            e.show();
-            e.registerEvents();
-        });
+        dump.forEach((t) => { this.add(TaskElement.fromTask(t)); });
     }
 
     public get activeElement(): TaskElement {
-        return this._activeTask;
+        return this._activeElement;
     }
 
     public set activeElement(value: TaskElement) {
-        if (this._activeTask) {
-            this._activeTask.active = false;
-            this._activeTask.jQueryElement.removeClass("active");
+        if (this._activeElement) {
+            this._activeElement.active = false;
+            this._activeElement.jQueryElement.removeClass("active");
         }
 
-        this._activeTask = value;
+        this._activeElement = value;
         if (value) {
-            this._activeTask.jQueryElement.addClass("active");
+            this._activeElement.jQueryElement.addClass("active");
         }
-
-        // 要修正
-        $(".ui-selected").removeClass("ui-selected");
     }
+
+    private onElementMouseDown = (el, ev) => {
+        this.previousState = this.dump();
+        this.activeElement = el;
+        this.balloon.hide();
+    };
+
+    private onElementClick = (el, ev) => {
+        this.balloon.show();
+    };
+
+    private onElementCloseButtonClick = (el, ev) => {
+        this.remove(el);
+    };
 }

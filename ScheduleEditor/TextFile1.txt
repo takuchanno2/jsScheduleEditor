@@ -97,3 +97,5 @@
 // やっぱTask用のコンテナが必要かも
 
 // TaskElementContainerがBalloonを持っていることにする
+
+// クラスの依存関係を少なくする → ObserverPatternを使う

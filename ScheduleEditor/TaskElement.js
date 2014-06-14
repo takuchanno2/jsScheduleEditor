@@ -16,6 +16,10 @@ var TaskElement = (function () {
     function TaskElement(timeSpan, jQueryElement) {
         if (typeof jQueryElement === "undefined") { jQueryElement = null; }
         this.jQueryElement = jQueryElement;
+        // public onClick: Function = null;
+        this.onClick = null;
+        this.onMouseDown = null;
+        this.onCloseButtonClick = null;
         if (!this.jQueryElement) {
             this.jQueryElement = TaskElement.jQueryElementTemplate.clone();
         }
@@ -235,21 +239,19 @@ var TaskElement = (function () {
     };
 
     //　jQueryの要素にイベントを登録する
-    TaskElement.prototype.registerEvents = function () {
+    TaskElement.prototype.registerDefaultEvents = function () {
         var _this = this;
         if (!this.visible)
             throw new Error("Event registration of hidden elements is now allowed.");
 
-        this.jQueryElement.mousedown(function () {
-            lastState = taskElementContainer.dump();
-            activateTask(_this.jQueryElement);
+        this.jQueryElement.mousedown(function (ev) {
+            return (_this.onMouseDown ? _this.onMouseDown(_this, ev) : undefined);
         });
-        this.jQueryElement.click(function () {
-            taskElementContainer.balloon.show();
+        this.jQueryElement.click(function (ev) {
+            return (_this.onClick ? _this.onClick(_this, ev) : undefined);
         });
-
-        this.jQueryElement.find(".close").click(function () {
-            removeTask(_this.jQueryElement);
+        this.jQueryElement.find(".close").click(function (ev) {
+            return (_this.onCloseButtonClick ? _this.onCloseButtonClick(_this, ev) : undefined);
         });
 
         var commonOption = {

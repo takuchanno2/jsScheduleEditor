@@ -4,18 +4,35 @@
 /// <reference path="Balloon.ts" />
 var TaskElementContainer = (function () {
     function TaskElementContainer(jQueryContainer) {
+        var _this = this;
         this.jQueryContainer = jQueryContainer;
         this.elements = [];
-        this._activeTask = null;
+        this._activeElement = null;
+        this.previousState = null;
+        this.onElementMouseDown = function (el, ev) {
+            _this.previousState = _this.dump();
+            _this.activeElement = el;
+            _this.balloon.hide();
+        };
+        this.onElementClick = function (el, ev) {
+            _this.balloon.show();
+        };
+        this.onElementCloseButtonClick = function (el, ev) {
+            _this.remove(el);
+        };
         this.balloon = new Balloon(this);
     }
     TaskElementContainer.prototype.add = function (element, active) {
         if (typeof active === "undefined") { active = true; }
-        this.elements.push(element);
+        element.onMouseDown = this.onElementMouseDown;
+        element.onClick = this.onElementClick;
+        element.onCloseButtonClick = this.onElementCloseButtonClick;
 
+        this.elements.push(element);
         this.jQueryContainer.append(element.jQueryElement);
+
         element.show();
-        element.registerEvents();
+        element.registerDefaultEvents();
 
         if (active) {
             this.activeElement = element;
@@ -48,41 +65,26 @@ var TaskElementContainer = (function () {
 
     TaskElementContainer.prototype.restore = function (dump) {
         var _this = this;
-        var fragment = $(document.createDocumentFragment());
-
         this.clear();
-
         dump.forEach(function (t) {
-            var element = TaskElement.fromTask(t);
-            _this.elements.push(element);
-            fragment.append(element.jQueryElement);
-        });
-
-        this.jQueryContainer.append(fragment);
-
-        this.elements.forEach(function (e) {
-            e.show();
-            e.registerEvents();
+            _this.add(TaskElement.fromTask(t));
         });
     };
 
     Object.defineProperty(TaskElementContainer.prototype, "activeElement", {
         get: function () {
-            return this._activeTask;
+            return this._activeElement;
         },
         set: function (value) {
-            if (this._activeTask) {
-                this._activeTask.active = false;
-                this._activeTask.jQueryElement.removeClass("active");
+            if (this._activeElement) {
+                this._activeElement.active = false;
+                this._activeElement.jQueryElement.removeClass("active");
             }
 
-            this._activeTask = value;
+            this._activeElement = value;
             if (value) {
-                this._activeTask.jQueryElement.addClass("active");
+                this._activeElement.jQueryElement.addClass("active");
             }
-
-            // 要修正
-            $(".ui-selected").removeClass("ui-selected");
         },
         enumerable: true,
         configurable: true

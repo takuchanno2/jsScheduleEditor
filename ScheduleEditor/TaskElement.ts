@@ -20,6 +20,11 @@ class TaskElement {
     private timeEndLabel: JQuery;
     private timeSpanLabel: JQuery;
 
+    // public onClick: Function = null;
+    public onClick: (el: TaskElement, ev: JQueryEventObject) => any = null;
+    public onMouseDown: (el: TaskElement, ev: JQueryMouseEventObject) => any = null;
+    public onCloseButtonClick: (el: TaskElement, ev: JQueryEventObject) => any = null;
+
     public constructor(timeSpan: TimeSpan, public jQueryElement: JQuery = null) {
         if (!this.jQueryElement) {
             this.jQueryElement = TaskElement.jQueryElementTemplate.clone();
@@ -184,16 +189,12 @@ class TaskElement {
     }
 
     //　jQueryの要素にイベントを登録する
-    public registerEvents() {
+    public registerDefaultEvents() {
         if (!this.visible) throw new Error("Event registration of hidden elements is now allowed.");
 
-        this.jQueryElement.mousedown(() => {
-            lastState = taskElementContainer.dump();
-            activateTask(this.jQueryElement);
-        });
-        this.jQueryElement.click(() => { taskElementContainer.balloon.show(); } );
-
-        this.jQueryElement.find(".close").click(() => { removeTask(this.jQueryElement); });
+        this.jQueryElement.mousedown((ev) => (this.onMouseDown ? this.onMouseDown(this, ev) : undefined));
+        this.jQueryElement.click((ev) => (this.onClick ? this.onClick(this, ev) : undefined));
+        this.jQueryElement.find(".close").click((ev) => (this.onCloseButtonClick ? this.onCloseButtonClick(this, ev) : undefined));
 
         var commonOption = {
             "grid": [0, taskGridHeight],
