@@ -25,7 +25,7 @@ class TimeSpan {
     }
 
     public static fromJSONObject(obj: any): TimeSpan {
-        return new TimeSpan(obj.begin, obj.end);
+        return new TimeSpan(obj._begin, obj._end);
     }
 }
 
@@ -42,7 +42,7 @@ class Task {
     }
 
     public static fromJSONObject(obj: any): Task {
-        return new Task(obj.type, obj.name, new TimeSpan(obj.timeSpan.begin, obj.timeSpan.end), obj.memo);
+        return new Task(obj.type, obj.name, TimeSpan.fromJSONObject(obj.timeSpan), obj.memo);
     }
 }
 
@@ -68,11 +68,12 @@ class TaskElement {
             this.jQueryElement = TaskElement.jQueryElementTemplate.clone();
         }
 
-        if (this.jQueryElement.data("task-element")) {
+        if (this.jQueryElement.taskElement()) {
             throw new Error("This object is bound to an other TaskElement.");
         }
 
-        this.jQueryElement.data("task-element", this)
+        this.jQueryElement.data("task-element", this);
+        this._taskType = this.jQueryElement.data("task-type");
 
         this.typeLabel = this.jQueryElement.find(".task-type");
         this.nameLabel = this.jQueryElement.find(".task-name");
@@ -183,6 +184,11 @@ class TaskElement {
         this.jQueryElement.height(value);
     }
 
+    // 上で交差してる: "upside"
+    // 下で交差してる: "downside"
+    // 含んでいる: "outside"
+    // 含まれている: "inside"
+    // 関係なし: "unrelated"
     public getGeometricRelation(counterpart: TaskElement): GeometricRelation {
         if (this.timeSpan.begin == counterpart.timeSpan.begin) {
             if (this.timeSpan.end < counterpart.timeSpan.end) {
@@ -254,6 +260,10 @@ class TaskElement {
         this.jQueryElement.remove();
     }
 
+    public toTask(): Task {
+        return new Task(this.type, this.name, this.timeSpan, this.memo);
+    }
+
     public static fromTask(task: Task): TaskElement {
         var element = new TaskElement();
         element.type = task.type;
@@ -263,14 +273,10 @@ class TaskElement {
         return element;
     }
 
-    public static toTask(): Task {
-        throw new Error();
-        return null;
-    }
-
     public static prepareTemplate() {
         this.jQueryElementTemplate = $("#task-template");
         this.jQueryElementTemplate.removeAttr("id");
+        this.jQueryElementTemplate.find(".task-type").text(taskTypeTable[this.jQueryElementTemplate.data("task-type")]);
         this.jQueryElementTemplate.find(".task-name").empty();
         this.jQueryElementTemplate.find(".task-memo").empty();
         this.jQueryElementTemplate.remove();
@@ -301,6 +307,8 @@ interface JQuery{
 
     dataAttr(key: string): any;
     dataAttr(key: string, value: any): JQuery;
+
+    taskElement(): TaskElement;
 }
 
 interface Window {
@@ -313,7 +321,7 @@ $(function () {
         "bottom": fn_bottom,
         "height": fn_height,
         "dataAttr": fn_dataAttr,
-        "geometricRelation": fn_geometricRelation,
+        "taskElement": fn_taskElement,
     });
 
     $(".add-task").click(addTask);
@@ -399,7 +407,7 @@ var initBalloon = function () {
 
     taskTypeBox.change(function () {
         var value: number = $(this).val();
-        var element: TaskElement = $(".task.active").data("task-element");
+        var element: TaskElement = $(".task.active").taskElement();
 
         element.type = value;
         $("#balloon-task-name").autocomplete({
@@ -496,57 +504,6 @@ var balloonTimeBoxChanged = function (changedBeginTime: boolean) {
     refreshTaskTimeText(task);
 };
 
-//var createNewTask = function (top, height, original) {
-//    var newTask = original.clone(true);
-//    var closeButton = newTask.find(".close");
-//    var taskType = newTask.find(".task-type");
-
-//    newTask.top(top);
-//    newTask.height(height);
-
-//    taskType.text(taskTypeTable[newTask.data("task-type")]);
-
-//    // append+showしてからdraggableイベント追加しないと、挙動がおかしくなる
-//    $("#task-list").append(newTask);
-//    refreshTaskTimeText(newTask, top, height);
-//    newTask.show();
-
-//    registerTaskEvents(newTask);
-
-//    return newTask;
-//};
-
-var registerTaskEvents = function (newTask) {
-    newTask.mousedown(function () { lastState = dumpTasks(); activateTask($(this)); });
-    newTask.click(showBalloon);
-
-    newTask.find(".close").click(function () { removeTask(newTask); });
-
-    var commonOption = {
-        "grid": [0, taskGridHeight],
-        "containment": "parent",
-    };
-
-    var taskWidth = newTask.width();
-
-    newTask.draggable($.extend(commonOption, {
-        "start": startDragEvent,
-        "stop": stopEditingEvent,
-        "drag": editTaskEvent,
-    }));
-    // draggableが何故か"position: relative"をくっ付けるので削除
-    newTask.css("position", "");
-
-    newTask.resizable($.extend(commonOption, {
-        "handles": "n, s, ne, se, sw, nw",
-        "start": startResizeEvent,
-        "stop": stopEditingEvent,
-        "resize": editTaskEvent,
-        "maxWidth": taskWidth,
-        "minWidth": taskWidth,
-    }));
-};
-
 var addTask = function () {
     var selectedCells = $(".ui-selected");
     if (selectedCells.length <= 0) return;
@@ -566,7 +523,7 @@ var addTask = function () {
     selectedCells.removeClass("ui-selected");
 
     $(".task").each(function () {
-        var curr: TaskElement = $(this).data("task-element");
+        var curr: TaskElement = $(this).taskElement();
         switch (newTask.getGeometricRelation(curr)) {
             case GeometricRelation.equal:
             case GeometricRelation.outside:
@@ -770,7 +727,7 @@ var activateTask = function (task) {
 };
 
 var showBalloon = function () {
-    var element: TaskElement = $(".task.active").data("task-element");
+    var element: TaskElement = $(".task.active").taskElement();
     var balloon = $("#edit-balloon");
 
     var taskNameBox = $("#balloon-task-name");
@@ -823,19 +780,7 @@ var dumpTasks = function (): Task[] {
    .sort(sortByTopInDesc);
    */
 
-    var dump: Task[] = [];
-    $(".task").each(function () {
-        var curr = $(this);
-        var timeSpan = getTimeSpanFromPosition(curr);
-        dump.push(new Task(
-            curr.data("task-type"),
-            curr.find(".task-name").text(),
-            timeSpan,
-            curr.find(".task-memo").text()
-            ));
-    });
-
-    return dump;
+    return $.map($(".task"), function (e, i) { return $(e).taskElement().toTask(); });
 };
 
 var restoreTasks = function (dump: Task[]) {
@@ -849,7 +794,7 @@ var restoreTasks = function (dump: Task[]) {
     $("#task-list").append(fragment);
 
     $(".task").each(function () {
-        var curr: TaskElement = $(this).data("task-element");
+        var curr: TaskElement = $(this).taskElement();
         curr.show();
         curr.registerEvents();
     });
@@ -929,6 +874,10 @@ var fn_dataAttr = function (key, value) {
     }
 };
 
+var fn_taskElement = function (): TaskElement {
+    return this.data("task-element");
+};
+
 var clearTasks = function () {
     activateTask(null);
     $(".task").remove();
@@ -954,40 +903,6 @@ var input = function () {
     })
 
     restoreTasks(tasks);
-};
-
-// *** 移植済み ***
-// 上で交差してる: "upside"
-// 下で交差してる: "downside"
-// 含んでいる: "outside"
-// 含まれている: "inside"
-// 関係なし: null
-var fn_geometricRelation = function (elm) {
-    if (this.top() == elm.top()) {
-        if (this.bottom() < elm.bottom()) {
-            return "inside";
-        } else if (this.bottom() > elm.bottom()) {
-            return "outside";
-        } else {
-            return "equal";
-        }
-    } else if (this.top() > elm.top()) {
-        if (this.bottom() <= elm.bottom()) {
-            return "inside";
-        } else if (this.top() < elm.bottom()) {
-            return "upside";
-        } else {
-            return null;
-        }
-    } else {
-        if (this.bottom() >= elm.bottom()) {
-            return "outside";
-        } else if (this.bottom() > elm.top()) {
-            return "downside";
-        } else {
-            return null;
-        }
-    }
 };
 
 // jsdoのログエリアにログを吐く
