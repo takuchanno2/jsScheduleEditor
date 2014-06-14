@@ -110,8 +110,12 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="Balloon.ts" />
+    <TypeScriptCompile Include="BaseTypes.ts" />
     <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
+    <TypeScriptCompile Include="TaskElement.ts" />
+    <TypeScriptCompile Include="TaskElementContainer.ts" />
   </ItemGroup>
   <ItemGroup>
     <None Include="web.Debug.config">
