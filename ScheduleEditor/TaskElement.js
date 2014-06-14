@@ -312,4 +312,8 @@ var TaskElement = (function () {
     };
     return TaskElement;
 })();
+
+$(function () {
+    TaskElement.prepareTemplate();
+});
 //# sourceMappingURL=TaskElement.js.map

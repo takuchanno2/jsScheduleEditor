@@ -19,7 +19,7 @@ class TaskElement {
     private timeEndLabel: JQuery;
     private timeSpanLabel: JQuery;
 
-    constructor(timeSpan: TimeSpan, public jQueryElement: JQuery = null) {
+    public constructor(timeSpan: TimeSpan, public jQueryElement: JQuery = null) {
         if (!this.jQueryElement) {
             this.jQueryElement = TaskElement.jQueryElementTemplate.clone();
         }
@@ -254,3 +254,7 @@ class TaskElement {
         this.jQueryElement.remove();
     }
 }
+
+$(function () {
+    TaskElement.prepareTemplate();
+});

@@ -1,11 +1,12 @@
 ﻿/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
 /// <reference path="BaseTypes.ts" />
 /// <reference path="TaskElement.ts" />
+/// <reference path="Balloon.ts" />
 
 class TaskElementContainer {
     private elements: TaskElement[] = [];
 
-    public constructor(private jQueryContainer: JQuery) {
+    public constructor(private jQueryContainer: JQuery, private balloon: Balloon) {
     }
 
     public add(element: TaskElement) {

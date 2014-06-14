@@ -7,7 +7,6 @@
 declare var taskAutoComplete: string[][];
 declare var initialTasksJSON: any[]; 
 
-
 var taskGridHeight: number;
 var taskGridHeightTotal: number;
 
@@ -30,7 +29,7 @@ interface Window {
     collectGarbage(): void;
 }
 
-$(function () {
+$(() => {
     $.fn.extend({
         "top": fn_top,
         "bottom": fn_bottom,
@@ -63,7 +62,6 @@ $(function () {
         initialTasks.push(Task.fromJSONObject(v));
     });
 
-    TaskElement.prepareTemplate();
     initTable();
     initBalloon();
 

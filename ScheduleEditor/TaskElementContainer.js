@@ -1,9 +1,11 @@
 ﻿/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
 /// <reference path="BaseTypes.ts" />
 /// <reference path="TaskElement.ts" />
+/// <reference path="Balloon.ts" />
 var TaskElementContainer = (function () {
-    function TaskElementContainer(jQueryContainer) {
+    function TaskElementContainer(jQueryContainer, balloon) {
         this.jQueryContainer = jQueryContainer;
+        this.balloon = balloon;
         this.elements = [];
     }
     TaskElementContainer.prototype.add = function (element) {
