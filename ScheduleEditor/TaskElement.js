@@ -1,6 +1,7 @@
 ﻿/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
 /// <reference path="Scripts/typings/jqueryui/jqueryui.d.ts" />
 /// <reference path="BaseTypes.ts" />
+/// <reference path="TaskElementContainer.ts" />
 var GeometricRelation;
 (function (GeometricRelation) {
     GeometricRelation[GeometricRelation["unrelated"] = 0] = "unrelated";
@@ -240,10 +241,12 @@ var TaskElement = (function () {
             throw new Error("Event registration of hidden elements is now allowed.");
 
         this.jQueryElement.mousedown(function () {
-            lastState = dumpTasks();
+            lastState = taskElementContainer.dump();
             activateTask(_this.jQueryElement);
         });
-        this.jQueryElement.click(showBalloon);
+        this.jQueryElement.click(function () {
+            balloon.show(taskElementContainer.activeElement);
+        });
 
         this.jQueryElement.find(".close").click(function () {
             removeTask(_this.jQueryElement);
@@ -279,6 +282,10 @@ var TaskElement = (function () {
         return element;
     };
 
+    TaskElement.prototype.remove = function () {
+        this.container.remove(this);
+    };
+
     TaskElement.prototype.toTask = function () {
         return new Task(this.type, this.name, this.timeSpan, this.memo);
     };
@@ -298,17 +305,6 @@ var TaskElement = (function () {
         this.jQueryElementTemplate.find(".task-name").empty();
         this.jQueryElementTemplate.find(".task-memo").empty();
         this.jQueryElementTemplate.remove();
-    };
-
-    // いか、ごみ
-    TaskElement.addToContainer = function (container, element) {
-        container.append(element.jQueryElement);
-        element.show();
-        element.registerEvents();
-    };
-
-    TaskElement.prototype.remove = function () {
-        this.jQueryElement.remove();
     };
     return TaskElement;
 })();

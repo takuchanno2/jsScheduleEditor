@@ -4,11 +4,13 @@
 var Balloon = (function () {
     function Balloon() {
         var _this = this;
+        this.jQueryElement = $("#edit-balloon");
         this.typeBox = $("#balloon-task-type");
         this.nameBox = $("#balloon-task-name");
         this.memoBox = $("#balloon-task-memo");
         this.timeBeginBox = $("#balloon-time-begin");
         this.timeEndBox = $("#balloon-time-end");
+        this.timeSpanLabel = $("#balloon-time-span");
         this.okButton = $("#balloon-ok-button");
         this.cancelButton = $("#balloon-cancel-button");
         this.deleteButton = $("#balloon-delete-button");
@@ -16,11 +18,10 @@ var Balloon = (function () {
         var realtimeEvents = "keydown keyup keypress change";
         this.typeBox.change(function () {
             var value = _this.typeBox.val();
-            var element = $(".task.active").taskElement();
 
-            element.type = value;
+            _this.activeElement.type = Number(value);
             _this.nameBox.autocomplete({
-                "source": taskAutoComplete[value],
+                "source": taskAutoComplete[_this.activeElement.type],
                 "minLength": 0
             });
         });
@@ -30,17 +31,17 @@ var Balloon = (function () {
         });
 
         this.nameBox.on(realtimeEvents, function () {
-            $(".task.active .task-name").text($(this).val());
+            _this.activeElement.name = _this.nameBox.val();
         });
         this.memoBox.on(realtimeEvents, function () {
-            $(".task.active .task-memo").text($(this).val());
+            this.activeElement.memo = this.memoBox.val();
         });
 
-        this.timeBeginBox.change(function () {
-            balloonTimeBoxChanged(true);
+        this.timeBeginBox.change(function (e) {
+            _this.timeBoxChanged(e);
         });
-        this.timeEndBox.change(function () {
-            balloonTimeBoxChanged(false);
+        this.timeEndBox.change(function (e) {
+            _this.timeBoxChanged(e);
         });
 
         this.okButton.click(function () {
@@ -48,19 +49,19 @@ var Balloon = (function () {
         });
         this.cancelButton.click(function () {
             if (lastState)
-                restoreTasks(lastState);
+                taskElementContainer.restore(lastState);
             lastState = null;
         });
         this.deleteButton.click(function () {
-            removeTask($(".task.active"));
+            _this.activeElement.remove();
         });
 
         // タスクの種類のコンボボックスを作る
-        taskTypeTable.forEach(function (val, i) {
+        Task.taskTypes.forEach(function (v, i) {
             $("<option>", {
-                "text": val,
+                "text": v,
                 "value": String(i)
-            }).appendTo(this.typeBox);
+            }).appendTo(_this.typeBox);
         });
 
         // 時間を選択するコンボボックスを作る
@@ -83,9 +84,63 @@ var Balloon = (function () {
         }
     }
     Balloon.prototype.show = function (element) {
+        this.activeElement = element;
+
+        this.nameBox.val(element.name);
+        this.memoBox.val(element.memo);
+
+        this.typeBox.val(String(element.type));
+        this.nameBox.autocomplete({
+            "source": taskAutoComplete[element.type],
+            "minLength": 0
+        });
+
+        this.timeBeginBox.val(String(element.timeSpan.begin));
+        this.timeEndBox.val(String(element.timeSpan.end));
+        this.timeSpanLabel.text(element.timeSpan.span.toFixed(1));
+
+        this.jQueryElement.css("top", element.top + taskGridHeight);
+        this.jQueryElement.show();
+        this.okButton.focus();
     };
 
     Balloon.prototype.hide = function () {
+        this.activeElement = null;
+        this.jQueryElement.hide();
+    };
+
+    Balloon.prototype.timeBoxChanged = function (e) {
+        var timeBegin = Number(this.timeBeginBox.val());
+        var timeEnd = Number(this.timeEndBox.val());
+
+        if (timeBegin > timeEnd) {
+            // beginとendを交換
+            var tmp = timeBegin;
+            timeBegin = timeEnd;
+            timeEnd = tmp;
+        } else if (timeBegin === timeEnd) {
+            if (e.target === this.timeBeginBox[0]) {
+                timeEnd = timeBegin + 0.5;
+            } else {
+                timeBegin = timeEnd - 0.5;
+            }
+        }
+
+        this.timeBeginBox.val(String(timeBegin));
+        this.timeEndBox.val(String(timeEnd));
+
+        // 時間修正前の開始時間・終了時間
+        var newTop = 2.0 * taskGridHeight * (timeBegin - TimeSpan.scheduleTime.begin);
+        var newHeight = 2.0 * taskGridHeight * (timeEnd - timeBegin);
+
+        if (timeBegin < this.activeElement.timeSpan.begin) {
+            adjustPositionUpward(this.activeElement.jQueryElement, newTop, newTop + newHeight);
+        } else if (timeEnd > this.activeElement.timeSpan.end) {
+            adjustPositionDownward(this.activeElement.jQueryElement, newTop, newTop + newHeight);
+        }
+
+        this.activeElement.timeSpan = new TimeSpan(timeBegin, timeEnd);
+        this.timeSpanLabel.text(String(this.activeElement.timeSpan.span));
     };
     return Balloon;
 })();

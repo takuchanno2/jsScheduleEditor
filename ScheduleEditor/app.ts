@@ -13,6 +13,9 @@ var taskGridHeightTotal: number;
 var initialTasks: Task[] = [];
 var lastState: Task[] = null;
 
+var taskElementContainer: TaskElementContainer;
+var balloon: Balloon;
+
 interface JQuery{
     top(): number;
     top(top: number): JQuery;
@@ -41,10 +44,10 @@ $(() => {
     $(".add-task").click(addTask);
     $(".output").click(output);
     $(".input").click(input);
-    $(".clear").click(clearTasks);
+    $(".clear").click(() => { taskElementContainer.clear(); });
     $(".bench").click(() => {
         for (var i = 0; i < 1000; i++) {
-            restoreTasks(initialTasks);
+            taskElementContainer.restore(initialTasks);
         }
 
         window.collectGarbage();
@@ -62,10 +65,12 @@ $(() => {
         initialTasks.push(Task.fromJSONObject(v));
     });
 
-    initTable();
-    initBalloon();
+    balloon = new Balloon();
+    taskElementContainer = new TaskElementContainer($("#task-list"), balloon);
 
-    restoreTasks(initialTasks);
+    initTable();
+
+    taskElementContainer.restore(initialTasks);
 });
 
 var initTable = function () {
@@ -109,114 +114,6 @@ var initTable = function () {
     });
 };
 
-var timeValueToString = function (tv: number) {
-    return Math.floor(tv) + ":" + ((Math.round(tv * 2.0) % 2) ? "30" : "00");
-};
-
-var initBalloon = function () {
-    var realtimeEvents = "keydown keyup keypress change";
-    var taskTypeBox = $("#balloon-task-type");
-    var taskNameBox = $("#balloon-task-name");
-
-    taskTypeBox.change(function () {
-        var value: number = $(this).val();
-        var element: TaskElement = $(".task.active").taskElement();
-
-        element.type = value;
-        $("#balloon-task-name").autocomplete({
-            "source": taskAutoComplete[value],
-            "minLength": 0,
-        });
-    });
-
-    $("#balloon-task-name").focus(function () {
-        taskNameBox.autocomplete("search");
-    });
-
-    taskNameBox.on(realtimeEvents, function () { $(".task.active .task-name").text($(this).val()); });
-    $("#balloon-task-memo").on(realtimeEvents, function () { $(".task.active .task-memo").text($(this).val()); });
-
-    $("#balloon-time-begin").change(function () { balloonTimeBoxChanged(true); });
-    $("#balloon-time-end").change(function () { balloonTimeBoxChanged(false); });
-
-    $("#balloon-ok-button").click(function () { activateTask(null); });
-    $("#balloon-cancel-button").click(function () { if (lastState) restoreTasks(lastState); lastState = null; });
-    $("#balloon-delete-button").click(function () { removeTask($(".task.active")); });
-
-    // タスクの種類のコンボボックスを作る
-    taskTypeTable.forEach(function (val: string, i: number) {
-        $("<option>", {
-            "text": val,
-            "value": String(i),
-        }).appendTo(taskTypeBox);
-    });
-
-    // 時間を選択するコンボボックスを作る
-    var timeBeginBox = $("#balloon-time-begin");
-    var timeEndBox = $("#balloon-time-end");
-
-    var timeBegin = Math.round(TimeSpan.scheduleTime.begin * 2);
-    var timeEnd = Math.round(TimeSpan.scheduleTime.end * 2);
-    for (var i = 0, end = Math.round(TimeSpan.scheduleTime.span * 2.0); i <= end; i++) {
-        var currTime = TimeSpan.scheduleTime.begin + (i / 2.0);
-
-        var option = $("<option>", {
-            "text": TimeSpan.timeToString(currTime),
-            "value": String(currTime),
-        });
-
-        if (i < end) {
-            option.clone().appendTo(timeBeginBox);
-        }
-        if (i > 0) {
-            option.clone().appendTo(timeEndBox);
-        }
-    }
-};
-
-var balloonTimeBoxChanged = function (changedBeginTime: boolean) {
-    var task = $(".task.active");
-    var timeBeginBox = $("#balloon-time-begin");
-    var timeEndBox = $("#balloon-time-end");
-    var timeSpanBox = $("#balloon-time-span");
-    var timeBegin: number = parseInt(timeBeginBox.val());
-    var timeEnd: number = parseInt(timeEndBox.val());
-
-    if (timeBegin > timeEnd) {
-        timeBeginBox.val(String(timeEnd));
-        timeEndBox.val(String(timeBegin));
-    } else if (timeBegin === timeEnd) {
-        if (changedBeginTime) {
-            timeEndBox.val(String(timeBegin + 1));
-        } else {
-            timeBeginBox.val(String(timeEnd - 1));
-        }
-    }
-
-    var scheduleBegin = Math.round(TimeSpan.scheduleTime.begin * 2);
-
-    timeBegin = timeBeginBox.val();
-    timeEnd = timeEndBox.val();
-
-    // 時間修正前の開始時間・終了時間
-    var lastTimeSpan = getTimeSpanFromPosition(task);
-    var newTop = 2.0 * taskGridHeight * (timeBegin - TimeSpan.scheduleTime.begin);
-    var newHeight = 2.0 * taskGridHeight * (timeEnd - timeBegin);
-
-    if (timeBegin < lastTimeSpan.begin) {
-        adjustPositionUpward(task, newTop, newTop + newHeight);
-    }
-    if (timeEnd > lastTimeSpan.end) {
-        adjustPositionDownward(task, newTop, newTop + newHeight);
-    }
-
-    task.top(newTop);
-    task.height(newHeight);
-    timeSpanBox.text(timeEnd - timeBegin);
-
-    refreshTaskTimeText(task);
-};
-
 var addTask = function () {
     var selectedCells = $(".ui-selected");
     if (selectedCells.length <= 0) return;
@@ -224,9 +121,7 @@ var addTask = function () {
     var timeBegin = TimeSpan.scheduleTime.begin + (selectedCells.first().top() / taskGridHeight / 2.0);
     var timeEnd = timeBegin + selectedCells.length / 2.0;
 
-    lastState = dumpTasks();
-
-    var taskList = $("#task-list");
+    lastState = taskElementContainer.dump();
 
     // var newTask = createNewTask(top, height, taskTemplate);
     var newTask = new TaskElement(new TimeSpan(timeBegin, timeEnd));
@@ -238,7 +133,7 @@ var addTask = function () {
         switch (newTask.getGeometricRelation(curr)) {
             case GeometricRelation.equal:
             case GeometricRelation.outside:
-                curr.remove();
+                taskElementContainer.remove(curr);
                 break;
 
             case GeometricRelation.upside:
@@ -254,24 +149,34 @@ var addTask = function () {
                 if (Math.round((curr.timeSpan.end - newTask.timeSpan.end) * 2.0) > 0) {
                     var lowerTask = curr.clone();
                     lowerTask.timeSpan = new TimeSpan(newTask.timeSpan.end, curr.timeSpan.end);
-                    TaskElement.addToContainer(taskList, lowerTask);
+                    taskElementContainer.add(lowerTask);
                 }
 
                 // 新しいタスクで分断された時に上に居るタスク
                 if (Math.round((newTask.timeSpan.begin - curr.timeSpan.begin) * 2.0) > 0) {
                     curr.timeSpan = new TimeSpan(curr.timeSpan.begin, newTask.timeSpan.begin);
                 } else {
-                    curr.remove();
+                    taskElementContainer.remove(curr);
                 }
 
                 break;
         }
     });
 
-    TaskElement.addToContainer(taskList, newTask);
+    taskElementContainer.add(newTask, true);
+    balloon.show(newTask);
+};
 
-    activateTask(newTask.jQueryElement);
-    showBalloon();
+var activateTask = function (task: JQuery) {
+    if (task) {
+        taskElementContainer.activeElement = task.taskElement();
+    } else {
+        balloon.hide();
+    }
+
+    $(".ui-selected").removeClass("ui-selected");
+
+    return true;
 };
 
 var startDragEvent = function (e, ui) {
@@ -279,14 +184,14 @@ var startDragEvent = function (e, ui) {
 
     curr.data("original-top", ui.position.top);
     activateTask(curr);
-    hideBalloon();
+    balloon.hide();
 };
 
 var startResizeEvent = function (e, ui) {
     var curr = ui.helper;
 
     activateTask(curr);
-    hideBalloon();
+    balloon.hide();
 };
 
 var editTaskEvent = function (e, ui) {
@@ -326,22 +231,12 @@ var editTaskEvent = function (e, ui) {
     }
 
     setTaskBorder(curr, ui.position.top);
-    refreshTaskTimeText(curr);
+    // refreshTaskTimeText(curr);
 };
 
-var refreshTaskTimeText = function (elm: JQuery, top: number = undefined, height: number = undefined) {
-    var timeSpan = getTimeSpanFromPosition(elm, top, height);
-    var tiemBeginArea = elm.find(".task-time-begin");
-    var timeEndArea = elm.find(".task-time-end");
-    var timeSpanArea = elm.find(".task-time-span");
-
-    tiemBeginArea.text(timeValueToString(timeSpan.begin));
-    timeEndArea.text(timeValueToString(timeSpan.end));
-    timeSpanArea.text(timeSpan.span.toFixed(1));
-};
 
 var stopEditingEvent = function (e, ui) {
-    showBalloon();
+    balloon.show(taskElementContainer.activeElement);
 };
 
 var sortByTopInAsc = function (a, b) { return ($(a).top() - $(b).top()); };
@@ -364,7 +259,7 @@ var adjustPositionDownward = function (elm, top, bottom) {
             if (nt < cb) {
                 var newTop = nt + (cb - nt);
                 if (n.top(newTop) !== null) {
-                    refreshTaskTimeText(n);
+                    // refreshTaskTimeText(n);
                     break;
                 }
             }
@@ -392,7 +287,7 @@ var adjustPositionUpward = function (elm, top, bottom) {
             if (ct < no) {
                 var newTop = nt - (no - ct);
                 if (n.top(newTop) !== null) {
-                    refreshTaskTimeText(n);
+                    // refreshTaskTimeText(n);
                     break;
                 }
             }
@@ -402,12 +297,13 @@ var adjustPositionUpward = function (elm, top, bottom) {
     }
 };
 
-var removeTask = function (task) {
+var removeTask = function (task: JQuery) {
     if (task.hasClass("active")) {
         activateTask(null);
     }
 
-    task.remove();
+    taskElementContainer.remove(task.taskElement());
+    balloon.hide();
 };
 
 // 移植済み
@@ -421,56 +317,6 @@ var getTimeSpanFromPosition = function (task: JQuery, top: number = undefined, h
         );
 };
 
-var activateTask = function (task) {
-    if (task) {
-        if (!task.hasClass("active")) {
-            $(".task.active").removeClass("active");
-            task.addClass("active");
-        }
-    } else {
-        $(".task.active").removeClass("active");
-        hideBalloon();
-    }
-
-    $(".ui-selected").removeClass("ui-selected");
-
-    return true;
-};
-
-var showBalloon = function () {
-    var element: TaskElement = $(".task.active").taskElement();
-    var balloon = $("#edit-balloon");
-
-    var taskNameBox = $("#balloon-task-name");
-
-    taskNameBox.val(element.name);
-    $("#balloon-task-memo").val(element.memo);
-
-    var taskType = element.type;
-    $("#balloon-task-type").val(String(taskType));
-    taskNameBox.autocomplete({
-        "source": taskAutoComplete[taskType],
-        "minLength": 0,
-    });
-
-    var timeSpan = element.timeSpan;
-    var timeBeginBox = $("#balloon-time-begin");
-    var timeEndBox = $("#balloon-time-end");
-    var timeSpanBox = $("#balloon-time-span");
-
-    timeBeginBox.val(String(timeSpan.begin));
-    timeEndBox.val(String(timeSpan.end));
-    timeSpanBox.text(timeSpan.span.toFixed(1));
-
-    balloon.css("top", element.top + taskGridHeight);
-    balloon.show();
-    $("#balloon-ok-button").focus();
-};
-
-var hideBalloon = function () {
-    $("#edit-balloon").hide();
-};
-
 // 移植済み
 var originalHeight = $.fn.height;
 var fn_height = function (height) {
@@ -482,33 +328,6 @@ var fn_height = function (height) {
         if (height === 0) throw new Error("'height' property is somehow zero.");
         return result;
     }
-};
-
-var dumpTasks = function (): Task[] {
-    /* ソートするのはサーバに送信するときだけでいい
-    var tasks = $(".task")
-   .filter(function () { return (this !== elm[0]) && ($(this).bottom() <= bottom); })
-   .sort(sortByTopInDesc);
-   */
-
-    return $.map($(".task"), function (e, i) { return $(e).taskElement().toTask(); });
-};
-
-var restoreTasks = function (dump: Task[]) {
-    var fragment = $(document.createDocumentFragment());
-
-    dump.forEach(function (taskJSON) {
-        fragment.append(TaskElement.fromTask(Task.fromJSONObject(taskJSON)).jQueryElement)
-    });
-
-    clearTasks();
-    $("#task-list").append(fragment);
-
-    $(".task").each(function () {
-        var curr: TaskElement = $(this).taskElement();
-        curr.show();
-        curr.registerEvents();
-    });
 };
 
 // *** 移植済み？ ***
@@ -589,14 +408,9 @@ var fn_taskElement = function (): TaskElement {
     return this.data("task-element");
 };
 
-var clearTasks = function () {
-    activateTask(null);
-    $(".task").remove();
-};
-
 var output = function () {
     var out = $("#out");
-    out.text(JSON.stringify(dumpTasks(), null, "  "));
+    out.text(JSON.stringify(taskElementContainer.dump(), null, "  "));
     /*
     out.empty();
     $(".task").each(function () {
@@ -613,7 +427,7 @@ var input = function () {
         tasks.push(Task.fromJSONObject(v));
     })
 
-    restoreTasks(tasks);
+    taskElementContainer.restore(tasks);
 };
 
 // jsdoのログエリアにログを吐く

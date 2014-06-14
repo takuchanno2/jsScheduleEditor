@@ -1,6 +1,7 @@
 ﻿/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
 /// <reference path="Scripts/typings/jqueryui/jqueryui.d.ts" />
 /// <reference path="BaseTypes.ts" />
+/// <reference path="TaskElementContainer.ts" />
 
 enum GeometricRelation {
     unrelated, equal, upside, downside, inside, outside,
@@ -8,6 +9,8 @@ enum GeometricRelation {
 
 class TaskElement {
     private static jQueryElementTemplate: JQuery;
+
+    public container: TaskElementContainer;
 
     private _taskType: number;
     private _timeSpan: TimeSpan;
@@ -186,8 +189,11 @@ class TaskElement {
     public registerEvents() {
         if (!this.visible) throw new Error("Event registration of hidden elements is now allowed.");
 
-        this.jQueryElement.mousedown(() => { lastState = dumpTasks(); activateTask(this.jQueryElement); });
-        this.jQueryElement.click(showBalloon);
+        this.jQueryElement.mousedown(() => {
+            lastState = taskElementContainer.dump();
+            activateTask(this.jQueryElement);
+        });
+        this.jQueryElement.click(() => { balloon.show(taskElementContainer.activeElement) } );
 
         this.jQueryElement.find(".close").click(() => { removeTask(this.jQueryElement); });
 
@@ -221,6 +227,10 @@ class TaskElement {
         return element;
     }
 
+    public remove() {
+        this.container.remove(this);
+    }
+
     public toTask(): Task {
         return new Task(this.type, this.name, this.timeSpan, this.memo);
     }
@@ -240,18 +250,6 @@ class TaskElement {
         this.jQueryElementTemplate.find(".task-name").empty();
         this.jQueryElementTemplate.find(".task-memo").empty();
         this.jQueryElementTemplate.remove();
-    }
-
-    // いか、ごみ
-
-    public static addToContainer(container: JQuery, element: TaskElement) {
-        container.append(element.jQueryElement);
-        element.show();
-        element.registerEvents();
-    }
-
-    public remove() {
-        this.jQueryElement.remove();
     }
 }
 

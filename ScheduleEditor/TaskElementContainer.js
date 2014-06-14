@@ -7,20 +7,33 @@ var TaskElementContainer = (function () {
         this.jQueryContainer = jQueryContainer;
         this.balloon = balloon;
         this.elements = [];
+        this._activeTask = null;
     }
-    TaskElementContainer.prototype.add = function (element) {
+    TaskElementContainer.prototype.add = function (element, active) {
+        if (typeof active === "undefined") { active = true; }
+        element.container = this;
         this.elements.push(element);
+
         this.jQueryContainer.append(element.jQueryElement);
         element.show();
         element.registerEvents();
+
+        if (active) {
+            this.activeElement = element;
+        }
     };
 
     TaskElementContainer.prototype.remove = function (element) {
+        if (this.activeElement === element) {
+            this.activeElement = null;
+        }
+
         this.elements.splice(this.elements.indexOf(element), 1);
         element.jQueryElement.remove();
     };
 
     TaskElementContainer.prototype.clear = function () {
+        this.balloon.hide();
         this.elements.forEach(function (e) {
             e.jQueryElement.remove();
         });
@@ -34,27 +47,39 @@ var TaskElementContainer = (function () {
     };
 
     TaskElementContainer.prototype.restore = function (dump) {
+        var _this = this;
         var fragment = $(document.createDocumentFragment());
 
-        dump.forEach(function (task) {
-            fragment.append(TaskElement.fromTask(task).jQueryElement);
+        this.clear();
+
+        dump.forEach(function (t) {
+            var element = TaskElement.fromTask(t);
+            element.container = _this;
+            _this.elements.push(element);
+            fragment.append(element.jQueryElement);
         });
 
-        clearTasks();
-        $("#task-list").append(fragment);
+        this.jQueryContainer.append(fragment);
 
-        $(".task").each(function () {
-            var curr = $(this).taskElement();
-            curr.show();
-            curr.registerEvents();
+        this.elements.forEach(function (e) {
+            e.show();
+            e.registerEvents();
         });
     };
 
-    Object.defineProperty(TaskElementContainer.prototype, "activeTask", {
+    Object.defineProperty(TaskElementContainer.prototype, "activeElement", {
         get: function () {
-            return null;
+            return this._activeTask;
         },
         set: function (value) {
+            if (this._activeTask) {
+                this._activeTask.active = false;
+            }
+
+            this._activeTask = value;
+
+            // 要修正
+            $(".ui-selected").removeClass("ui-selected");
         },
         enumerable: true,
         configurable: true
