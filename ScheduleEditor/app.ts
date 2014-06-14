@@ -20,7 +20,7 @@ class TimeSpan {
     public get beginString(): string { return TimeSpan.timeToString(this.begin); }
     public get endString(): string { return TimeSpan.timeToString(this.end); }
 
-    private static timeToString(time: number): string {
+    public static timeToString(time: number): string {
         return String(Math.floor(time)) + ":" + (((time * 2) % 2 == 0) ? "00" : "30");
     }
 
@@ -88,6 +88,7 @@ class TaskElement {
     public get typeString(): string { return taskTypeTable[this.type]; }
     public set type(value: number) {
         this._taskType = value;
+        this.typeLabel.text(this.typeString);
         this.jQueryElement.attr("data-task-type", value);
     }
 
@@ -257,7 +258,7 @@ class TaskElement {
         var element = new TaskElement();
         element.type = task.type;
         element.name = task.name;
-        element.name = task.memo;
+        element.memo = task.memo;
         element.timeSpan = task.timeSpan;
         return element;
     }
@@ -397,9 +398,10 @@ var initBalloon = function () {
     var taskNameBox = $("#balloon-task-name");
 
     taskTypeBox.change(function () {
-        var value = $(this).val();
-        $(".task.active").dataAttr("task-type", value);
-        $(".task.active .task-type").text(taskTypeTable[value]);
+        var value: number = $(this).val();
+        var element: TaskElement = $(".task.active").data("task-element");
+
+        element.type = value;
         $("#balloon-task-name").autocomplete({
             "source": taskAutoComplete[value],
             "minLength": 0,
@@ -438,7 +440,7 @@ var initBalloon = function () {
         var currTime = TimeSpan.scheduleTime.begin + (i / 2.0);
 
         var option = $("<option>", {
-            "text": timeValueToString(currTime),
+            "text": TimeSpan.timeToString(currTime),
             "value": String(currTime),
         });
 
@@ -768,22 +770,22 @@ var activateTask = function (task) {
 };
 
 var showBalloon = function () {
-    var task = $(".task.active");
+    var element: TaskElement = $(".task.active").data("task-element");
     var balloon = $("#edit-balloon");
 
     var taskNameBox = $("#balloon-task-name");
 
-    taskNameBox.val(task.find(".task-name").text());
-    $("#balloon-task-memo").val(task.find(".task-memo").text());
+    taskNameBox.val(element.name);
+    $("#balloon-task-memo").val(element.memo);
 
-    var taskType = task.data("task-type");
-    $("#balloon-task-type").val(taskType);
+    var taskType = element.type;
+    $("#balloon-task-type").val(String(taskType));
     taskNameBox.autocomplete({
         "source": taskAutoComplete[taskType],
         "minLength": 0,
     });
 
-    var timeSpan = getTimeSpanFromPosition(task);
+    var timeSpan = element.timeSpan;
     var timeBeginBox = $("#balloon-time-begin");
     var timeEndBox = $("#balloon-time-end");
     var timeSpanBox = $("#balloon-time-span");
@@ -792,7 +794,7 @@ var showBalloon = function () {
     timeEndBox.val(String(timeSpan.end));
     timeSpanBox.text(timeSpan.span.toFixed(1));
 
-    balloon.css("top", task.top() + taskGridHeight);
+    balloon.css("top", element.top + taskGridHeight);
     balloon.show();
     $("#balloon-ok-button").focus();
 };
