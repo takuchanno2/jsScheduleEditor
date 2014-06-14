@@ -63,7 +63,7 @@ class TaskElement {
     private timeEndLabel: JQuery;
     private timeSpanLabel: JQuery;
 
-    constructor(public jQueryElement: JQuery = null) {
+    constructor(timeSpan: TimeSpan, public jQueryElement: JQuery = null) {
         if (!this.jQueryElement) {
             this.jQueryElement = TaskElement.jQueryElementTemplate.clone();
         }
@@ -73,7 +73,6 @@ class TaskElement {
         }
 
         this.jQueryElement.data("task-element", this);
-        this._taskType = this.jQueryElement.data("task-type");
 
         this.typeLabel = this.jQueryElement.find(".task-type");
         this.nameLabel = this.jQueryElement.find(".task-name");
@@ -82,7 +81,8 @@ class TaskElement {
         this.timeEndLabel = this.jQueryElement.find(".task-time-end");
         this.timeSpanLabel = this.jQueryElement.find(".task-time-span");
 
-        // this.applyPositionToTimeSpan();
+        this._taskType = this.jQueryElement.data("task-type");
+        this.timeSpan = timeSpan;
     }
 
     public get type(): number { return this._taskType; }
@@ -252,7 +252,7 @@ class TaskElement {
     }
 
     public clone(): TaskElement {
-        var element = new TaskElement(this.jQueryElement.clone());
+        var element = new TaskElement(this.timeSpan, this.jQueryElement.clone());
         return element;
     }
 
@@ -265,11 +265,10 @@ class TaskElement {
     }
 
     public static fromTask(task: Task): TaskElement {
-        var element = new TaskElement();
+        var element = new TaskElement(task.timeSpan);
         element.type = task.type;
         element.name = task.name;
         element.memo = task.memo;
-        element.timeSpan = task.timeSpan;
         return element;
     }
 
@@ -516,9 +515,7 @@ var addTask = function () {
     var taskList = $("#task-list");
 
     // var newTask = createNewTask(top, height, taskTemplate);
-    var newTask = new TaskElement();
-    newTask.timeSpan = new TimeSpan(timeBegin, timeEnd);
-
+    var newTask = new TaskElement(new TimeSpan(timeBegin, timeEnd));
 
     selectedCells.removeClass("ui-selected");
 
