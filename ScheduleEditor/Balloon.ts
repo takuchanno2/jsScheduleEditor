@@ -1,10 +1,9 @@
 ﻿/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
 /// <reference path="BaseTypes.ts" />
 /// <reference path="TaskElement.ts" />
+/// <reference path="TaskElementContainer.ts" />
 
 class Balloon {
-    private activeElement: TaskElement;
-
     private jQueryElement: JQuery;
     private typeBox: JQuery;
     private nameBox: JQuery;
@@ -16,7 +15,7 @@ class Balloon {
     private cancelButton: JQuery;
     private deleteButton: JQuery;
 
-    public constructor() {
+    public constructor(private elementContainer: TaskElementContainer) {
         this.jQueryElement = $("#edit-balloon");
         this.typeBox = $("#balloon-task-type");
         this.nameBox = $("#balloon-task-name");
@@ -32,9 +31,10 @@ class Balloon {
         this.typeBox.change(() => {
             var value: number = this.typeBox.val();
 
-            this.activeElement.type = Number(value);
+            var element = this.elementContainer.activeElement;
+            element.type = Number(value);
             this.nameBox.autocomplete({
-                "source": taskAutoComplete[this.activeElement.type],
+                "source": taskAutoComplete[element.type],
                 "minLength": 0,
             });
         });
@@ -43,15 +43,15 @@ class Balloon {
             this.nameBox.autocomplete("search");
         });
 
-        this.nameBox.on(realtimeEvents, () => { this.activeElement.name = this.nameBox.val(); });
-        this.memoBox.on(realtimeEvents, function () { this.activeElement.memo = this.memoBox.val(); });
+        this.nameBox.on(realtimeEvents, () => { this.elementContainer.activeElement.name = this.nameBox.val(); });
+        this.memoBox.on(realtimeEvents, () => { this.elementContainer.activeElement.memo = this.memoBox.val(); });
 
         this.timeBeginBox.change((e) => { this.timeBoxChanged(e); });
         this.timeEndBox.change((e) => { this.timeBoxChanged(e); });
 
-        this.okButton.click(function () { activateTask(null); });
-        this.cancelButton.click(function () { if (lastState) taskElementContainer.restore(lastState); lastState = null; });
-        this.deleteButton.click(() => { this.activeElement.remove(); });
+        this.okButton.click(() => { activateTask(null); });
+        this.cancelButton.click(() => { if (lastState) this.elementContainer.restore(lastState); lastState = null; });
+        this.deleteButton.click(() => { this.elementContainer.remove(this.elementContainer.activeElement); });
 
         // タスクの種類のコンボボックスを作る
         Task.taskTypes.forEach((v, i) => {
@@ -81,8 +81,8 @@ class Balloon {
         }
     }
 
-    public show(element: TaskElement) {
-        this.activeElement = element;
+    public show() {
+        var element = this.elementContainer.activeElement;
 
         this.nameBox.val(element.name);
         this.memoBox.val(element.memo);
@@ -103,7 +103,6 @@ class Balloon {
     }
 
     public hide() {
-        this.activeElement = null;
         this.jQueryElement.hide();
     }
 
@@ -130,15 +129,16 @@ class Balloon {
         // 時間修正前の開始時間・終了時間
         var newTop = 2.0 * taskGridHeight * (timeBegin - TimeSpan.scheduleTime.begin);
         var newHeight = 2.0 * taskGridHeight * (timeEnd - timeBegin);
+        var element = this.elementContainer.activeElement;
 
-        if (timeBegin < this.activeElement.timeSpan.begin) {
-            adjustPositionUpward(this.activeElement.jQueryElement, newTop, newTop + newHeight);
-        } else if (timeEnd > this.activeElement.timeSpan.end) {
-            adjustPositionDownward(this.activeElement.jQueryElement, newTop, newTop + newHeight);
+        if (timeBegin < element.timeSpan.begin) {
+            adjustPositionUpward(element.jQueryElement, newTop, newTop + newHeight);
+        } else if (timeEnd > element.timeSpan.end) {
+            adjustPositionDownward(element.jQueryElement, newTop, newTop + newHeight);
         }
 
-        this.activeElement.timeSpan = new TimeSpan(timeBegin, timeEnd);
-        this.timeSpanLabel.text(String(this.activeElement.timeSpan.span));
+        element.timeSpan = new TimeSpan(timeBegin, timeEnd);
+        this.timeSpanLabel.text(String(element.timeSpan.span));
     }
 }
 

@@ -3,15 +3,14 @@
 /// <reference path="TaskElement.ts" />
 /// <reference path="Balloon.ts" />
 var TaskElementContainer = (function () {
-    function TaskElementContainer(jQueryContainer, balloon) {
+    function TaskElementContainer(jQueryContainer) {
         this.jQueryContainer = jQueryContainer;
-        this.balloon = balloon;
         this.elements = [];
         this._activeTask = null;
+        this.balloon = new Balloon(this);
     }
     TaskElementContainer.prototype.add = function (element, active) {
         if (typeof active === "undefined") { active = true; }
-        element.container = this;
         this.elements.push(element);
 
         this.jQueryContainer.append(element.jQueryElement);
@@ -26,6 +25,7 @@ var TaskElementContainer = (function () {
     TaskElementContainer.prototype.remove = function (element) {
         if (this.activeElement === element) {
             this.activeElement = null;
+            this.balloon.hide();
         }
 
         this.elements.splice(this.elements.indexOf(element), 1);
@@ -54,7 +54,6 @@ var TaskElementContainer = (function () {
 
         dump.forEach(function (t) {
             var element = TaskElement.fromTask(t);
-            element.container = _this;
             _this.elements.push(element);
             fragment.append(element.jQueryElement);
         });
@@ -74,9 +73,13 @@ var TaskElementContainer = (function () {
         set: function (value) {
             if (this._activeTask) {
                 this._activeTask.active = false;
+                this._activeTask.jQueryElement.removeClass("active");
             }
 
             this._activeTask = value;
+            if (value) {
+                this._activeTask.jQueryElement.addClass("active");
+            }
 
             // 要修正
             $(".ui-selected").removeClass("ui-selected");

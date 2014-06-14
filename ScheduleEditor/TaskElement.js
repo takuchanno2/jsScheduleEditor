@@ -245,7 +245,7 @@ var TaskElement = (function () {
             activateTask(_this.jQueryElement);
         });
         this.jQueryElement.click(function () {
-            balloon.show(taskElementContainer.activeElement);
+            taskElementContainer.balloon.show();
         });
 
         this.jQueryElement.find(".close").click(function () {
@@ -280,10 +280,6 @@ var TaskElement = (function () {
     TaskElement.prototype.clone = function () {
         var element = new TaskElement(this.timeSpan, this.jQueryElement.clone());
         return element;
-    };
-
-    TaskElement.prototype.remove = function () {
-        this.container.remove(this);
     };
 
     TaskElement.prototype.toTask = function () {

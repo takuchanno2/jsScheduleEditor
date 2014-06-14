@@ -10,8 +10,6 @@ enum GeometricRelation {
 class TaskElement {
     private static jQueryElementTemplate: JQuery;
 
-    public container: TaskElementContainer;
-
     private _taskType: number;
     private _timeSpan: TimeSpan;
 
@@ -193,7 +191,7 @@ class TaskElement {
             lastState = taskElementContainer.dump();
             activateTask(this.jQueryElement);
         });
-        this.jQueryElement.click(() => { balloon.show(taskElementContainer.activeElement) } );
+        this.jQueryElement.click(() => { taskElementContainer.balloon.show(); } );
 
         this.jQueryElement.find(".close").click(() => { removeTask(this.jQueryElement); });
 
@@ -225,10 +223,6 @@ class TaskElement {
     public clone(): TaskElement {
         var element = new TaskElement(this.timeSpan, this.jQueryElement.clone());
         return element;
-    }
-
-    public remove() {
-        this.container.remove(this);
     }
 
     public toTask(): Task {

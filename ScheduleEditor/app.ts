@@ -14,7 +14,6 @@ var initialTasks: Task[] = [];
 var lastState: Task[] = null;
 
 var taskElementContainer: TaskElementContainer;
-var balloon: Balloon;
 
 interface JQuery{
     top(): number;
@@ -65,8 +64,8 @@ $(() => {
         initialTasks.push(Task.fromJSONObject(v));
     });
 
-    balloon = new Balloon();
-    taskElementContainer = new TaskElementContainer($("#task-list"), balloon);
+    
+    taskElementContainer = new TaskElementContainer($("#task-list"));
 
     initTable();
 
@@ -164,14 +163,14 @@ var addTask = function () {
     });
 
     taskElementContainer.add(newTask, true);
-    balloon.show(newTask);
+    taskElementContainer.balloon.show();
 };
 
 var activateTask = function (task: JQuery) {
     if (task) {
         taskElementContainer.activeElement = task.taskElement();
     } else {
-        balloon.hide();
+        taskElementContainer.balloon.hide();
     }
 
     $(".ui-selected").removeClass("ui-selected");
@@ -184,14 +183,14 @@ var startDragEvent = function (e, ui) {
 
     curr.data("original-top", ui.position.top);
     activateTask(curr);
-    balloon.hide();
+    taskElementContainer.balloon.hide();
 };
 
 var startResizeEvent = function (e, ui) {
     var curr = ui.helper;
 
     activateTask(curr);
-    balloon.hide();
+    taskElementContainer.balloon.hide();
 };
 
 var editTaskEvent = function (e, ui) {
@@ -236,7 +235,7 @@ var editTaskEvent = function (e, ui) {
 
 
 var stopEditingEvent = function (e, ui) {
-    balloon.show(taskElementContainer.activeElement);
+    taskElementContainer.balloon.show();
 };
 
 var sortByTopInAsc = function (a, b) { return ($(a).top() - $(b).top()); };
@@ -303,7 +302,6 @@ var removeTask = function (task: JQuery) {
     }
 
     taskElementContainer.remove(task.taskElement());
-    balloon.hide();
 };
 
 // 移植済み

@@ -95,3 +95,5 @@
 // タスクのmemo欄に改行が反映されない
 
 // やっぱTask用のコンテナが必要かも
+
+// TaskElementContainerがBalloonを持っていることにする

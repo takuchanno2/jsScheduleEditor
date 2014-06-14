@@ -1,9 +1,11 @@
 ﻿/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
 /// <reference path="BaseTypes.ts" />
 /// <reference path="TaskElement.ts" />
+/// <reference path="TaskElementContainer.ts" />
 var Balloon = (function () {
-    function Balloon() {
+    function Balloon(elementContainer) {
         var _this = this;
+        this.elementContainer = elementContainer;
         this.jQueryElement = $("#edit-balloon");
         this.typeBox = $("#balloon-task-type");
         this.nameBox = $("#balloon-task-name");
@@ -19,9 +21,10 @@ var Balloon = (function () {
         this.typeBox.change(function () {
             var value = _this.typeBox.val();
 
-            _this.activeElement.type = Number(value);
+            var element = _this.elementContainer.activeElement;
+            element.type = Number(value);
             _this.nameBox.autocomplete({
-                "source": taskAutoComplete[_this.activeElement.type],
+                "source": taskAutoComplete[element.type],
                 "minLength": 0
             });
         });
@@ -31,10 +34,10 @@ var Balloon = (function () {
         });
 
         this.nameBox.on(realtimeEvents, function () {
-            _this.activeElement.name = _this.nameBox.val();
+            _this.elementContainer.activeElement.name = _this.nameBox.val();
         });
         this.memoBox.on(realtimeEvents, function () {
-            this.activeElement.memo = this.memoBox.val();
+            _this.elementContainer.activeElement.memo = _this.memoBox.val();
         });
 
         this.timeBeginBox.change(function (e) {
@@ -49,11 +52,11 @@ var Balloon = (function () {
         });
         this.cancelButton.click(function () {
             if (lastState)
-                taskElementContainer.restore(lastState);
+                _this.elementContainer.restore(lastState);
             lastState = null;
         });
         this.deleteButton.click(function () {
-            _this.activeElement.remove();
+            _this.elementContainer.remove(_this.elementContainer.activeElement);
         });
 
         // タスクの種類のコンボボックスを作る
@@ -83,8 +86,8 @@ var Balloon = (function () {
             }
         }
     }
-    Balloon.prototype.show = function (element) {
-        this.activeElement = element;
+    Balloon.prototype.show = function () {
+        var element = this.elementContainer.activeElement;
 
         this.nameBox.val(element.name);
         this.memoBox.val(element.memo);
@@ -105,7 +108,6 @@ var Balloon = (function () {
     };
 
     Balloon.prototype.hide = function () {
-        this.activeElement = null;
         this.jQueryElement.hide();
     };
 
@@ -132,15 +134,16 @@ var Balloon = (function () {
         // 時間修正前の開始時間・終了時間
         var newTop = 2.0 * taskGridHeight * (timeBegin - TimeSpan.scheduleTime.begin);
         var newHeight = 2.0 * taskGridHeight * (timeEnd - timeBegin);
+        var element = this.elementContainer.activeElement;
 
-        if (timeBegin < this.activeElement.timeSpan.begin) {
-            adjustPositionUpward(this.activeElement.jQueryElement, newTop, newTop + newHeight);
-        } else if (timeEnd > this.activeElement.timeSpan.end) {
-            adjustPositionDownward(this.activeElement.jQueryElement, newTop, newTop + newHeight);
+        if (timeBegin < element.timeSpan.begin) {
+            adjustPositionUpward(element.jQueryElement, newTop, newTop + newHeight);
+        } else if (timeEnd > element.timeSpan.end) {
+            adjustPositionDownward(element.jQueryElement, newTop, newTop + newHeight);
         }
 
-        this.activeElement.timeSpan = new TimeSpan(timeBegin, timeEnd);
-        this.timeSpanLabel.text(String(this.activeElement.timeSpan.span));
+        element.timeSpan = new TimeSpan(timeBegin, timeEnd);
+        this.timeSpanLabel.text(String(element.timeSpan.span));
     };
     return Balloon;
 })();

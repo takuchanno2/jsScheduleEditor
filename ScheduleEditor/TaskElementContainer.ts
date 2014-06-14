@@ -6,12 +6,13 @@
 class TaskElementContainer {
     private elements: TaskElement[] = [];
     private _activeTask: TaskElement = null;
+    public balloon: Balloon;
 
-    public constructor(private jQueryContainer: JQuery, private balloon: Balloon) {
+    public constructor(private jQueryContainer: JQuery) {
+        this.balloon = new Balloon(this);
     }
 
     public add(element: TaskElement, active = true) {
-        element.container = this;
         this.elements.push(element);
 
         this.jQueryContainer.append(element.jQueryElement);
@@ -26,6 +27,7 @@ class TaskElementContainer {
     public remove(element: TaskElement) {
         if (this.activeElement === element) {
             this.activeElement = null;
+            this.balloon.hide();
         }
 
         this.elements.splice(this.elements.indexOf(element), 1);
@@ -49,7 +51,6 @@ class TaskElementContainer {
 
         dump.forEach((t) => {
             var element = TaskElement.fromTask(t);
-            element.container = this;
             this.elements.push(element);
             fragment.append(element.jQueryElement)
         });
@@ -69,9 +70,13 @@ class TaskElementContainer {
     public set activeElement(value: TaskElement) {
         if (this._activeTask) {
             this._activeTask.active = false;
+            this._activeTask.jQueryElement.removeClass("active");
         }
 
         this._activeTask = value;
+        if (value) {
+            this._activeTask.jQueryElement.addClass("active");
+        }
 
         // 要修正
         $(".ui-selected").removeClass("ui-selected");
