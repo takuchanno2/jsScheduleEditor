@@ -9,24 +9,24 @@ var TaskElementContainer = (function () {
         this.elements = [];
         this._activeElement = null;
         this.previousState = null;
-        this.onElementMouseDown = function (el, ev) {
+        this.onElementMousePressed = function (el, ev) {
             _this.previousState = _this.dump();
             _this.activeElement = el;
             _this.balloon.hide();
         };
-        this.onElementClick = function (el, ev) {
+        this.onElementClicked = function (el, ev) {
             _this.balloon.show();
         };
-        this.onElementCloseButtonClick = function (el, ev) {
+        this.onElementCloseButtonClicked = function (el, ev) {
             _this.remove(el);
         };
         this.balloon = new Balloon(this);
     }
     TaskElementContainer.prototype.add = function (element, active) {
         if (typeof active === "undefined") { active = true; }
-        element.onMouseDown = this.onElementMouseDown;
-        element.onClick = this.onElementClick;
-        element.onCloseButtonClick = this.onElementCloseButtonClick;
+        element.onMousePressed = this.onElementMousePressed;
+        element.onClicked = this.onElementClicked;
+        element.onCloseButtonClicked = this.onElementCloseButtonClicked;
 
         this.elements.push(element);
         this.jQueryContainer.append(element.jQueryElement);

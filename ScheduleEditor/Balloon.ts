@@ -15,7 +15,7 @@ class Balloon {
     private cancelButton: JQuery;
     private deleteButton: JQuery;
 
-    public constructor(private elementContainer: TaskElementContainer) {
+    public constructor(/*private elementContainer: TaskElementContainer*/) {
         this.jQueryElement = $("#edit-balloon");
         this.typeBox = $("#balloon-task-type");
         this.nameBox = $("#balloon-task-name");
@@ -46,10 +46,10 @@ class Balloon {
         this.nameBox.on(realtimeEvents, () => { this.elementContainer.activeElement.name = this.nameBox.val(); });
         this.memoBox.on(realtimeEvents, () => { this.elementContainer.activeElement.memo = this.memoBox.val(); });
 
-        this.timeBeginBox.change((e) => { this.onTimeBoxChange(e); });
-        this.timeEndBox.change((e) => { this.onTimeBoxChange(e); });
+        this.timeBeginBox.change((e) => { this.onTimeBoxChanged(e); });
+        this.timeEndBox.change((e) => { this.onTimeBoxChanged(e); });
 
-        this.okButton.click(() => { taskElementContainer.activeElement = null; });
+        this.okButton.click(() => { this.elementContainer.activeElement = null; });
         this.cancelButton.click(() => { if (lastState) this.elementContainer.restore(lastState); lastState = null; });
         this.deleteButton.click(() => { this.elementContainer.remove(this.elementContainer.activeElement); });
 
@@ -114,7 +114,7 @@ class Balloon {
         return (this.jQueryElement.css("display") !== "none");
     }
 
-    private onTimeBoxChange(e: JQueryEventObject){
+    private onTimeBoxChanged(e: JQueryEventObject){
         var timeBegin: number = Number(this.timeBeginBox.val());
         var timeEnd: number = Number(this.timeEndBox.val());
 
@@ -124,6 +124,7 @@ class Balloon {
             timeBegin = timeEnd;
             timeEnd = tmp;
         } else if (timeBegin === timeEnd) {
+            // 今ユーザが弄った方とは違う方のコンボボックスの値を変更する
             if (e.target === this.timeBeginBox[0]) {
                 timeEnd = timeBegin + 0.5;
             } else {
@@ -149,6 +150,3 @@ class Balloon {
         this.timeSpanLabel.text(String(element.timeSpan.span));
     }
 }
-
-$(() => {
-});

@@ -21,9 +21,9 @@ class TaskElement {
     private timeSpanLabel: JQuery;
 
     // public onClick: Function = null;
-    public onClick: (el: TaskElement, ev: JQueryEventObject) => any = null;
-    public onMouseDown: (el: TaskElement, ev: JQueryMouseEventObject) => any = null;
-    public onCloseButtonClick: (el: TaskElement, ev: JQueryEventObject) => any = null;
+    public onClicked: (el: TaskElement, ev: JQueryEventObject) => any = null;
+    public onMousePressed: (el: TaskElement, ev: JQueryMouseEventObject) => any = null;
+    public onCloseButtonClicked: (el: TaskElement, ev: JQueryEventObject) => any = null;
 
     public constructor(timeSpan: TimeSpan, public jQueryElement: JQuery = null) {
         if (!this.jQueryElement) {
@@ -189,9 +189,9 @@ class TaskElement {
     public registerDefaultEvents() {
         if (!this.visible) throw new Error("Event registration of hidden elements is now allowed.");
 
-        this.jQueryElement.mousedown((ev) => (this.onMouseDown ? this.onMouseDown(this, ev) : undefined));
-        this.jQueryElement.click((ev) => (this.onClick ? this.onClick(this, ev) : undefined));
-        this.jQueryElement.find(".close").click((ev) => (this.onCloseButtonClick ? this.onCloseButtonClick(this, ev) : undefined));
+        this.jQueryElement.mousedown((ev) => (this.onMousePressed ? this.onMousePressed(this, ev) : undefined));
+        this.jQueryElement.click((ev) => (this.onClicked ? this.onClicked(this, ev) : undefined));
+        this.jQueryElement.find(".close").click((ev) => (this.onCloseButtonClicked ? this.onCloseButtonClicked(this, ev) : undefined));
 
         var commonOption = {
             "grid": [0, taskGridHeight],

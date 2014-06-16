@@ -15,9 +15,9 @@ class TaskElementContainer {
     }
 
     public add(element: TaskElement, active = true) {
-        element.onMouseDown = this.onElementMouseDown;
-        element.onClick = this.onElementClick;
-        element.onCloseButtonClick = this.onElementCloseButtonClick;
+        element.onMousePressed = this.onElementMousePressed;
+        element.onClicked = this.onElementClicked;
+        element.onCloseButtonClicked = this.onElementCloseButtonClicked;
 
         this.elements.push(element);
         this.jQueryContainer.append(element.jQueryElement);
@@ -77,17 +77,17 @@ class TaskElementContainer {
         }
     }
 
-    private onElementMouseDown = (el, ev) => {
+    private onElementMousePressed = (el, ev) => {
         this.previousState = this.dump();
         this.activeElement = el;
         this.balloon.hide();
     };
 
-    private onElementClick = (el, ev) => {
+    private onElementClicked = (el, ev) => {
         this.balloon.show();
     };
 
-    private onElementCloseButtonClick = (el, ev) => {
+    private onElementCloseButtonClicked = (el, ev) => {
         this.remove(el);
     };
 }

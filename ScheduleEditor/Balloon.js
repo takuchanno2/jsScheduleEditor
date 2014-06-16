@@ -3,9 +3,8 @@
 /// <reference path="TaskElement.ts" />
 /// <reference path="TaskElementContainer.ts" />
 var Balloon = (function () {
-    function Balloon(elementContainer) {
+    function Balloon() {
         var _this = this;
-        this.elementContainer = elementContainer;
         this.jQueryElement = $("#edit-balloon");
         this.typeBox = $("#balloon-task-type");
         this.nameBox = $("#balloon-task-name");
@@ -41,14 +40,14 @@ var Balloon = (function () {
         });
 
         this.timeBeginBox.change(function (e) {
-            _this.onTimeBoxChange(e);
+            _this.onTimeBoxChanged(e);
         });
         this.timeEndBox.change(function (e) {
-            _this.onTimeBoxChange(e);
+            _this.onTimeBoxChanged(e);
         });
 
         this.okButton.click(function () {
-            taskElementContainer.activeElement = null;
+            _this.elementContainer.activeElement = null;
         });
         this.cancelButton.click(function () {
             if (lastState)
@@ -123,7 +122,7 @@ var Balloon = (function () {
         configurable: true
     });
 
-    Balloon.prototype.onTimeBoxChange = function (e) {
+    Balloon.prototype.onTimeBoxChanged = function (e) {
         var timeBegin = Number(this.timeBeginBox.val());
         var timeEnd = Number(this.timeEndBox.val());
 
@@ -133,6 +132,7 @@ var Balloon = (function () {
             timeBegin = timeEnd;
             timeEnd = tmp;
         } else if (timeBegin === timeEnd) {
+            // 今ユーザが弄った方とは違う方のコンボボックスの値を変更する
             if (e.target === this.timeBeginBox[0]) {
                 timeEnd = timeBegin + 0.5;
             } else {
@@ -159,7 +159,4 @@ var Balloon = (function () {
     };
     return Balloon;
 })();
-
-$(function () {
-});
 //# sourceMappingURL=Balloon.js.map

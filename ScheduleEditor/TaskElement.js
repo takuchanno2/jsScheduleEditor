@@ -17,9 +17,9 @@ var TaskElement = (function () {
         if (typeof jQueryElement === "undefined") { jQueryElement = null; }
         this.jQueryElement = jQueryElement;
         // public onClick: Function = null;
-        this.onClick = null;
-        this.onMouseDown = null;
-        this.onCloseButtonClick = null;
+        this.onClicked = null;
+        this.onMousePressed = null;
+        this.onCloseButtonClicked = null;
         if (!this.jQueryElement) {
             this.jQueryElement = TaskElement.jQueryElementTemplate.clone();
         }
@@ -244,13 +244,13 @@ var TaskElement = (function () {
             throw new Error("Event registration of hidden elements is now allowed.");
 
         this.jQueryElement.mousedown(function (ev) {
-            return (_this.onMouseDown ? _this.onMouseDown(_this, ev) : undefined);
+            return (_this.onMousePressed ? _this.onMousePressed(_this, ev) : undefined);
         });
         this.jQueryElement.click(function (ev) {
-            return (_this.onClick ? _this.onClick(_this, ev) : undefined);
+            return (_this.onClicked ? _this.onClicked(_this, ev) : undefined);
         });
         this.jQueryElement.find(".close").click(function (ev) {
-            return (_this.onCloseButtonClick ? _this.onCloseButtonClick(_this, ev) : undefined);
+            return (_this.onCloseButtonClicked ? _this.onCloseButtonClicked(_this, ev) : undefined);
         });
 
         var commonOption = {
