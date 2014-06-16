@@ -103,20 +103,6 @@ var TaskElement = (function () {
         throw new Error();
     };
 
-    TaskElement.prototype.show = function () {
-        this.jQueryElement.show();
-    };
-    TaskElement.prototype.hide = function () {
-        this.jQueryElement.hide();
-    };
-    Object.defineProperty(TaskElement.prototype, "visible", {
-        get: function () {
-            return this.jQueryElement.css("display") !== "none";
-        },
-        enumerable: true,
-        configurable: true
-    });
-
     Object.defineProperty(TaskElement.prototype, "active", {
         get: function () {
             return this.jQueryElement.hasClass("active");
@@ -134,8 +120,6 @@ var TaskElement = (function () {
 
     Object.defineProperty(TaskElement.prototype, "top", {
         get: function () {
-            if (!this.visible)
-                throw new Error("Tried to access 'top' property of an invisible element.");
             return Math.round(this.jQueryElement.position().top);
         },
         set: function (value) {
@@ -176,8 +160,6 @@ var TaskElement = (function () {
 
     Object.defineProperty(TaskElement.prototype, "bottom", {
         get: function () {
-            if (!this.visible)
-                throw new Error("Tried to access 'bottom' property of an invisible element.");
             return Math.round(this.top + this.height);
         },
         enumerable: true,
@@ -186,8 +168,6 @@ var TaskElement = (function () {
 
     Object.defineProperty(TaskElement.prototype, "height", {
         get: function () {
-            if (!this.visible)
-                throw new Error("Tried to access 'height' property of an invisible element.");
             var height = this.jQueryElement.height();
             if (height === 0)
                 throw new Error("The height is somehow zero.");
@@ -239,9 +219,6 @@ var TaskElement = (function () {
     //　jQueryの要素にイベントを登録する
     TaskElement.prototype.registerDefaultEvents = function () {
         var _this = this;
-        if (!this.visible)
-            throw new Error("Event registration of hidden elements is now allowed.");
-
         this.jQueryElement.mousedown(function (ev) {
             return (_this.onMousePressed ? _this.onMousePressed(_this, ev) : undefined);
         });

@@ -4,6 +4,7 @@
 /// <reference path="Balloon.ts" />
 
 class TaskElementContainer {
+    // 早い時間で始まるタスクが先に来るように、常にソートされている
     private elements: TaskElement[] = [];
     private _activeElement: TaskElement = null;
     private previousState = null;
@@ -17,6 +18,7 @@ class TaskElementContainer {
         this.balloon.onDeleteButtonClicked = this.onBalloonDeleteButtonClicked;
     }
 
+    // やっぱaddAll的なメソッド追加する
     public add(element: TaskElement, active = true) {
         element.onMousePressed = this.onElementMousePressed;
         element.onClicked = this.onElementClicked;
@@ -25,7 +27,6 @@ class TaskElementContainer {
         this.elements.push(element);
         this.jQueryContainer.append(element.jQueryElement);
 
-        element.show();
         element.registerDefaultEvents();
 
         if (active) {
@@ -55,7 +56,7 @@ class TaskElementContainer {
 
     public restore(dump: Task[]) {
         this.clear();
-        dump.forEach((t) => { this.add(TaskElement.fromTask(t)); });
+        dump.forEach((t) => { this.add(TaskElement.fromTask(t), false); });
     }
 
     public saveState() {

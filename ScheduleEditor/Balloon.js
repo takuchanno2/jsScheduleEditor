@@ -19,26 +19,26 @@ var Balloon = (function () {
         this.cancelButton = $("#balloon-cancel-button");
         this.deleteButton = $("#balloon-delete-button");
 
-        var realtimeEvents = "keydown keyup keypress change";
         this.typeBox.change(function () {
-            var value = _this.typeBox.val();
-
-            _this.activeTaskElement.type = Number(value);
-            _this.nameBox.autocomplete({
-                "source": taskAutoComplete[_this.activeTaskElement.type],
-                "minLength": 0
-            });
+            _this.updateAutoComplete();
         });
-
         this.nameBox.focus(function () {
             _this.nameBox.autocomplete("search");
         });
 
-        this.nameBox.on(realtimeEvents, function () {
-            _this.activeTaskElement.name = _this.nameBox.val();
+        // IEのバグのため、変なタイミングでinputイベントが発火することがある
+        // 変な時に発火してもいいように、変数をチェックする
+        //this.nameBox.on("input", () => { this.activeTaskElement.name = this.nameBox.val(); });
+        //this.memoBox.on("input", () => { this.activeTaskElement.memo = this.memoBox.val(); });
+        this.nameBox.on("input", function () {
+            if (_this.activeTaskElement) {
+                _this.activeTaskElement.name = _this.nameBox.val();
+            }
         });
-        this.memoBox.on(realtimeEvents, function () {
-            _this.activeTaskElement.memo = _this.memoBox.val();
+        this.memoBox.on("input", function () {
+            if (_this.activeTaskElement) {
+                _this.activeTaskElement.memo = _this.memoBox.val();
+            }
         });
 
         this.timeBeginBox.change(function (e) {
@@ -102,10 +102,7 @@ var Balloon = (function () {
         this.memoBox.val(element.memo);
 
         this.typeBox.val(String(element.type));
-        this.nameBox.autocomplete({
-            "source": taskAutoComplete[element.type],
-            "minLength": 0
-        });
+        this.updateAutoComplete();
 
         this.timeBeginBox.val(String(element.timeSpan.begin));
         this.timeEndBox.val(String(element.timeSpan.end));
@@ -121,6 +118,17 @@ var Balloon = (function () {
         enumerable: true,
         configurable: true
     });
+
+    Balloon.prototype.updateAutoComplete = function () {
+        var _this = this;
+        this.nameBox.autocomplete({
+            "source": taskAutoComplete[this.activeTaskElement.type],
+            "minLength": 0,
+            "select": function (ev, ui) {
+                _this.activeTaskElement.name = ui.item.value;
+            }
+        });
+    };
 
     Balloon.prototype.onTimeBoxChanged = function (e) {
         var timeBegin = Number(this.timeBeginBox.val());

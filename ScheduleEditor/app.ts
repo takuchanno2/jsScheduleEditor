@@ -11,7 +11,6 @@ var taskGridHeight: number;
 var taskGridHeightTotal: number;
 
 var initialTasks: Task[] = [];
-var lastState: Task[] = null;
 
 var taskElementContainer: TaskElementContainer;
 
@@ -120,7 +119,7 @@ var addTask = function () {
     var timeBegin = TimeSpan.scheduleTime.begin + (selectedCells.first().top() / taskGridHeight / 2.0);
     var timeEnd = timeBegin + selectedCells.length / 2.0;
 
-    lastState = taskElementContainer.dump();
+    taskElementContainer.saveState();
 
     // var newTask = createNewTask(top, height, taskTemplate);
     var newTask = new TaskElement(new TimeSpan(timeBegin, timeEnd));

@@ -76,10 +76,6 @@ class TaskElement {
         throw new Error();
     }
 
-    public show() { this.jQueryElement.show(); }
-    public hide() { this.jQueryElement.hide(); }
-    public get visible() { return this.jQueryElement.css("display") !== "none"; }
-
     public get active(): boolean { return this.jQueryElement.hasClass("active"); }
     public set active(value: boolean) {
         if (value) {
@@ -90,7 +86,6 @@ class TaskElement {
     }
 
     public get top(): number {
-        if (!this.visible) throw new Error("Tried to access 'top' property of an invisible element.");
         return Math.round(this.jQueryElement.position().top);
     }
 
@@ -135,12 +130,10 @@ class TaskElement {
     }
 
     public get bottom(): number {
-        if (!this.visible) throw new Error("Tried to access 'bottom' property of an invisible element.");
         return Math.round(this.top + this.height);
     }
 
     public get height(): number {
-        if (!this.visible) throw new Error("Tried to access 'height' property of an invisible element.");
         var height = this.jQueryElement.height();
         if (height === 0) throw new Error("The height is somehow zero.");
         return Math.round(height);
@@ -186,8 +179,6 @@ class TaskElement {
 
     //　jQueryの要素にイベントを登録する
     public registerDefaultEvents() {
-        if (!this.visible) throw new Error("Event registration of hidden elements is now allowed.");
-
         this.jQueryElement.mousedown((ev) => (this.onMousePressed ? this.onMousePressed(this, ev) : undefined));
         this.jQueryElement.click((ev) => (this.onClicked ? this.onClicked(this, ev) : undefined));
         this.jQueryElement.find(".close").click((ev) => (this.onCloseButtonClicked ? this.onCloseButtonClicked(this, ev) : undefined));

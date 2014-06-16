@@ -21,7 +21,7 @@ class Balloon {
     public onCancelButtonClicked: (el: TaskElement, ev: JQueryEventObject) => any = null;
     public onDeleteButtonClicked: (el: TaskElement, ev: JQueryEventObject) => any = null;
 
-    public constructor(/*private elementContainer: TaskElementContainer*/) {
+    public constructor() {
         this.jQueryElement = $("#edit-balloon");
         this.typeBox = $("#balloon-task-type");
         this.nameBox = $("#balloon-task-name");
@@ -33,24 +33,16 @@ class Balloon {
         this.cancelButton = $("#balloon-cancel-button");
         this.deleteButton = $("#balloon-delete-button");
 
-        var realtimeEvents = "keydown keyup keypress change";
-        this.typeBox.change(() => {
-            var value: number = this.typeBox.val();
+        this.typeBox.change(() => { this.updateAutoComplete(); });
+        this.nameBox.focus(() => { this.nameBox.autocomplete("search"); });
 
-            this.activeTaskElement.type = Number(value);
-            this.nameBox.autocomplete({
-                "source": taskAutoComplete[this.activeTaskElement.type],
-                "minLength": 0,
-            });
-        });
-
-        this.nameBox.focus(() => {
-            this.nameBox.autocomplete("search");
-        });
-
-        this.nameBox.on(realtimeEvents, () => { this.activeTaskElement.name = this.nameBox.val(); });
-        this.memoBox.on(realtimeEvents, () => { this.activeTaskElement.memo = this.memoBox.val(); });
-
+        // IEのバグのため、変なタイミングでinputイベントが発火することがある
+        // 変な時に発火してもいいように、変数をチェックする
+        //this.nameBox.on("input", () => { this.activeTaskElement.name = this.nameBox.val(); });
+        //this.memoBox.on("input", () => { this.activeTaskElement.memo = this.memoBox.val(); });
+        this.nameBox.on("input", () => { if (this.activeTaskElement) { this.activeTaskElement.name = this.nameBox.val(); } });
+        this.memoBox.on("input", () => { if (this.activeTaskElement) { this.activeTaskElement.memo = this.memoBox.val(); } });
+        
         this.timeBeginBox.change((e) => { this.onTimeBoxChanged(e); });
         this.timeEndBox.change((e) => { this.onTimeBoxChanged(e); });
 
@@ -103,10 +95,7 @@ class Balloon {
         this.memoBox.val(element.memo);
 
         this.typeBox.val(String(element.type));
-        this.nameBox.autocomplete({
-            "source": taskAutoComplete[element.type],
-            "minLength": 0,
-        });
+        this.updateAutoComplete();
 
         this.timeBeginBox.val(String(element.timeSpan.begin));
         this.timeEndBox.val(String(element.timeSpan.end));
@@ -117,6 +106,14 @@ class Balloon {
 
     public get visible() {
         return (this.jQueryElement.css("display") !== "none");
+    }
+
+    private updateAutoComplete() {
+        this.nameBox.autocomplete({
+            "source": taskAutoComplete[this.activeTaskElement.type],
+            "minLength": 0,
+            "select": (ev, ui) => { this.activeTaskElement.name = ui.item.value; }
+        });
     }
 
     private onTimeBoxChanged(e: JQueryEventObject){

@@ -6,6 +6,7 @@ var TaskElementContainer = (function () {
     function TaskElementContainer(jQueryContainer) {
         var _this = this;
         this.jQueryContainer = jQueryContainer;
+        // 早い時間で始まるタスクが先に来るように、常にソートされている
         this.elements = [];
         this._activeElement = null;
         this.previousState = null;
@@ -35,6 +36,7 @@ var TaskElementContainer = (function () {
         this.balloon.onCancelButtonClicked = this.onBalloonCancelButtonClicked;
         this.balloon.onDeleteButtonClicked = this.onBalloonDeleteButtonClicked;
     }
+    // やっぱaddAll的なメソッド追加する
     TaskElementContainer.prototype.add = function (element, active) {
         if (typeof active === "undefined") { active = true; }
         element.onMousePressed = this.onElementMousePressed;
@@ -44,7 +46,6 @@ var TaskElementContainer = (function () {
         this.elements.push(element);
         this.jQueryContainer.append(element.jQueryElement);
 
-        element.show();
         element.registerDefaultEvents();
 
         if (active) {
@@ -80,7 +81,7 @@ var TaskElementContainer = (function () {
         var _this = this;
         this.clear();
         dump.forEach(function (t) {
-            _this.add(TaskElement.fromTask(t));
+            _this.add(TaskElement.fromTask(t), false);
         });
     };
 
