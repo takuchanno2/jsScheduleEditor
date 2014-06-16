@@ -2,6 +2,7 @@
 /// <reference path="Scripts/typings/jqueryui/jqueryui.d.ts" />
 /// <reference path="BaseTypes.ts" />
 /// <reference path="TaskElementContainer.ts" />
+"use strict";
 var GeometricRelation;
 (function (GeometricRelation) {
     GeometricRelation[GeometricRelation["unrelated"] = 0] = "unrelated";
@@ -16,9 +17,9 @@ var TaskElement = (function () {
     function TaskElement(timeSpan, jQueryElement) {
         if (typeof jQueryElement === "undefined") { jQueryElement = null; }
         this.jQueryElement = jQueryElement;
-        this.onClicked = null;
-        this.onMousePressed = null;
-        this.onCloseButtonClicked = null;
+        this.onClicked = $.noop;
+        this.onMousePressed = $.noop;
+        this.onCloseButtonClicked = $.noop;
         if (!this.jQueryElement) {
             this.jQueryElement = TaskElement.jQueryElementTemplate.clone();
         }
@@ -220,13 +221,13 @@ var TaskElement = (function () {
     TaskElement.prototype.registerDefaultEvents = function () {
         var _this = this;
         this.jQueryElement.mousedown(function (ev) {
-            return (_this.onMousePressed ? _this.onMousePressed(_this, ev) : undefined);
+            return _this.onMousePressed(_this, ev);
         });
         this.jQueryElement.click(function (ev) {
-            return (_this.onClicked ? _this.onClicked(_this, ev) : undefined);
+            return _this.onClicked(_this, ev);
         });
         this.jQueryElement.find(".close").click(function (ev) {
-            return (_this.onCloseButtonClicked ? _this.onCloseButtonClicked(_this, ev) : undefined);
+            return _this.onCloseButtonClicked(_this, ev);
         });
 
         var commonOption = {

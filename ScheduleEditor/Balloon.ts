@@ -3,6 +3,9 @@
 /// <reference path="TaskElement.ts" />
 /// <reference path="TaskElementContainer.ts" />
 
+"use strict"
+
+
 class Balloon {
     private jQueryElement: JQuery;
     private activeTaskElement: TaskElement;
@@ -17,9 +20,9 @@ class Balloon {
     private cancelButton: JQuery;
     private deleteButton: JQuery;
 
-    public onOkButtonClicked: (el: TaskElement, ev: JQueryEventObject) => any = null;
-    public onCancelButtonClicked: (el: TaskElement, ev: JQueryEventObject) => any = null;
-    public onDeleteButtonClicked: (el: TaskElement, ev: JQueryEventObject) => any = null;
+    public onOkButtonClicked: (el: TaskElement, ev: JQueryEventObject) => any = $.noop;
+    public onCancelButtonClicked: (el: TaskElement, ev: JQueryEventObject) => any = $.noop;
+    public onDeleteButtonClicked: (el: TaskElement, ev: JQueryEventObject) => any = $.noop;
 
     public constructor() {
         this.jQueryElement = $("#edit-balloon");
@@ -46,9 +49,9 @@ class Balloon {
         this.timeBeginBox.change((e) => { this.onTimeBoxChanged(e); });
         this.timeEndBox.change((e) => { this.onTimeBoxChanged(e); });
 
-        this.okButton.click((e) => (this.onOkButtonClicked ? this.onOkButtonClicked(this.activeTaskElement, e) : undefined));
-        this.cancelButton.click((e) => (this.onCancelButtonClicked ? this.onCancelButtonClicked(this.activeTaskElement, e) : undefined));
-        this.deleteButton.click((e) => (this.onDeleteButtonClicked ? this.onDeleteButtonClicked(this.activeTaskElement, e) : undefined));
+        this.okButton.click((e) => this.onOkButtonClicked(this.activeTaskElement, e));
+        this.cancelButton.click((e) => this.onCancelButtonClicked(this.activeTaskElement, e));
+        this.deleteButton.click((e) => this.onDeleteButtonClicked(this.activeTaskElement, e));
 
         // タスクの種類のコンボボックスを作る
         Task.taskTypes.forEach((v, i) => {
@@ -112,7 +115,11 @@ class Balloon {
         this.nameBox.autocomplete({
             "source": taskAutoComplete[this.activeTaskElement.type],
             "minLength": 0,
-            "select": (ev, ui) => { this.activeTaskElement.name = ui.item.value; }
+            // 何故かJQueryUI.AutocompleteUIParamsの定義が空……
+            // "select": (ev: JQueryEventObject, ui: JQueryUI.AutocompleteUIParams) => { this.activeTaskElement.name = ui.item.value; }
+            "select": (ev: JQueryEventObject, ui: any) => {
+                this.activeTaskElement.name = ui.item.value;
+            }
         });
     }
 

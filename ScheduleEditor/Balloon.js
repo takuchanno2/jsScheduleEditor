@@ -2,12 +2,13 @@
 /// <reference path="BaseTypes.ts" />
 /// <reference path="TaskElement.ts" />
 /// <reference path="TaskElementContainer.ts" />
+"use strict";
 var Balloon = (function () {
     function Balloon() {
         var _this = this;
-        this.onOkButtonClicked = null;
-        this.onCancelButtonClicked = null;
-        this.onDeleteButtonClicked = null;
+        this.onOkButtonClicked = $.noop;
+        this.onCancelButtonClicked = $.noop;
+        this.onDeleteButtonClicked = $.noop;
         this.jQueryElement = $("#edit-balloon");
         this.typeBox = $("#balloon-task-type");
         this.nameBox = $("#balloon-task-name");
@@ -49,13 +50,13 @@ var Balloon = (function () {
         });
 
         this.okButton.click(function (e) {
-            return (_this.onOkButtonClicked ? _this.onOkButtonClicked(_this.activeTaskElement, e) : undefined);
+            return _this.onOkButtonClicked(_this.activeTaskElement, e);
         });
         this.cancelButton.click(function (e) {
-            return (_this.onCancelButtonClicked ? _this.onCancelButtonClicked(_this.activeTaskElement, e) : undefined);
+            return _this.onCancelButtonClicked(_this.activeTaskElement, e);
         });
         this.deleteButton.click(function (e) {
-            return (_this.onDeleteButtonClicked ? _this.onDeleteButtonClicked(_this.activeTaskElement, e) : undefined);
+            return _this.onDeleteButtonClicked(_this.activeTaskElement, e);
         });
 
         // タスクの種類のコンボボックスを作る
@@ -124,6 +125,8 @@ var Balloon = (function () {
         this.nameBox.autocomplete({
             "source": taskAutoComplete[this.activeTaskElement.type],
             "minLength": 0,
+            // 何故かJQueryUI.AutocompleteUIParamsの定義が空……
+            // "select": (ev: JQueryEventObject, ui: JQueryUI.AutocompleteUIParams) => { this.activeTaskElement.name = ui.item.value; }
             "select": function (ev, ui) {
                 _this.activeTaskElement.name = ui.item.value;
             }

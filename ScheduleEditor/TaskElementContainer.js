@@ -1,7 +1,9 @@
 ﻿/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
+/// <reference path="Scripts/typings/underscore/underscore.d.ts" />
 /// <reference path="BaseTypes.ts" />
 /// <reference path="TaskElement.ts" />
 /// <reference path="Balloon.ts" />
+"use strict";
 var TaskElementContainer = (function () {
     function TaskElementContainer(jQueryContainer) {
         var _this = this;
@@ -43,7 +45,26 @@ var TaskElementContainer = (function () {
         element.onClicked = this.onElementClicked;
         element.onCloseButtonClicked = this.onElementCloseButtonClicked;
 
-        this.elements.push(element);
+        if ($.isEmptyObject(this.elements)) {
+            this.elements.push(element);
+        } else {
+            var i = 0;
+
+            while (i < this.elements.length && element.timeSpan.begin > this.elements[i].timeSpan.end)
+                i++;
+            if (i < this.elements.length) {
+                var overlapTop = this.elements[i];
+                if (element.timeSpan.begin > overlapTop.timeSpan.begin) {
+                    // この要素の下の部分と新しい要素の上部分が被っている
+                    // →この要素の高さを縮める
+                    // overlapTop.timeSpan.end = element.timeSpan.begin;
+                }
+            }
+
+            // この位置に新しい要素を追加
+            this.elements.splice(i, 0, element);
+        }
+
         this.jQueryContainer.append(element.jQueryElement);
 
         element.registerDefaultEvents();
@@ -80,6 +101,8 @@ var TaskElementContainer = (function () {
     TaskElementContainer.prototype.restore = function (dump) {
         var _this = this;
         this.clear();
+
+        // すげぇ遅い
         dump.forEach(function (t) {
             _this.add(TaskElement.fromTask(t), false);
         });

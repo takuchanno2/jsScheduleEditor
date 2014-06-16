@@ -1,4 +1,5 @@
-﻿var TimeSpan = (function () {
+﻿"use strict";
+var TimeSpan = (function () {
     function TimeSpan(_begin, _end) {
         this._begin = _begin;
         this._end = _end;

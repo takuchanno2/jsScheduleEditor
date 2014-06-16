@@ -3,6 +3,8 @@
 /// <reference path="BaseTypes.ts" />
 /// <reference path="TaskElementContainer.ts" />
 
+"use strict"
+
 enum GeometricRelation {
     unrelated, equal, upside, downside, inside, outside,
 }
@@ -20,9 +22,9 @@ class TaskElement {
     private timeEndLabel: JQuery;
     private timeSpanLabel: JQuery;
 
-    public onClicked: (el: TaskElement, ev: JQueryEventObject) => any = null;
-    public onMousePressed: (el: TaskElement, ev: JQueryMouseEventObject) => any = null;
-    public onCloseButtonClicked: (el: TaskElement, ev: JQueryEventObject) => any = null;
+    public onClicked: (el: TaskElement, ev: JQueryEventObject) => any = $.noop;
+    public onMousePressed: (el: TaskElement, ev: JQueryMouseEventObject) => any = $.noop;
+    public onCloseButtonClicked: (el: TaskElement, ev: JQueryEventObject) => any = $.noop;
 
     public constructor(timeSpan: TimeSpan, public jQueryElement: JQuery = null) {
         if (!this.jQueryElement) {
@@ -179,9 +181,9 @@ class TaskElement {
 
     //　jQueryの要素にイベントを登録する
     public registerDefaultEvents() {
-        this.jQueryElement.mousedown((ev) => (this.onMousePressed ? this.onMousePressed(this, ev) : undefined));
-        this.jQueryElement.click((ev) => (this.onClicked ? this.onClicked(this, ev) : undefined));
-        this.jQueryElement.find(".close").click((ev) => (this.onCloseButtonClicked ? this.onCloseButtonClicked(this, ev) : undefined));
+        this.jQueryElement.mousedown((ev) => this.onMousePressed(this, ev));
+        this.jQueryElement.click((ev) => this.onClicked(this, ev));
+        this.jQueryElement.find(".close").click((ev) => this.onCloseButtonClicked(this, ev));
 
         var commonOption = {
             "grid": [0, taskGridHeight],

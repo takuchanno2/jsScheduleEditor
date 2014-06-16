@@ -1,4 +1,6 @@
-﻿declare var scheduleTimeSpan: number[];
+﻿"use strict"
+
+declare var scheduleTimeSpan: number[];
 declare var coreTimeSpan: number[];
 declare var taskTypeTable: string[];
 

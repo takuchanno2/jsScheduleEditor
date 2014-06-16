@@ -4,6 +4,8 @@
 /// <reference path="TaskElementContainer.ts" />
 /// <reference path="Balloon.ts" />
 
+"use strict"
+
 declare var taskAutoComplete: string[][];
 declare var initialTasksJSON: any[]; 
 
@@ -107,8 +109,8 @@ var initTable = function () {
     taskGrid.selectable({
         "filter": ".grid-cell",
         // .schedule-editorのmouseupでタスクを非アクティブにされないように
-        "start": function (e, ui) { taskElementContainer.activeElement = null; },
-        "stop": function (e, ui) { addTask(); $(".ui-selected").removeClass("ui-selected"); },
+        "start": function (e: any, ui: any) { taskElementContainer.activeElement = null; },
+        "stop": function (e: any, ui: any) { addTask();},
     });
 };
 
@@ -126,6 +128,7 @@ var addTask = function () {
 
     selectedCells.removeClass("ui-selected");
 
+    /*
     $(".task").each(function () {
         var curr: TaskElement = $(this).taskElement();
         switch (newTask.getGeometricRelation(curr)) {
@@ -160,12 +163,13 @@ var addTask = function () {
                 break;
         }
     });
+    */
 
     taskElementContainer.add(newTask, true);
     taskElementContainer.balloon.show(newTask);
 };
 
-var startDragEvent = function (e, ui) {
+var startDragEvent = function (e: any, ui: any) {
     var curr: JQuery = ui.helper;
 
     curr.data("original-top", ui.position.top);
@@ -175,14 +179,14 @@ var startDragEvent = function (e, ui) {
     
 };
 
-var startResizeEvent = function (e, ui) {
+var startResizeEvent = function (e: any, ui: any) {
     var curr: JQuery = ui.helper;
 
     taskElementContainer.balloon.hide();
     taskElementContainer.activeElement = curr.taskElement();
 };
 
-var editTaskEvent = function (e, ui) {
+var editTaskEvent = function (e: any, ui: any) {
     var curr = ui.helper; // 今、移動orサイズ変更しようとしている要素
     var originalTop = (e.type === "drag") ? curr.data("original-top") : ui.originalPosition.top;
 
@@ -223,15 +227,15 @@ var editTaskEvent = function (e, ui) {
 };
 
 
-var stopEditingEvent = function (e, ui) {
+var stopEditingEvent = function (e: any, ui: any) {
     taskElementContainer.balloon.show(taskElementContainer.activeElement);
 };
 
-var sortByTopInAsc = function (a, b) { return ($(a).top() - $(b).top()); };
-var sortByTopInDesc = function (a, b) { return ($(b).top() - $(a).top()); }
+var sortByTopInAsc = function (a: Node, b: Node) { return ($(a).top() - $(b).top()); };
+var sortByTopInDesc = function (a: Node, b: Node) { return ($(b).top() - $(a).top()); }
 
 // 要素elmが、top～bottomの間のスペースを確保していると考えて、それより下の要素を適当にずらす
-var adjustPositionDownward = function (elm, top, bottom) {
+var adjustPositionDownward = function (elm: JQuery, top: number, bottom: number) {
     // 自分より下で、上に配置されている方が先に来るようにソート
 
     var tasks = $(".task")
@@ -258,7 +262,7 @@ var adjustPositionDownward = function (elm, top, bottom) {
 };
 
 // 要素elmが、top～bottomの間のスペースを確保していると考えて、それより上の要素を適当にずらす
-var adjustPositionUpward = function (elm, top, bottom) {
+var adjustPositionUpward = function (elm: JQuery, top: number, bottom: number) {
     // 自分より上で、下に配置されている方が先に来るようにソート
     var tasks = $(".task")
         .filter(function () { return (this !== elm[0]) && ($(this).bottom() <= bottom); })
@@ -287,7 +291,7 @@ var adjustPositionUpward = function (elm, top, bottom) {
 
 // 移植済み
 var originalHeight = $.fn.height;
-var fn_height = function (height) {
+var fn_height = function (height: number) {
     if (height !== undefined) {
         if (height === 0) throw new Error("Try to set zero to height.");
         return originalHeight.apply(this, arguments);
@@ -302,7 +306,7 @@ var fn_height = function (height) {
 // 引数なしの時は、cssのtopを返す
 // 引数があるときは、その値をcssのtopに設定
 // マイナスの値を設定しようとしたり、グリッドの高さを超えそうなときは適宜設定
-var fn_top = function (top) {
+var fn_top = function (top: number) {
     if (top !== undefined) {
         top = Math.round(top);
         var newBottom = Math.round(top + this.height());
@@ -341,7 +345,7 @@ var fn_top = function (top) {
     }
 };
 
-var setTaskBorder = function (elm, top) {
+var setTaskBorder = function (elm: JQuery, top: number) {
     if (top === undefined) {
         top = elm.top();
     }
@@ -362,7 +366,7 @@ var fn_bottom = function () {
     return Math.round(this.top() + this.height());
 };
 
-var fn_dataAttr = function (key, value) {
+var fn_dataAttr = function (key: string, value: any) {
     if (value !== undefined) {
         this.data(key, value);
         this.attr("data-" + key, value);

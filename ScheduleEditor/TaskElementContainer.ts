@@ -1,13 +1,18 @@
 ﻿/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
+/// <reference path="Scripts/typings/underscore/underscore.d.ts" />
+
 /// <reference path="BaseTypes.ts" />
 /// <reference path="TaskElement.ts" />
 /// <reference path="Balloon.ts" />
+
+"use strict"
+
 
 class TaskElementContainer {
     // 早い時間で始まるタスクが先に来るように、常にソートされている
     private elements: TaskElement[] = [];
     private _activeElement: TaskElement = null;
-    private previousState = null;
+    private previousState: Task[] = null;
 
     public balloon: Balloon;
 
@@ -24,7 +29,25 @@ class TaskElementContainer {
         element.onClicked = this.onElementClicked;
         element.onCloseButtonClicked = this.onElementCloseButtonClicked;
 
-        this.elements.push(element);
+        if ($.isEmptyObject(this.elements)) {
+            this.elements.push(element);
+        } else {
+            var i = 0;
+
+            while (i < this.elements.length && element.timeSpan.begin > this.elements[i].timeSpan.end) i++;
+            if (i < this.elements.length) {
+                var overlapTop = this.elements[i];
+                if (element.timeSpan.begin > overlapTop.timeSpan.begin) {
+                    // この要素の下の部分と新しい要素の上部分が被っている
+                    // →この要素の高さを縮める
+                    // overlapTop.timeSpan.end = element.timeSpan.begin;
+                }
+            }
+
+            // この位置に新しい要素を追加
+            this.elements.splice(i, 0, element);
+        }
+
         this.jQueryContainer.append(element.jQueryElement);
 
         element.registerDefaultEvents();
@@ -56,6 +79,7 @@ class TaskElementContainer {
 
     public restore(dump: Task[]) {
         this.clear();
+        // すげぇ遅い
         dump.forEach((t) => { this.add(TaskElement.fromTask(t), false); });
     }
 
@@ -92,30 +116,30 @@ class TaskElementContainer {
         }
     }
 
-    private onElementMousePressed = (el, ev) => {
+    private onElementMousePressed = (el: TaskElement, ev: JQueryMouseEventObject) => {
         this.activeElement = el;
         this.saveState();
         this.balloon.hide();
     };
 
-    private onElementClicked = (el, ev) => {
+    private onElementClicked = (el: TaskElement, ev: JQueryEventObject) => {
         this.balloon.show(el);
     };
 
-    private onElementCloseButtonClicked = (el, ev) => {
+    private onElementCloseButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
         this.remove(el);
     };
 
-    private onBalloonOkButtonClicked = (el, ev) => {
+    private onBalloonOkButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
         this.activeElement = null;
         this.balloon.hide();
     };
 
-    private onBalloonCancelButtonClicked = (el, ev) => {
+    private onBalloonCancelButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
         this.rollbackState();
     };
 
-    private onBalloonDeleteButtonClicked = (el, ev) => {
+    private onBalloonDeleteButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
         this.remove(el);
     };
 }

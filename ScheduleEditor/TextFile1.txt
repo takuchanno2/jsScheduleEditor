@@ -105,3 +105,5 @@
 // balloonにTaskElementContainer渡さない、TaskElementをshowとupdateで渡す
 
 // adjustメソッドはもっとラクに(1段ループで、たとえばタスクが下方向に伸びたら、下にあるタスクを順番に見て行ってずらすとか)
+
+// TaskElementContainerにAddAll的なメソッド追加して、DocumentFragmentを使って高速化
