@@ -5,6 +5,9 @@
 var Balloon = (function () {
     function Balloon() {
         var _this = this;
+        this.onOkButtonClicked = null;
+        this.onCancelButtonClicked = null;
+        this.onDeleteButtonClicked = null;
         this.jQueryElement = $("#edit-balloon");
         this.typeBox = $("#balloon-task-type");
         this.nameBox = $("#balloon-task-name");
@@ -20,10 +23,9 @@ var Balloon = (function () {
         this.typeBox.change(function () {
             var value = _this.typeBox.val();
 
-            var element = _this.elementContainer.activeElement;
-            element.type = Number(value);
+            _this.activeTaskElement.type = Number(value);
             _this.nameBox.autocomplete({
-                "source": taskAutoComplete[element.type],
+                "source": taskAutoComplete[_this.activeTaskElement.type],
                 "minLength": 0
             });
         });
@@ -33,10 +35,10 @@ var Balloon = (function () {
         });
 
         this.nameBox.on(realtimeEvents, function () {
-            _this.elementContainer.activeElement.name = _this.nameBox.val();
+            _this.activeTaskElement.name = _this.nameBox.val();
         });
         this.memoBox.on(realtimeEvents, function () {
-            _this.elementContainer.activeElement.memo = _this.memoBox.val();
+            _this.activeTaskElement.memo = _this.memoBox.val();
         });
 
         this.timeBeginBox.change(function (e) {
@@ -46,16 +48,14 @@ var Balloon = (function () {
             _this.onTimeBoxChanged(e);
         });
 
-        this.okButton.click(function () {
-            _this.elementContainer.activeElement = null;
+        this.okButton.click(function (e) {
+            return (_this.onOkButtonClicked ? _this.onOkButtonClicked(_this.activeTaskElement, e) : undefined);
         });
-        this.cancelButton.click(function () {
-            if (lastState)
-                _this.elementContainer.restore(lastState);
-            lastState = null;
+        this.cancelButton.click(function (e) {
+            return (_this.onCancelButtonClicked ? _this.onCancelButtonClicked(_this.activeTaskElement, e) : undefined);
         });
-        this.deleteButton.click(function () {
-            _this.elementContainer.remove(_this.elementContainer.activeElement);
+        this.deleteButton.click(function (e) {
+            return (_this.onDeleteButtonClicked ? _this.onDeleteButtonClicked(_this.activeTaskElement, e) : undefined);
         });
 
         // タスクの種類のコンボボックスを作る
@@ -85,8 +85,8 @@ var Balloon = (function () {
             }
         }
     }
-    Balloon.prototype.show = function () {
-        this.update();
+    Balloon.prototype.show = function (element) {
+        this.update(element);
         this.jQueryElement.show();
         this.okButton.focus();
     };
@@ -95,8 +95,8 @@ var Balloon = (function () {
         this.jQueryElement.hide();
     };
 
-    Balloon.prototype.update = function () {
-        var element = this.elementContainer.activeElement;
+    Balloon.prototype.update = function (element) {
+        this.activeTaskElement = element;
 
         this.nameBox.val(element.name);
         this.memoBox.val(element.memo);
@@ -146,7 +146,7 @@ var Balloon = (function () {
         // 時間修正前の開始時間・終了時間
         var newTop = 2.0 * taskGridHeight * (timeBegin - TimeSpan.scheduleTime.begin);
         var newHeight = 2.0 * taskGridHeight * (timeEnd - timeBegin);
-        var element = this.elementContainer.activeElement;
+        var element = this.activeTaskElement;
 
         if (timeBegin < element.timeSpan.begin) {
             adjustPositionUpward(element.jQueryElement, newTop, newTop + newHeight);

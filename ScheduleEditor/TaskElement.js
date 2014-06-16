@@ -16,7 +16,6 @@ var TaskElement = (function () {
     function TaskElement(timeSpan, jQueryElement) {
         if (typeof jQueryElement === "undefined") { jQueryElement = null; }
         this.jQueryElement = jQueryElement;
-        // public onClick: Function = null;
         this.onClicked = null;
         this.onMousePressed = null;
         this.onCloseButtonClicked = null;

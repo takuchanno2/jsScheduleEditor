@@ -11,7 +11,10 @@ class TaskElementContainer {
     public balloon: Balloon;
 
     public constructor(private jQueryContainer: JQuery) {
-        this.balloon = new Balloon(this);
+        this.balloon = new Balloon();
+        this.balloon.onOkButtonClicked = this.onBalloonOkButtonClicked;
+        this.balloon.onCancelButtonClicked = this.onBalloonCancelButtonClicked;
+        this.balloon.onDeleteButtonClicked = this.onBalloonDeleteButtonClicked;
     }
 
     public add(element: TaskElement, active = true) {
@@ -55,6 +58,17 @@ class TaskElementContainer {
         dump.forEach((t) => { this.add(TaskElement.fromTask(t)); });
     }
 
+    public saveState() {
+        this.previousState = this.dump();
+    }
+
+    public rollbackState() {
+        if (!this.previousState) throw new Error("Cannot rollback to the previous state.");
+
+        this.restore(this.previousState);
+        this.previousState = null;
+    }
+
     public get activeElement(): TaskElement {
         return this._activeElement;
     }
@@ -68,7 +82,7 @@ class TaskElementContainer {
         if (value) {
             this._activeElement.active = true;
             if (this.balloon.visible) {
-                this.balloon.update();
+                this.balloon.update(value);
             }
         } else {
             if (this.balloon.visible) {
@@ -78,16 +92,29 @@ class TaskElementContainer {
     }
 
     private onElementMousePressed = (el, ev) => {
-        this.previousState = this.dump();
         this.activeElement = el;
+        this.saveState();
         this.balloon.hide();
     };
 
     private onElementClicked = (el, ev) => {
-        this.balloon.show();
+        this.balloon.show(el);
     };
 
     private onElementCloseButtonClicked = (el, ev) => {
+        this.remove(el);
+    };
+
+    private onBalloonOkButtonClicked = (el, ev) => {
+        this.activeElement = null;
+        this.balloon.hide();
+    };
+
+    private onBalloonCancelButtonClicked = (el, ev) => {
+        this.rollbackState();
+    };
+
+    private onBalloonDeleteButtonClicked = (el, ev) => {
         this.remove(el);
     };
 }

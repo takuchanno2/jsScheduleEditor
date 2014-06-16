@@ -163,7 +163,7 @@ var addTask = function () {
     });
 
     taskElementContainer.add(newTask, true);
-    taskElementContainer.balloon.show();
+    taskElementContainer.balloon.show(newTask);
 };
 
 var startDragEvent = function (e, ui) {
@@ -225,7 +225,7 @@ var editTaskEvent = function (e, ui) {
 
 
 var stopEditingEvent = function (e, ui) {
-    taskElementContainer.balloon.show();
+    taskElementContainer.balloon.show(taskElementContainer.activeElement);
 };
 
 var sortByTopInAsc = function (a, b) { return ($(a).top() - $(b).top()); };

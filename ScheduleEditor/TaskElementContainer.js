@@ -10,17 +10,30 @@ var TaskElementContainer = (function () {
         this._activeElement = null;
         this.previousState = null;
         this.onElementMousePressed = function (el, ev) {
-            _this.previousState = _this.dump();
             _this.activeElement = el;
+            _this.saveState();
             _this.balloon.hide();
         };
         this.onElementClicked = function (el, ev) {
-            _this.balloon.show();
+            _this.balloon.show(el);
         };
         this.onElementCloseButtonClicked = function (el, ev) {
             _this.remove(el);
         };
-        this.balloon = new Balloon(this);
+        this.onBalloonOkButtonClicked = function (el, ev) {
+            _this.activeElement = null;
+            _this.balloon.hide();
+        };
+        this.onBalloonCancelButtonClicked = function (el, ev) {
+            _this.rollbackState();
+        };
+        this.onBalloonDeleteButtonClicked = function (el, ev) {
+            _this.remove(el);
+        };
+        this.balloon = new Balloon();
+        this.balloon.onOkButtonClicked = this.onBalloonOkButtonClicked;
+        this.balloon.onCancelButtonClicked = this.onBalloonCancelButtonClicked;
+        this.balloon.onDeleteButtonClicked = this.onBalloonDeleteButtonClicked;
     }
     TaskElementContainer.prototype.add = function (element, active) {
         if (typeof active === "undefined") { active = true; }
@@ -71,6 +84,18 @@ var TaskElementContainer = (function () {
         });
     };
 
+    TaskElementContainer.prototype.saveState = function () {
+        this.previousState = this.dump();
+    };
+
+    TaskElementContainer.prototype.rollbackState = function () {
+        if (!this.previousState)
+            throw new Error("Cannot rollback to the previous state.");
+
+        this.restore(this.previousState);
+        this.previousState = null;
+    };
+
     Object.defineProperty(TaskElementContainer.prototype, "activeElement", {
         get: function () {
             return this._activeElement;
@@ -84,7 +109,7 @@ var TaskElementContainer = (function () {
             if (value) {
                 this._activeElement.active = true;
                 if (this.balloon.visible) {
-                    this.balloon.update();
+                    this.balloon.update(value);
                 }
             } else {
                 if (this.balloon.visible) {

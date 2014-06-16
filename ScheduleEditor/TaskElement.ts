@@ -20,7 +20,6 @@ class TaskElement {
     private timeEndLabel: JQuery;
     private timeSpanLabel: JQuery;
 
-    // public onClick: Function = null;
     public onClicked: (el: TaskElement, ev: JQueryEventObject) => any = null;
     public onMousePressed: (el: TaskElement, ev: JQueryMouseEventObject) => any = null;
     public onCloseButtonClicked: (el: TaskElement, ev: JQueryEventObject) => any = null;
