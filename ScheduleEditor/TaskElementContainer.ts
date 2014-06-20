@@ -5,7 +5,7 @@
 /// <reference path="TaskElement.ts" />
 /// <reference path="Balloon.ts" />
 
-"use strict"
+"use strict";
 
 
 class TaskElementContainer {
@@ -40,12 +40,12 @@ class TaskElementContainer {
                 if (element.timeSpan.begin > overlapTop.timeSpan.begin) {
                     // この要素の下の部分と新しい要素の上部分が被っている
                     // →この要素の高さを縮める
-                    // overlapTop.timeSpan.end = element.timeSpan.begin;
+                    overlapTop.timeSpan = new TimeSpan(overlapTop.timeSpan.begin, element.timeSpan.begin);
                 }
             }
 
             // この位置に新しい要素を追加
-            this.elements.splice(i, 0, element);
+            this.elements.splice(i+1, 0, element);
         }
 
         this.jQueryContainer.append(element.jQueryElement);

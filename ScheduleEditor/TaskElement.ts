@@ -3,7 +3,7 @@
 /// <reference path="BaseTypes.ts" />
 /// <reference path="TaskElementContainer.ts" />
 
-"use strict"
+"use strict";
 
 enum GeometricRelation {
     unrelated, equal, upside, downside, inside, outside,

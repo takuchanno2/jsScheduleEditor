@@ -1,4 +1,4 @@
-﻿"use strict"
+﻿"use strict";
 
 declare var scheduleTimeSpan: number[];
 declare var coreTimeSpan: number[];

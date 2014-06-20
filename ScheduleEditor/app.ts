@@ -4,7 +4,7 @@
 /// <reference path="TaskElementContainer.ts" />
 /// <reference path="Balloon.ts" />
 
-"use strict"
+"use strict";
 
 declare var taskAutoComplete: string[][];
 declare var initialTasksJSON: any[]; 

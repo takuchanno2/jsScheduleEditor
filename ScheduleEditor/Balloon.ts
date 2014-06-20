@@ -3,7 +3,7 @@
 /// <reference path="TaskElement.ts" />
 /// <reference path="TaskElementContainer.ts" />
 
-"use strict"
+"use strict";
 
 
 class Balloon {

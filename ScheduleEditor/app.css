@@ -22,7 +22,16 @@ body {
   border-width: 2px;
 }
 #schedule-editor .schedule-editor-table #table-content {
+  height: 300px;
+  overflow-x: hidden;
+  overflow-y: scroll;
   position: relative;
+}
+#schedule-editor .schedule-editor-table #table-header .grid-cell {
+  width: 100% !important;
+}
+#schedule-editor .schedule-editor-table #table-header .grid-cell .task-cell {
+  width: 50% !important;
 }
 #schedule-editor .schedule-editor-table #task-grid .grid-cell,
 #schedule-editor .schedule-editor-table #table-header .grid-cell {

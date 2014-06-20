@@ -37,11 +37,25 @@ body {
     position: relative;
     display: inline-block;
     box-sizing: border-box;
+
     .default-border();
     border-width: @border-width-bold;
 
     #table-content {
+      height: 300px;
+      overflow-x: hidden;
+      overflow-y: scroll;
+
       position: relative;
+    }
+
+    #table-header {
+      .grid-cell{
+        width: 100% !important;
+        .task-cell{
+          width: 50% !important;
+        }
+      }
     }
 
     #task-grid, #table-header {
@@ -86,9 +100,11 @@ body {
         &:first-child .task-cell {
           border-top-width: 0px;
         }
+
         &:nth-child(even) .half-hour-cell {
           border-top-width: 0px;
         }
+
         &.ui-selecting .half-hour-cell,
         &.ui-selecting .task-cell {
           background-color: #FC4;
@@ -102,9 +118,9 @@ body {
     }
 
     #table-header {
-      .grid-cell{
-          .default-border();
-          border-width: 0px 0px @border-width-bold 0px;
+      .grid-cell {
+        .default-border();
+        border-width: 0px 0px @border-width-bold 0px;
 
         .half-hour-cell, .task-cell {
           background-color: hsl(60, 60%, 87%);
