@@ -48,7 +48,7 @@ var TimeSpan = (function () {
     TimeSpan.fromJSONObject = function (obj) {
         return new TimeSpan(obj._begin, obj._end);
     };
-    TimeSpan.coreTime = new TimeSpan(Math.min(coreTimeSpan[0], coreTimeSpan[1]), Math.max(coreTimeSpan[0], coreTimeSpan[1]));
+    TimeSpan.coreTime = null;
     return TimeSpan;
 })();
 
@@ -61,7 +61,7 @@ var Task = (function () {
     }
     Object.defineProperty(Task.prototype, "typeString", {
         get: function () {
-            return Task.taskTypes[this.type];
+            return Task.taskTypes[this.type].name;
         },
         enumerable: true,
         configurable: true
@@ -70,7 +70,12 @@ var Task = (function () {
     Task.fromJSONObject = function (obj) {
         return new Task(obj.type, obj.name, TimeSpan.fromJSONObject(obj.timeSpan), obj.memo);
     };
-    Task.taskTypes = taskTypeTable;
+    Task.taskTypes = null;
     return Task;
 })();
+
+$(function () {
+    TimeSpan.coreTime = TimeSpan.fromJSONObject(JSON.parse($("#coretime-span").html()));
+    Task.taskTypes = JSON.parse($("#task-types").html());
+});
 //# sourceMappingURL=BaseTypes.js.map

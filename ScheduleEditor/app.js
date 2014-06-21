@@ -44,7 +44,7 @@ $(function () {
         taskElementContainer.activeElement = null;
     });
 
-    initialTasksJSON.forEach(function (v) {
+    JSON.parse($("#initial-schedule").html()).forEach(function (v) {
         initialTasks.push(Task.fromJSONObject(v));
     });
 

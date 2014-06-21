@@ -120,8 +120,10 @@
 // ドラッグ(draggable)しながらスクロールして要素が外に行くと消えるときがある
 // ドラッグが終わったときに、task-listのDOM要素の中にtaskElementが存在していない場合、こっち側で入れてあげて、top,height設定してshowすべきかも
 
-// Javascript標準のDateTimeを使うことにする
+// Javascript標準のDateTimeを使うことにする → jsonにできない。やはり自分で書いた方がいい
 
 // TaskElement作るときに最初にTimeSpan渡す必要なくない
 
 // tableもクラスに分けるか……
+
+// スクリプトに渡すデータは、scriptタグに独立して書く

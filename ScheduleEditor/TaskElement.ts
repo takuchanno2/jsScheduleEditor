@@ -49,7 +49,7 @@ class TaskElement {
     }
 
     public get type(): number { return this._taskType; }
-    public get typeString(): string { return Task.taskTypes[this.type]; }
+    public get typeString(): string { return Task.taskTypes[this.type].name; }
     public set type(value: number) {
         this._taskType = value;
         this.typeLabel.text(this.typeString);
@@ -193,9 +193,8 @@ class TaskElement {
     }
 
     public static prepareTemplate() {
-        this.jQueryElementTemplate = $("#task-template");
-        this.jQueryElementTemplate.removeAttr("id");
-        this.jQueryElementTemplate.find(".task-type").text(Task.taskTypes[this.jQueryElementTemplate.data("task-type")]);
+        this.jQueryElementTemplate = $($.parseHTML($("#task-template").html().trim()));
+        this.jQueryElementTemplate.find(".task-type").text(Task.taskTypes[this.jQueryElementTemplate.data("task-type")].name);
         this.jQueryElementTemplate.find(".task-name").empty();
         this.jQueryElementTemplate.find(".task-memo").empty();
         this.jQueryElementTemplate.remove();

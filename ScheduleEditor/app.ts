@@ -6,9 +6,6 @@
 
 "use strict";
 
-declare var taskAutoComplete: string[][];
-declare var initialTasksJSON: any[]; 
-
 var taskGridHeight: number;
 var taskGridHeightTotal: number;
 
@@ -61,7 +58,7 @@ $(() => {
         taskElementContainer.activeElement = null;
     });
 
-    initialTasksJSON.forEach((v) => {
+    JSON.parse($("#initial-schedule").html()).forEach((v: any) => {
         initialTasks.push(Task.fromJSONObject(v));
     });
 

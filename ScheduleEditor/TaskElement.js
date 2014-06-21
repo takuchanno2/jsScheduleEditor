@@ -54,7 +54,7 @@ var TaskElement = (function () {
     });
     Object.defineProperty(TaskElement.prototype, "typeString", {
         get: function () {
-            return Task.taskTypes[this.type];
+            return Task.taskTypes[this.type].name;
         },
         enumerable: true,
         configurable: true
@@ -238,9 +238,8 @@ var TaskElement = (function () {
     };
 
     TaskElement.prepareTemplate = function () {
-        this.jQueryElementTemplate = $("#task-template");
-        this.jQueryElementTemplate.removeAttr("id");
-        this.jQueryElementTemplate.find(".task-type").text(Task.taskTypes[this.jQueryElementTemplate.data("task-type")]);
+        this.jQueryElementTemplate = $($.parseHTML($("#task-template").html().trim()));
+        this.jQueryElementTemplate.find(".task-type").text(Task.taskTypes[this.jQueryElementTemplate.data("task-type")].name);
         this.jQueryElementTemplate.find(".task-name").empty();
         this.jQueryElementTemplate.find(".task-memo").empty();
         this.jQueryElementTemplate.remove();

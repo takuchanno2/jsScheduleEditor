@@ -1,14 +1,7 @@
 ﻿"use strict";
 
-declare var scheduleTimeSpan: number[];
-declare var coreTimeSpan: number[];
-declare var taskTypeTable: string[];
-
 class TimeSpan {
-    public static coreTime = new TimeSpan(
-        Math.min(coreTimeSpan[0], coreTimeSpan[1]),
-        Math.max(coreTimeSpan[0], coreTimeSpan[1])
-        );
+    public static coreTime: TimeSpan = null;
 
     public constructor(private _begin: number, private _end: number) { }
 
@@ -29,7 +22,7 @@ class TimeSpan {
 }
 
 class Task {
-    public static taskTypes = taskTypeTable;
+    public static taskTypes: { name: string; taskNameCandidates: string[]; }[] = null;
 
     public constructor(
         public type: number,
@@ -39,10 +32,15 @@ class Task {
         ) { }
 
     public get typeString(): string {
-        return Task.taskTypes[this.type];
+        return Task.taskTypes[this.type].name;
     }
 
     public static fromJSONObject(obj: any): Task {
         return new Task(obj.type, obj.name, TimeSpan.fromJSONObject(obj.timeSpan), obj.memo);
     }
 }
+
+$(() => {
+    TimeSpan.coreTime = TimeSpan.fromJSONObject(JSON.parse($("#coretime-span").html()));
+    Task.taskTypes = JSON.parse($("#task-types").html());
+});

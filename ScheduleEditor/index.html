@@ -11,51 +11,90 @@
 
   <script>
     const coreTimeSpan = [9.5, 16.5];
-    const taskTypeTable = ["研究系", "勉強系", "その他", "実働外"];
-    const taskAutoComplete = [
-      ["Apple", "Banana", "Canada", "Django", "Egypt", "Fuji-yama", "Gorbachev"],
-      ["Hoge", "Internet", "Japan", "Korea", "London", "Monkey", "New Zealand"],
-      ["Others", "Sonota"],
-      ["遅刻", "昼寝", "夜寝", "朝寝"],
-    ];
-    const initialTasksJSON =
-      [
-  {
+  </script>
+
+  <script type="application/json" id="coretime-span">
+    {
+    "_begin": 9.5,
+    "_end": 16.5
+    }
+  </script>
+
+  <script type="application/json" id="task-types">
+    [
+      {
+        "name": "研究系",
+        "taskNameCandidates": ["Apple", "Banana", "Canada", "Django", "Egypt", "Fuji-yama", "Gorbachev"]
+      },{
+        "name": "勉強系",
+        "taskNameCandidates": ["Hoge", "Internet", "Japan", "Korea", "London", "Monkey", "New Zealand"]
+      },{
+        "name": "その他",
+        "taskNameCandidates": ["Others", "Sonota"]
+      },{
+        "name": "実働外",
+        "taskNameCandidates": ["遅刻", "昼寝", "夜寝", "朝寝"]
+      }
+    ]
+  </script>
+
+  <script type="application/json" id="initial-schedule">
+    [
+    {
     "type": 0,
     "name": "Kenkyu-kei",
     "timeSpan": {
-      "_begin": 9.5,
-      "_end": 11
+    "_begin": 9.5,
+    "_end": 11
     },
     "memo": "hogehoge"
-  },
-  {
+    },
+    {
     "type": "1",
     "name": "Benkyo-kei",
     "timeSpan": {
-      "_begin": 11,
-      "_end": 12.5
+    "_begin": 11,
+    "_end": 12.5
     },
     "memo": "piyopiyo"
-  },
-  {
+    },
+    {
     "type": "2",
     "name": "Fuyu no Sonota",
     "timeSpan": {
-      "_begin": 12.5,
-      "_end": 14
+    "_begin": 12.5,
+    "_end": 14
     }, "memo": "foofoo"
-  },
-  {
+    },
+    {
     "type": "3",
     "name": "Jitsudo-gai",
     "timeSpan": {
-      "_begin": 14,
-      "_end": 15.5
+    "_begin": 14,
+    "_end": 15.5
     },
     "memo": "barbar"
-  }
-      ];
+    }
+    ]
+  </script>
+
+  <script type="text/template" id="task-template">
+    <div class="task" data-task-type="0">
+      <div class="task-content">
+        <div class="task-head clearfix">
+          <button type="button" class="close">&times;</button>
+          <div class="task-title">
+            <b class="task-type">種類</b>
+            <span class="task-name">タスク名タスク名</span>
+            <span class="task-time">
+              <span class="task-time-begin">10:00</span> - <span class="task-time-end">12:00</span>
+              (<span class="task-time-span">2.0</span> 時間)
+            </span>
+          </div>
+        </div>
+        <p class="task-memo">タスクに関する説明</p>
+      </div>
+    </div>
   </script>
 
   <script src="Scripts/jquery-2.1.1.js"></script>
@@ -65,8 +104,8 @@
 
   <script src="BaseTypes.js"></script>
   <script src="TaskElement.js"></script>
-  <script src="TaskElementContainer.js"></script>
   <script src="Balloon.js"></script>
+  <script src="TaskElementContainer.js"></script>
   <script src="app.js"></script>
 </head>
 <body>
@@ -90,22 +129,6 @@
             <div id="table-content">
               <div id="task-grid"></div>
               <div id="task-list">
-                <div id="task-template" class="task" data-task-type="0">
-                  <div class="task-content">
-                    <div class="task-head clearfix">
-                      <button type="button" class="close">&times;</button>
-                      <div class="task-title">
-                        <b class="task-type">種類</b>
-                        <span class="task-name">タスク名タスク名</span>
-                        <span class="task-time">
-                          <span class="task-time-begin">10:00</span> - <span class="task-time-end">12:00</span>
-                          (<span class="task-time-span">2.0</span> 時間)
-                        </span>
-                      </div>
-                    </div>
-                    <p class="task-memo">タスクに関する説明</p>
-                  </div>
-                </div>
               </div>
             </div>
             <div id="edit-balloon">
