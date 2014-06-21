@@ -62,7 +62,7 @@ var initTable = function () {
     var coreBegin = Math.round(TimeSpan.coreTime.begin * 2);
     var coreEnd = Math.round(TimeSpan.coreTime.end * 2);
     var fragment = $(document.createDocumentFragment());
-    for (var i = Math.round(TimeSpan.scheduleTime.begin * 2), end = Math.round(TimeSpan.scheduleTime.end * 2); i < end; i++) {
+    for (var i = 0, end = 24 * 2; i < end; i++) {
         var inCoreTime = (coreBegin <= i) && (i < coreEnd);
 
         var cell = $("<div />", {
@@ -85,7 +85,7 @@ var initTable = function () {
 
     taskGrid.append(fragment);
 
-    taskGridHeight = Math.round($(".grid-cell:first").outerHeight());
+    taskGridHeight = Math.round($("#table-content .grid-cell:first").outerHeight());
     taskGridHeightTotal = Math.round(taskGrid.height());
 
     taskGrid.selectable({
@@ -105,7 +105,7 @@ var addTask = function () {
     if (selectedCells.length <= 0)
         return;
 
-    var timeBegin = TimeSpan.scheduleTime.begin + (selectedCells.first().top() / taskGridHeight / 2.0);
+    var timeBegin = (selectedCells.first().top() / taskGridHeight / 2.0);
     var timeEnd = timeBegin + selectedCells.length / 2.0;
 
     taskElementContainer.saveState();

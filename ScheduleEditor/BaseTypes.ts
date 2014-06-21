@@ -5,10 +5,6 @@ declare var coreTimeSpan: number[];
 declare var taskTypeTable: string[];
 
 class TimeSpan {
-    public static scheduleTime = new TimeSpan(
-        Math.min(scheduleTimeSpan[0], scheduleTimeSpan[1]),
-        Math.max(scheduleTimeSpan[0], scheduleTimeSpan[1])
-        );
     public static coreTime = new TimeSpan(
         Math.min(coreTimeSpan[0], coreTimeSpan[1]),
         Math.max(coreTimeSpan[0], coreTimeSpan[1])

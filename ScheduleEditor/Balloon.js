@@ -67,11 +67,8 @@ var Balloon = (function () {
             }).appendTo(_this.typeBox);
         });
 
-        // 時間を選択するコンボボックスを作る
-        var timeBegin = Math.round(TimeSpan.scheduleTime.begin * 2);
-        var timeEnd = Math.round(TimeSpan.scheduleTime.end * 2);
-        for (var i = 0, end = Math.round(TimeSpan.scheduleTime.span * 2.0); i <= end; i++) {
-            var currTime = TimeSpan.scheduleTime.begin + (i / 2.0);
+        for (var i = 0, end = 24 * 2; i <= end; i++) {
+            var currTime = (i / 2.0);
 
             var option = $("<option>", {
                 "text": TimeSpan.timeToString(currTime),
@@ -155,7 +152,7 @@ var Balloon = (function () {
         this.timeEndBox.val(String(timeEnd));
 
         // 時間修正前の開始時間・終了時間
-        var newTop = 2.0 * taskGridHeight * (timeBegin - TimeSpan.scheduleTime.begin);
+        var newTop = 2.0 * taskGridHeight * timeBegin;
         var newHeight = 2.0 * taskGridHeight * (timeEnd - timeBegin);
         var element = this.activeTaskElement;
 

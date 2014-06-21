@@ -10,7 +10,6 @@
   <link rel="stylesheet" href="app.css" type="text/css" />
 
   <script>
-    const scheduleTimeSpan = [8, 20]
     const coreTimeSpan = [9.5, 16.5];
     const taskTypeTable = ["研究系", "勉強系", "その他", "実働外"];
     const taskAutoComplete = [
@@ -85,7 +84,6 @@
             <div id="table-header">
               <div class="grid-cell">
                 <div class="task-cell">予定</div>
-                <!--<div class="half-hour-cell"></div>-->
                 <div class="task-cell">実施</div>
               </div>
             </div>
@@ -126,10 +124,10 @@
                   </div>
                   <div class="clearfix">
                     <div class="col-xs-6">
-                      <select id="balloon-time-begin" name="time-begin" class="form-control"></select>
+                      <select id="balloon-time-begin" name="time-begin" class="balloon-time-option form-control"></select>
                     </div>
                     <div class="col-xs-6">
-                      <select id="balloon-time-end" name="time-end" class="form-control"></select>
+                      <select id="balloon-time-end" name="time-end" class="balloon-time-option form-control"></select>
                     </div>
                   </div>
                 </div>

@@ -2,6 +2,7 @@
 @border-width-bold: 2px;
 
 @hour-area-width: 30px;
+@task-grid-header-height: 30px;
 @task-grid-height: 30px;
 
 @task-width: 300px;
@@ -37,7 +38,6 @@ body {
     position: relative;
     display: inline-block;
     box-sizing: border-box;
-
     .default-border();
     border-width: @border-width-bold;
 
@@ -45,17 +45,7 @@ body {
       height: 300px;
       overflow-x: hidden;
       overflow-y: scroll;
-
       position: relative;
-    }
-
-    #table-header {
-      .grid-cell{
-        width: 100% !important;
-        .task-cell{
-          width: 50% !important;
-        }
-      }
     }
 
     #task-grid, #table-header {
@@ -119,16 +109,21 @@ body {
 
     #table-header {
       .grid-cell {
+        width: 100%;
+        height: @task-grid-header-height;
+
         .default-border();
         border-width: 0px 0px @border-width-bold 0px;
 
-        .half-hour-cell, .task-cell {
+        .task-cell {
+          width: 50%;
+          height: 100%;
           background-color: hsl(60, 60%, 87%);
           font-weight: bold;
           text-align: center;
           font-size: 110%;
-          line-height: @task-grid-height;
-          border-width: 0px 0px 0px 0px;
+          line-height: @task-grid-header-height;
+          border-width: 0px;
         }
       }
     }
@@ -249,6 +244,16 @@ body {
           position: absolute;
           right: 0px;
           bottom: 0px;
+        }
+      }
+
+      .balloon-time-option{
+        .coretime {
+          background-color: hsl(160, 30%, 92%);
+        }
+
+        .flextime {
+          background-color: #FFFFFF;
         }
       }
 

@@ -48,7 +48,6 @@ var TimeSpan = (function () {
     TimeSpan.fromJSONObject = function (obj) {
         return new TimeSpan(obj._begin, obj._end);
     };
-    TimeSpan.scheduleTime = new TimeSpan(Math.min(scheduleTimeSpan[0], scheduleTimeSpan[1]), Math.max(scheduleTimeSpan[0], scheduleTimeSpan[1]));
     TimeSpan.coreTime = new TimeSpan(Math.min(coreTimeSpan[0], coreTimeSpan[1]), Math.max(coreTimeSpan[0], coreTimeSpan[1]));
     return TimeSpan;
 })();

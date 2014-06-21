@@ -66,7 +66,7 @@ class TaskElement {
     public set timeSpan(value: TimeSpan) {
         this._timeSpan = value;
 
-        this.top = taskGridHeight * (value.begin - TimeSpan.scheduleTime.begin) * 2;
+        this.top = taskGridHeight * value.begin * 2;
         this.height = taskGridHeight * (value.span) * 2;
 
         this.timeBeginLabel.text(value.beginString);
