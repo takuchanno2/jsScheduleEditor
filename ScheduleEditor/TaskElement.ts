@@ -146,39 +146,6 @@ class TaskElement {
         this.jQueryElement.height(value);
     }
 
-    // 上で交差してる: "upside"
-    // 下で交差してる: "downside"
-    // 含んでいる: "outside"
-    // 含まれている: "inside"
-    // 関係なし: "unrelated"
-    public getGeometricRelation(counterpart: TaskElement): GeometricRelation {
-        if (this.timeSpan.begin == counterpart.timeSpan.begin) {
-            if (this.timeSpan.end < counterpart.timeSpan.end) {
-                return GeometricRelation.inside;
-            } else if (this.timeSpan.end > counterpart.timeSpan.end) {
-                return GeometricRelation.outside;
-            } else {
-                return GeometricRelation.equal;
-            }
-        } else if (this.timeSpan.begin > counterpart.timeSpan.begin) {
-            if (this.timeSpan.end <= counterpart.timeSpan.end) {
-                return GeometricRelation.inside;
-            } else if (this.timeSpan.begin < counterpart.timeSpan.end) {
-                return GeometricRelation.upside;
-            } else {
-                return GeometricRelation.unrelated;
-            }
-        } else {
-            if (this.timeSpan.end >= counterpart.timeSpan.end) {
-                return GeometricRelation.outside;
-            } else if (this.timeSpan.end > counterpart.timeSpan.begin) {
-                return GeometricRelation.downside;
-            } else {
-                return GeometricRelation.unrelated;
-            }
-        }
-    }
-
     //　jQueryの要素にイベントを登録する
     public registerDefaultEvents() {
         this.jQueryElement.mousedown((ev) => this.onMousePressed(this, ev));
@@ -196,6 +163,7 @@ class TaskElement {
             "start": startDragEvent,
             "stop": stopEditingEvent,
             "drag": editTaskEvent,
+            "scroll": true,
         }));
 
         this.jQueryElement.resizable($.extend(commonOption, {
@@ -209,8 +177,7 @@ class TaskElement {
     }
 
     public clone(): TaskElement {
-        var element = new TaskElement(this.timeSpan, this.jQueryElement.clone());
-        return element;
+        return new TaskElement(this.timeSpan, this.jQueryElement.clone());
     }
 
     public toTask(): Task {

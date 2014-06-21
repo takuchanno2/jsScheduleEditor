@@ -184,39 +184,6 @@ var TaskElement = (function () {
     });
 
 
-    // 上で交差してる: "upside"
-    // 下で交差してる: "downside"
-    // 含んでいる: "outside"
-    // 含まれている: "inside"
-    // 関係なし: "unrelated"
-    TaskElement.prototype.getGeometricRelation = function (counterpart) {
-        if (this.timeSpan.begin == counterpart.timeSpan.begin) {
-            if (this.timeSpan.end < counterpart.timeSpan.end) {
-                return 4 /* inside */;
-            } else if (this.timeSpan.end > counterpart.timeSpan.end) {
-                return 5 /* outside */;
-            } else {
-                return 1 /* equal */;
-            }
-        } else if (this.timeSpan.begin > counterpart.timeSpan.begin) {
-            if (this.timeSpan.end <= counterpart.timeSpan.end) {
-                return 4 /* inside */;
-            } else if (this.timeSpan.begin < counterpart.timeSpan.end) {
-                return 2 /* upside */;
-            } else {
-                return 0 /* unrelated */;
-            }
-        } else {
-            if (this.timeSpan.end >= counterpart.timeSpan.end) {
-                return 5 /* outside */;
-            } else if (this.timeSpan.end > counterpart.timeSpan.begin) {
-                return 3 /* downside */;
-            } else {
-                return 0 /* unrelated */;
-            }
-        }
-    };
-
     //　jQueryの要素にイベントを登録する
     TaskElement.prototype.registerDefaultEvents = function () {
         var _this = this;
@@ -240,7 +207,8 @@ var TaskElement = (function () {
         this.jQueryElement.draggable($.extend(commonOption, {
             "start": startDragEvent,
             "stop": stopEditingEvent,
-            "drag": editTaskEvent
+            "drag": editTaskEvent,
+            "scroll": true
         }));
 
         this.jQueryElement.resizable($.extend(commonOption, {
@@ -254,8 +222,7 @@ var TaskElement = (function () {
     };
 
     TaskElement.prototype.clone = function () {
-        var element = new TaskElement(this.timeSpan, this.jQueryElement.clone());
-        return element;
+        return new TaskElement(this.timeSpan, this.jQueryElement.clone());
     };
 
     TaskElement.prototype.toTask = function () {

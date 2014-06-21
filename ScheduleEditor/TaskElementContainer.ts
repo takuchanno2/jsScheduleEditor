@@ -7,7 +7,6 @@
 
 "use strict";
 
-
 class TaskElementContainer {
     // 早い時間で始まるタスクが先に来るように、常にソートされている
     private elements: TaskElement[] = [];
@@ -25,38 +24,72 @@ class TaskElementContainer {
 
     // やっぱaddAll的なメソッド追加する
     public add(element: TaskElement, active = true) {
-        element.onMousePressed = this.onElementMousePressed;
-        element.onClicked = this.onElementClicked;
-        element.onCloseButtonClicked = this.onElementCloseButtonClicked;
+        this.registerElementEvents(element);
 
+        // 前後の要素との時間調整
         if ($.isEmptyObject(this.elements)) {
             this.elements.push(element);
         } else {
-            var i = 0;
+            var i: number; // ループカウンタ兼、新しく要素を挿入する場所
+            var succeedingElement: TaskElement = null;
 
-            while (i < this.elements.length && element.timeSpan.begin > this.elements[i].timeSpan.end) i++;
+            // 最初は、新しく追加する要素よりも開始時間が早いタスクについて、被りの解消をする
+            for (i = 0; i < this.elements.length && this.elements[i].timeSpan.end < element.timeSpan.begin; i++);
             if (i < this.elements.length) {
                 var overlapTop = this.elements[i];
-                if (element.timeSpan.begin > overlapTop.timeSpan.begin) {
-                    // この要素の下の部分と新しい要素の上部分が被っている
-                    // →この要素の高さを縮める
+                if (overlapTop.timeSpan.begin < element.timeSpan.begin) {
+                    // もし被っている要素が新しく追加する要素を完全に含むような時間設定だったら、
+                    // 新要素の下に、新要素の終了時間～被り要素の元々の終了時間を埋めるタスクを新規作成
+                    if (overlapTop.timeSpan.end > element.timeSpan.end) {
+                        succeedingElement = element.clone();
+                        succeedingElement.timeSpan = new TimeSpan(element.timeSpan.end, overlapTop.timeSpan.end);
+                        this.registerElementEvents(succeedingElement);
+                    }
+
+                    // 被っている要素の終了時間を早くする
                     overlapTop.timeSpan = new TimeSpan(overlapTop.timeSpan.begin, element.timeSpan.begin);
+                    i++;
                 }
             }
 
             // この位置に新しい要素を追加
-            this.elements.splice(i+1, 0, element);
+            this.elements.splice(i++, 0, element);
+            if (succeedingElement) {
+                this.elements.splice(i++, 0, succeedingElement);
+            }
+
+            // 続いて、新しく追加する要素よりも開始時間が遅いタスクについて、被りの解消をする
+            for (; i < this.elements.length && this.elements[i].timeSpan.begin < element.timeSpan.end; i++) {
+                var overlapBottom = this.elements[i];
+
+                if (overlapBottom.timeSpan.end <= element.timeSpan.end) {
+                    // 新しい要素が確保する時間の方が長い (既にある要素が新しい要素に完全に内包されている)
+                    // 場合は、内包されている要素を削除
+                    this.elements.splice(i, 1);
+                    overlapBottom.jQueryElement.remove();
+                    i--;
+                } else {
+                    // 被っている要素の開始時間を遅くする
+                    overlapBottom.timeSpan = new TimeSpan(element.timeSpan.end, overlapBottom.timeSpan.end);
+                }
+            }
         }
-
-        this.jQueryContainer.append(element.jQueryElement);
-
-        element.registerDefaultEvents();
 
         if (active) {
             this.activeElement = element;
         }
     }
-    
+
+    private registerElementEvents(element: TaskElement) {
+        // Containerの方で受け取るイベントの登録
+        element.onMousePressed = this.onElementMousePressed;
+        element.onClicked = this.onElementClicked;
+        element.onCloseButtonClicked = this.onElementCloseButtonClicked;
+
+        this.jQueryContainer.append(element.jQueryElement);
+        element.registerDefaultEvents();
+    }
+
     public remove(element: TaskElement) {
         if (this.activeElement === element) {
             this.activeElement = null;

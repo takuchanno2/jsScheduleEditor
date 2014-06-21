@@ -115,42 +115,6 @@ var addTask = function () {
 
     selectedCells.removeClass("ui-selected");
 
-    /*
-    $(".task").each(function () {
-    var curr: TaskElement = $(this).taskElement();
-    switch (newTask.getGeometricRelation(curr)) {
-    case GeometricRelation.equal:
-    case GeometricRelation.outside:
-    taskElementContainer.remove(curr);
-    break;
-    
-    case GeometricRelation.upside:
-    curr.timeSpan = new TimeSpan(curr.timeSpan.begin, newTask.timeSpan.begin);
-    break;
-    
-    case GeometricRelation.downside:
-    curr.timeSpan = new TimeSpan(newTask.timeSpan.end, curr.timeSpan.end);
-    break;
-    
-    case GeometricRelation.inside:
-    // 同、下に居るタスク
-    if (Math.round((curr.timeSpan.end - newTask.timeSpan.end) * 2.0) > 0) {
-    var lowerTask = curr.clone();
-    lowerTask.timeSpan = new TimeSpan(newTask.timeSpan.end, curr.timeSpan.end);
-    taskElementContainer.add(lowerTask);
-    }
-    
-    // 新しいタスクで分断された時に上に居るタスク
-    if (Math.round((newTask.timeSpan.begin - curr.timeSpan.begin) * 2.0) > 0) {
-    curr.timeSpan = new TimeSpan(curr.timeSpan.begin, newTask.timeSpan.begin);
-    } else {
-    taskElementContainer.remove(curr);
-    }
-    
-    break;
-    }
-    });
-    */
     taskElementContainer.add(newTask, true);
     taskElementContainer.balloon.show(newTask);
 };

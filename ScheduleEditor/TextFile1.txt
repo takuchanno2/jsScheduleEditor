@@ -117,6 +117,11 @@
 // tableレイアウトに戻そうかどうしようか
 // スケジュールの分割数(15分おき、30分おき)
 
-// ドラッグ(draggable)しながらスクロールして要素が外に行くと消える
+// ドラッグ(draggable)しながらスクロールして要素が外に行くと消えるときがある
+// ドラッグが終わったときに、task-listのDOM要素の中にtaskElementが存在していない場合、こっち側で入れてあげて、top,height設定してshowすべきかも
 
 // Javascript標準のDateTimeを使うことにする
+
+// TaskElement作るときに最初にTimeSpan渡す必要なくない
+
+// tableもクラスに分けるか……
