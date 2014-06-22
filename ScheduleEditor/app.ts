@@ -58,9 +58,9 @@ $(() => {
         taskElementContainer.activeElement = null;
     });
 
-    JSON.parse($("#initial-schedule").html()).forEach((v: any) => {
-        initialTasks.push(Task.fromJSONObject(v));
-    });
+    //JSON.parse($("#initial-schedule").html()).forEach((v: any) => {
+    //    initialTasks.push(Task.fromJSONObject(v));
+    //});
 
     
     taskElementContainer = new TaskElementContainer($("#task-list"));
@@ -74,10 +74,10 @@ var initTable = function () {
     var taskGrid = $("#task-grid");
     var nbsp = String.fromCharCode(160);
 
-    var coreBegin = Math.round(TimeSpan.coreTime.begin * 2);
-    var coreEnd = Math.round(TimeSpan.coreTime.end * 2);
+    var coreBegin = TimeSpan.coretime.begin.totalMinutes / TimeSpan.tableCellMinutes;
+    var coreEnd = TimeSpan.coretime.end.totalMinutes / TimeSpan.tableCellMinutes;
     var fragment = $(document.createDocumentFragment());
-    for (var i = 0, end = 24*2; i < end; i++) {
+    for (var i = 0, end = 24 * 60 / TimeSpan.tableCellMinutes; i < end; i++) {
         var inCoreTime = (coreBegin <= i) && (i < coreEnd);
 
         var cell = $("<div />", {

@@ -44,10 +44,9 @@ $(function () {
         taskElementContainer.activeElement = null;
     });
 
-    JSON.parse($("#initial-schedule").html()).forEach(function (v) {
-        initialTasks.push(Task.fromJSONObject(v));
-    });
-
+    //JSON.parse($("#initial-schedule").html()).forEach((v: any) => {
+    //    initialTasks.push(Task.fromJSONObject(v));
+    //});
     taskElementContainer = new TaskElementContainer($("#task-list"));
 
     initTable();

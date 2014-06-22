@@ -115,7 +115,7 @@
 
 // task-tableのscrollTopは、coretimeの頭に
 // tableレイアウトに戻そうかどうしようか
-// スケジュールの分割数(15分おき、30分おき)
+// スケジュールの分割数(15分おき、30分おき)... schedule-fineness
 
 // ドラッグ(draggable)しながらスクロールして要素が外に行くと消えるときがある
 // ドラッグが終わったときに、task-listのDOM要素の中にtaskElementが存在していない場合、こっち側で入れてあげて、top,height設定してshowすべきかも
@@ -127,3 +127,6 @@
 // tableもクラスに分けるか……
 
 // スクリプトに渡すデータは、scriptタグに独立して書く
+
+// coretime変数,schedulefineness変数を入れておくクラスはどうしよう
+// configをJSONパーズしたデータは一か所にあった方がいい

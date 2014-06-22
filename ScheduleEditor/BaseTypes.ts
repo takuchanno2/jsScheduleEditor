@@ -1,20 +1,54 @@
 ﻿"use strict";
 
-class TimeSpan {
-    public static coreTime: TimeSpan = null;
-
-    public constructor(private _begin: number, private _end: number) { }
-
-    public get begin(): number { return this._begin; }
-    public get end(): number { return this._end; }
-    public get span(): number { return this._end - this._begin; }
-
-    public get beginString(): string { return TimeSpan.timeToString(this.begin); }
-    public get endString(): string { return TimeSpan.timeToString(this.end); }
-
-    public static timeToString(time: number): string {
-        return String(Math.floor(time)) + ":" + (((time * 2) % 2 == 0) ? "00" : "30");
+class Time {
+    public constructor(private _hours: number, private _minutes: number) {
+        if (0 < _hours || 0 >= 24 || _minutes < 0 || _minutes >= 60) throw new Error("Invalid Argument");
     }
+
+    public get hours(): number { return this._hours; }
+    public get minutes(): number { return this._minutes; }
+    public get totalMinutes(): number { return this._hours * 60 + this._minutes; }
+
+    public static subtract(a: Time, b: Time): Time {
+        var hours = a._hours - b._hours;
+        var minutes = a._minutes - b._minutes;
+        if (minutes < 0) {
+            hours--;
+            minutes = 60 - minutes;
+        } else if (minutes >= 60) {
+            hours++;
+            minutes = minutes - 60;
+        }
+
+        return new Time(hours, minutes);
+    }
+
+    public toString(): string { return String(this._hours) + ":" + String(100 + this._minutes).slice(1); }
+    public static fromString(time: string): Time { 
+        var hm = time.split(":");
+        return new Time(Number(hm[0]), Number(hm[1]));
+    }
+
+    public toDecimalHoursString(): string {
+        return String(this._hours) + "." + String(this._minutes / 60.0);
+    }
+
+    public static fromJSONObject(obj: any): Time {
+        return new Time(obj._hours, obj._minutes);
+    }
+}
+
+class TimeSpan {
+    public static coretime: TimeSpan = null;
+    public static tableCellMinutes: number = 60;
+
+    public constructor(private _begin: Time, private _end: Time) {
+        if (_end.totalMinutes - _begin.totalMinutes < TimeSpan.tableCellMinutes) throw new Error("Invalid Argument");
+    }
+
+    public get begin(): Time { return this._begin; }
+    public get end(): Time { return this._end; }
+    public get span(): Time { return Time.subtract(this._end, this._begin); }
 
     public static fromJSONObject(obj: any): TimeSpan {
         return new TimeSpan(obj._begin, obj._end);
@@ -41,6 +75,13 @@ class Task {
 }
 
 $(() => {
-    TimeSpan.coreTime = TimeSpan.fromJSONObject(JSON.parse($("#coretime-span").html()));
+    var config = JSON.parse($("#config").html());
+
+    TimeSpan.coretime = TimeSpan.fromJSONObject(config.coretimeSpan);
+    TimeSpan.tableCellMinutes = config.tableCellMinutes;
+    if (60 % TimeSpan.tableCellMinutes != 0) {
+        TimeSpan.tableCellMinutes = 60 * Math.floor(60 / TimeSpan.tableCellMinutes);
+    }
+
     Task.taskTypes = JSON.parse($("#task-types").html());
 });

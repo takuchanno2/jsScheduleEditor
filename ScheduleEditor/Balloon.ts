@@ -5,7 +5,6 @@
 
 "use strict";
 
-
 class Balloon {
     private jQueryElement: JQuery;
     private activeTaskElement: TaskElement;

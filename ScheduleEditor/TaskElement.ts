@@ -10,6 +10,8 @@ enum GeometricRelation {
 }
 
 class TaskElement {
+    
+
     private static jQueryElementTemplate: JQuery;
 
     private _taskType: number;
@@ -66,12 +68,24 @@ class TaskElement {
     public set timeSpan(value: TimeSpan) {
         this._timeSpan = value;
 
-        this.top = taskGridHeight * value.begin * 2;
-        this.height = taskGridHeight * (value.span) * 2;
+        this.top = taskGridHeight * this.top2;
+        this.height = taskGridHeight * this.height2;
 
-        this.timeBeginLabel.text(value.beginString);
-        this.timeEndLabel.text(value.endString);
-        this.timeSpanLabel.text(value.span.toFixed(1));
+        this.timeBeginLabel.text(value.begin.toString());
+        this.timeEndLabel.text(value.end.toString());
+        this.timeSpanLabel.text(value.span.toDecimalHoursString());
+    }
+
+    public get top2(): number {
+        return Math.floor(this._timeSpan.begin.totalMinutes / TimeSpan.tableCellMinutes);
+    }
+
+    public get bottom2(): number {
+        return Math.floor(this._timeSpan.end.totalMinutes / TimeSpan.tableCellMinutes);
+    }
+
+    public get height2(): number {
+        return Math.floor(this._timeSpan.span.totalMinutes / TaskElement.tableCellMinutes);
     }
 
     public applyPositionToTimeSpan() {
