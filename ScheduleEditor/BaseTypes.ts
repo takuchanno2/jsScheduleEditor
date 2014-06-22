@@ -1,60 +1,74 @@
 ﻿"use strict";
 
 class Time {
-    public constructor(private _hours: number, private _minutes: number) {
-        if (0 < _hours || 0 >= 24 || _minutes < 0 || _minutes >= 60) throw new Error("Invalid Argument");
-    }
+    public static cellsPerHour: number = 2;
 
-    public get hours(): number { return this._hours; }
-    public get minutes(): number { return this._minutes; }
-    public get totalMinutes(): number { return this._hours * 60 + this._minutes; }
+    private _totalMinutes: number;
 
-    public static subtract(a: Time, b: Time): Time {
-        var hours = a._hours - b._hours;
-        var minutes = a._minutes - b._minutes;
-        if (minutes < 0) {
-            hours--;
-            minutes = 60 - minutes;
-        } else if (minutes >= 60) {
-            hours++;
-            minutes = minutes - 60;
+    public constructor(totalMinutes: number);
+    public constructor(hours: number, minutes: number);
+    public constructor(x: number, y?: number) {
+        if (y === undefined) {
+            // constructor(totalMinutes: number)
+            this._totalMinutes = x;
+        } else {
+            // constructor(hours: number, minutes: number)
+            this._totalMinutes = Time.getTotalMinutes(x, y);
         }
 
-        return new Time(hours, minutes);
+        if (this._totalMinutes < 0 || this._totalMinutes >= 24 * 60) {
+            throw new Error("Invalid constructor parameters");
+        }
     }
 
-    public toString(): string { return String(this._hours) + ":" + String(100 + this._minutes).slice(1); }
+    public get hours(): number { return Math.floor(this._totalMinutes / 60); }
+    public get minutes(): number { return this._totalMinutes % 60; }
+    public get totalMinutes(): number { return this._totalMinutes; }
+    public get deciamlHours(): number { return this.hours + (this.minutes / 60.0); }
+
+    public static subtract(x: Time, y: Time) {
+        return new Time(x._totalMinutes - y._totalMinutes);
+    }
+
+    public toString(): string { return String(this.hours) + ":" + String(100 + this.minutes).slice(1); }
     public static fromString(time: string): Time { 
         var hm = time.split(":");
         return new Time(Number(hm[0]), Number(hm[1]));
     }
 
-    public toDecimalHoursString(): string {
-        return String(this._hours) + "." + String(this._minutes / 60.0);
-    }
-
     public static fromJSONObject(obj: any): Time {
-        return new Time(obj._hours, obj._minutes);
+        return new Time(obj._totalMinutes);
     }
 
-    public toTableX(): number {
-        return Math.floor(this.totalMinutes * TimeSpan.cellsPerHour / 60);
+    public get tableIndex(): number {
+        return Time.getTableIndex(this._totalMinutes);
     }
 
-    public static fromTableX(tx: number): Time {
-        var totalMinutes = tx * 60 / TimeSpan.cellsPerHour;
-        var hours = Math.floor(totalMinutes / 60);
-        var minutes = totalMinutes % 60;
-        return new Time(hours, minutes);
+    public static fromTableIndex(tx: number): Time {
+        return new Time(tx * 60 / Time.cellsPerHour); 
+    }
+
+    public static getTotalMinutes(hours: number, minutes: number) {
+        return (hours * 60 + minutes);
+    }
+
+    public static getTableIndex(totalMinutes: number): number;
+    public static getTableIndex(hours: number, minutes: number): number;
+    public static getTableIndex(x: number, y?: number): number {
+        if (y === undefined) {
+            return Math.floor(x * Time.cellsPerHour / 60);
+        } else {
+            return Time.getTableIndex(x, y);
+        }
+        
     }
 }
 
 class TimeSpan {
     public static coretime: TimeSpan = null;
-    public static cellsPerHour: number = 2;
 
     public constructor(private _begin: Time, private _end: Time) {
-        if (_end.totalMinutes - _begin.totalMinutes < (60 / TimeSpan.cellsPerHour)) throw new Error("Invalid Argument");
+        if (_end.totalMinutes - _begin.totalMinutes < (60 / Time.cellsPerHour)) throw new Error("Invalid Argument");
     }
 
     public get begin(): Time { return this._begin; }
@@ -89,7 +103,7 @@ $(() => {
     var config = JSON.parse($("#config").html());
 
     TimeSpan.coretime = TimeSpan.fromJSONObject(config.coretimeSpan);
-    TimeSpan.cellsPerHour = config.cellsPerHour;
+    Time.cellsPerHour = config.cellsPerHour;
 
     Task.taskTypes = JSON.parse($("#task-types").html());
 });

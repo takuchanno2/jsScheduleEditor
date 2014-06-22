@@ -1,73 +1,87 @@
 ﻿"use strict";
 var Time = (function () {
-    function Time(_hours, _minutes) {
-        this._hours = _hours;
-        this._minutes = _minutes;
-        if (0 < _hours || 0 >= 24 || _minutes < 0 || _minutes >= 60)
-            throw new Error("Invalid Argument");
+    function Time(x, y) {
+        if (y === undefined) {
+            // constructor(totalMinutes: number)
+            this._totalMinutes = x;
+        } else {
+            // constructor(hours: number, minutes: number)
+            this._totalMinutes = Time.getTotalMinutes(x, y);
+        }
+
+        if (this._totalMinutes < 0 || this._totalMinutes >= 24 * 60) {
+            throw new Error("Invalid constructor parameters");
+        }
     }
     Object.defineProperty(Time.prototype, "hours", {
         get: function () {
-            return this._hours;
+            return Math.floor(this._totalMinutes / 60);
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Time.prototype, "minutes", {
         get: function () {
-            return this._minutes;
+            return this._totalMinutes % 60;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Time.prototype, "totalMinutes", {
         get: function () {
-            return this._hours * 60 + this._minutes;
+            return this._totalMinutes;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Time.prototype, "deciamlHours", {
+        get: function () {
+            return this.hours + (this.minutes / 60.0);
         },
         enumerable: true,
         configurable: true
     });
 
-    Time.subtract = function (a, b) {
-        var hours = a._hours - b._hours;
-        var minutes = a._minutes - b._minutes;
-        if (minutes < 0) {
-            hours--;
-            minutes = 60 - minutes;
-        } else if (minutes >= 60) {
-            hours++;
-            minutes = minutes - 60;
-        }
-
-        return new Time(hours, minutes);
+    Time.subtract = function (x, y) {
+        return new Time(x._totalMinutes - y._totalMinutes);
     };
 
     Time.prototype.toString = function () {
-        return String(this._hours) + ":" + String(100 + this._minutes).slice(1);
+        return String(this.hours) + ":" + String(100 + this.minutes).slice(1);
     };
     Time.fromString = function (time) {
         var hm = time.split(":");
         return new Time(Number(hm[0]), Number(hm[1]));
     };
 
-    Time.prototype.toDecimalHoursString = function () {
-        return String(this._hours) + "." + String(this._minutes / 60.0);
-    };
-
     Time.fromJSONObject = function (obj) {
-        return new Time(obj._hours, obj._minutes);
+        return new Time(obj._totalMinutes);
     };
 
-    Time.prototype.toTableX = function () {
-        return Math.floor(this.totalMinutes * TimeSpan.cellsPerHour / 60);
+    Object.defineProperty(Time.prototype, "tableIndex", {
+        get: function () {
+            return Time.getTableIndex(this._totalMinutes);
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Time.fromTableIndex = function (tx) {
+        return new Time(tx * 60 / Time.cellsPerHour);
     };
 
-    Time.fromTableX = function (tx) {
-        var totalMinutes = tx * 60 / TimeSpan.cellsPerHour;
-        var hours = Math.floor(totalMinutes / 60);
-        var minutes = totalMinutes % 60;
-        return new Time(hours, minutes);
+    Time.getTotalMinutes = function (hours, minutes) {
+        return (hours * 60 + minutes);
     };
+
+    Time.getTableIndex = function (x, y) {
+        if (y === undefined) {
+            return Math.floor(x * Time.cellsPerHour / 60);
+        } else {
+            return Time.getTableIndex(x, y);
+        }
+    };
+    Time.cellsPerHour = 2;
     return Time;
 })();
 
@@ -75,7 +89,7 @@ var TimeSpan = (function () {
     function TimeSpan(_begin, _end) {
         this._begin = _begin;
         this._end = _end;
-        if (_end.totalMinutes - _begin.totalMinutes < (60 / TimeSpan.cellsPerHour))
+        if (_end.totalMinutes - _begin.totalMinutes < (60 / Time.cellsPerHour))
             throw new Error("Invalid Argument");
     }
     Object.defineProperty(TimeSpan.prototype, "begin", {
@@ -104,7 +118,6 @@ var TimeSpan = (function () {
         return new TimeSpan(obj._begin, obj._end);
     };
     TimeSpan.coretime = null;
-    TimeSpan.cellsPerHour = 2;
     return TimeSpan;
 })();
 
@@ -134,7 +147,7 @@ $(function () {
     var config = JSON.parse($("#config").html());
 
     TimeSpan.coretime = TimeSpan.fromJSONObject(config.coretimeSpan);
-    TimeSpan.cellsPerHour = config.cellsPerHour;
+    Time.cellsPerHour = config.cellsPerHour;
 
     Task.taskTypes = JSON.parse($("#task-types").html());
 });

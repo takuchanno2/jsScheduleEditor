@@ -76,15 +76,15 @@ class TaskElement {
     }
 
     public get top2(): number {
-        return Math.floor(this._timeSpan.begin.totalMinutes * TimeSpan.cellsPerHour / 60);
+        return Math.floor(this._timeSpan.begin.totalMinutes * Time.cellsPerHour / 60);
     }
 
     public get bottom2(): number {
-        return Math.floor(this._timeSpan.end.totalMinutes * TimeSpan.cellsPerHour / 60);
+        return Math.floor(this._timeSpan.end.totalMinutes * Time.cellsPerHour / 60);
     }
 
     public get height2(): number {
-        return Math.floor(this._timeSpan.span.totalMinutes * TimeSpan.cellsPerHour / 60);
+        return Math.floor(this._timeSpan.span.totalMinutes * Time.cellsPerHour / 60);
     }
 
     public applyPositionToTimeSpan() {
