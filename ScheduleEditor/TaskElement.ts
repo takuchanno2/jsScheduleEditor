@@ -10,8 +10,7 @@ enum GeometricRelation {
 }
 
 class TaskElement {
-    
-
+    public static minutesPerCell: number = 60; // 1セルあたり何分を示すか
     private static jQueryElementTemplate: JQuery;
 
     private _taskType: number;
@@ -216,5 +215,13 @@ class TaskElement {
 }
 
 $(function () {
+    var config = JSON.parse($("#config").html());
+
+    TimeSpan.coretime = TimeSpan.fromJSONObject(config.coretimeSpan);
+    TimeSpan.tableCellMinutes = config.tableCellMinutes;
+    if (60 % TimeSpan.tableCellMinutes != 0) {
+        throw new Error("minutesPerCell must be a number by which 60 is dividable.");
+    }
+
     TaskElement.prepareTemplate();
 });

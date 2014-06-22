@@ -268,10 +268,19 @@ var TaskElement = (function () {
         this.jQueryElementTemplate.find(".task-memo").empty();
         this.jQueryElementTemplate.remove();
     };
+    TaskElement.minutesPerCell = 60;
     return TaskElement;
 })();
 
 $(function () {
+    var config = JSON.parse($("#config").html());
+
+    TimeSpan.coretime = TimeSpan.fromJSONObject(config.coretimeSpan);
+    TimeSpan.tableCellMinutes = config.tableCellMinutes;
+    if (60 % TimeSpan.tableCellMinutes != 0) {
+        throw new Error("minutesPerCell must be a number by which 60 is dividable.");
+    }
+
     TaskElement.prepareTemplate();
 });
 //# sourceMappingURL=TaskElement.js.map
