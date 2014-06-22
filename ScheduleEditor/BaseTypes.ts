@@ -36,14 +36,25 @@ class Time {
     public static fromJSONObject(obj: any): Time {
         return new Time(obj._hours, obj._minutes);
     }
+
+    public toTableX(): number {
+        return Math.floor(this.totalMinutes * TimeSpan.cellsPerHour / 60);
+    }
+
+    public static fromTableX(tx: number): Time {
+        var totalMinutes = tx * 60 / TimeSpan.cellsPerHour;
+        var hours = Math.floor(totalMinutes / 60);
+        var minutes = totalMinutes % 60;
+        return new Time(hours, minutes);
+    }
 }
 
 class TimeSpan {
     public static coretime: TimeSpan = null;
-    public static tableCellMinutes: number = 60;
+    public static cellsPerHour: number = 2;
 
     public constructor(private _begin: Time, private _end: Time) {
-        if (_end.totalMinutes - _begin.totalMinutes < TimeSpan.tableCellMinutes) throw new Error("Invalid Argument");
+        if (_end.totalMinutes - _begin.totalMinutes < (60 / TimeSpan.cellsPerHour)) throw new Error("Invalid Argument");
     }
 
     public get begin(): Time { return this._begin; }
@@ -78,10 +89,7 @@ $(() => {
     var config = JSON.parse($("#config").html());
 
     TimeSpan.coretime = TimeSpan.fromJSONObject(config.coretimeSpan);
-    TimeSpan.tableCellMinutes = config.tableCellMinutes;
-    if (60 % TimeSpan.tableCellMinutes != 0) {
-        TimeSpan.tableCellMinutes = 60 * Math.floor(60 / TimeSpan.tableCellMinutes);
-    }
+    TimeSpan.cellsPerHour = config.cellsPerHour;
 
     Task.taskTypes = JSON.parse($("#task-types").html());
 });

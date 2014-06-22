@@ -128,5 +128,12 @@
 
 // スクリプトに渡すデータは、scriptタグに独立して書く
 
+// タスクの入れ替えが出来るように、bootstrapのbuttongroupでメニュー
+
 // coretime変数,schedulefineness変数を入れておくクラスはどうしよう
 // configをJSONパーズしたデータは一か所にあった方がいい
+
+// Time, TimeSpanは純粋に時間だけを管理する。テーブルの何行目というのを示す値は、TaskElementとTableだけが感知する
+// HTML的に、テーブルは縦方向で要素をまとめたい。(予定/時間/実施)
+
+// TaskElementContainerがcreateメソッドでTaskElement作るようにする

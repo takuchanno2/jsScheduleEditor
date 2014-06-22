@@ -57,6 +57,17 @@ var Time = (function () {
     Time.fromJSONObject = function (obj) {
         return new Time(obj._hours, obj._minutes);
     };
+
+    Time.prototype.toTableX = function () {
+        return Math.floor(this.totalMinutes * TimeSpan.cellsPerHour / 60);
+    };
+
+    Time.fromTableX = function (tx) {
+        var totalMinutes = tx * 60 / TimeSpan.cellsPerHour;
+        var hours = Math.floor(totalMinutes / 60);
+        var minutes = totalMinutes % 60;
+        return new Time(hours, minutes);
+    };
     return Time;
 })();
 
@@ -64,7 +75,7 @@ var TimeSpan = (function () {
     function TimeSpan(_begin, _end) {
         this._begin = _begin;
         this._end = _end;
-        if (_end.totalMinutes - _begin.totalMinutes < TimeSpan.tableCellMinutes)
+        if (_end.totalMinutes - _begin.totalMinutes < (60 / TimeSpan.cellsPerHour))
             throw new Error("Invalid Argument");
     }
     Object.defineProperty(TimeSpan.prototype, "begin", {
@@ -93,7 +104,7 @@ var TimeSpan = (function () {
         return new TimeSpan(obj._begin, obj._end);
     };
     TimeSpan.coretime = null;
-    TimeSpan.tableCellMinutes = 60;
+    TimeSpan.cellsPerHour = 2;
     return TimeSpan;
 })();
 
@@ -123,10 +134,7 @@ $(function () {
     var config = JSON.parse($("#config").html());
 
     TimeSpan.coretime = TimeSpan.fromJSONObject(config.coretimeSpan);
-    TimeSpan.tableCellMinutes = config.tableCellMinutes;
-    if (60 % TimeSpan.tableCellMinutes != 0) {
-        TimeSpan.tableCellMinutes = 60 * Math.floor(60 / TimeSpan.tableCellMinutes);
-    }
+    TimeSpan.cellsPerHour = config.cellsPerHour;
 
     Task.taskTypes = JSON.parse($("#task-types").html());
 });

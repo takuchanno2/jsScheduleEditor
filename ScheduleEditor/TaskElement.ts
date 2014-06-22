@@ -76,15 +76,15 @@ class TaskElement {
     }
 
     public get top2(): number {
-        return Math.floor(this._timeSpan.begin.totalMinutes / TimeSpan.tableCellMinutes);
+        return Math.floor(this._timeSpan.begin.totalMinutes * TimeSpan.cellsPerHour / 60);
     }
 
     public get bottom2(): number {
-        return Math.floor(this._timeSpan.end.totalMinutes / TimeSpan.tableCellMinutes);
+        return Math.floor(this._timeSpan.end.totalMinutes * TimeSpan.cellsPerHour / 60);
     }
 
     public get height2(): number {
-        return Math.floor(this._timeSpan.span.totalMinutes / TaskElement.tableCellMinutes);
+        return Math.floor(this._timeSpan.span.totalMinutes * TimeSpan.cellsPerHour / 60);
     }
 
     public applyPositionToTimeSpan() {
@@ -215,13 +215,5 @@ class TaskElement {
 }
 
 $(function () {
-    var config = JSON.parse($("#config").html());
-
-    TimeSpan.coretime = TimeSpan.fromJSONObject(config.coretimeSpan);
-    TimeSpan.tableCellMinutes = config.tableCellMinutes;
-    if (60 % TimeSpan.tableCellMinutes != 0) {
-        throw new Error("minutesPerCell must be a number by which 60 is dividable.");
-    }
-
     TaskElement.prepareTemplate();
 });

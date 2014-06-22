@@ -102,7 +102,7 @@ var TaskElement = (function () {
 
     Object.defineProperty(TaskElement.prototype, "top2", {
         get: function () {
-            return Math.floor(this._timeSpan.begin.totalMinutes / TimeSpan.tableCellMinutes);
+            return Math.floor(this._timeSpan.begin.totalMinutes * TimeSpan.cellsPerHour / 60);
         },
         enumerable: true,
         configurable: true
@@ -110,7 +110,7 @@ var TaskElement = (function () {
 
     Object.defineProperty(TaskElement.prototype, "bottom2", {
         get: function () {
-            return Math.floor(this._timeSpan.end.totalMinutes / TimeSpan.tableCellMinutes);
+            return Math.floor(this._timeSpan.end.totalMinutes * TimeSpan.cellsPerHour / 60);
         },
         enumerable: true,
         configurable: true
@@ -118,7 +118,7 @@ var TaskElement = (function () {
 
     Object.defineProperty(TaskElement.prototype, "height2", {
         get: function () {
-            return Math.floor(this._timeSpan.span.totalMinutes / TaskElement.tableCellMinutes);
+            return Math.floor(this._timeSpan.span.totalMinutes * TimeSpan.cellsPerHour / 60);
         },
         enumerable: true,
         configurable: true
@@ -273,14 +273,6 @@ var TaskElement = (function () {
 })();
 
 $(function () {
-    var config = JSON.parse($("#config").html());
-
-    TimeSpan.coretime = TimeSpan.fromJSONObject(config.coretimeSpan);
-    TimeSpan.tableCellMinutes = config.tableCellMinutes;
-    if (60 % TimeSpan.tableCellMinutes != 0) {
-        throw new Error("minutesPerCell must be a number by which 60 is dividable.");
-    }
-
     TaskElement.prepareTemplate();
 });
 //# sourceMappingURL=TaskElement.js.map
