@@ -94,7 +94,7 @@ var TaskElement = (function () {
 
             this.timeBeginLabel.text(value.begin.toString());
             this.timeEndLabel.text(value.end.toString());
-            this.timeSpanLabel.text(value.span.toDecimalHoursString());
+            this.timeSpanLabel.text(String(value.span.deciamlHours));
         },
         enumerable: true,
         configurable: true

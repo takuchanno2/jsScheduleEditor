@@ -58,28 +58,32 @@ var initTable = function () {
     var taskGrid = $("#task-grid");
     var nbsp = String.fromCharCode(160);
 
-    var coreBegin = TimeSpan.coretime.begin.totalMinutes / TimeSpan.tableCellMinutes;
-    var coreEnd = TimeSpan.coretime.end.totalMinutes / TimeSpan.tableCellMinutes;
     var fragment = $(document.createDocumentFragment());
-    for (var i = 0, end = 24 * 60 / TimeSpan.tableCellMinutes; i < end; i++) {
-        var inCoreTime = (coreBegin <= i) && (i < coreEnd);
+    for (var i = 0; i < 24; i++) {
+        for (var j = 0; j < 60; j += 60 / Time.cellsPerHour) {
+            var time = new Time(i, j);
+            var inCoreTime = TimeSpan.coretime.includes(time);
 
-        var cell = $("<div />", {
-            "class": "grid-cell"
-        }).appendTo(fragment);
+            var cell = $("<div />", {
+                "class": "grid-cell",
+                "data": {
+                    "time": time
+                }
+            }).appendTo(fragment);
 
-        $("<div />", {
-            "class": "task-cell" + (inCoreTime ? " core" : "")
-        }).appendTo(cell);
+            $("<div />", {
+                "class": "task-cell" + (inCoreTime ? " core" : "")
+            }).appendTo(cell);
 
-        $("<div />", {
-            "text": ((i % 2) ? nbsp : String(i / 2)),
-            "class": "half-hour-cell" + (inCoreTime ? " core" : "")
-        }).appendTo(cell);
+            $("<div />", {
+                "text": ((i % Time.cellsPerHour) ? nbsp : String(i / Time.cellsPerHour)),
+                "class": "half-hour-cell" + (inCoreTime ? " core" : "")
+            }).appendTo(cell);
 
-        $("<div />", {
-            "class": "task-cell" + (inCoreTime ? " core" : "")
-        }).appendTo(cell);
+            $("<div />", {
+                "class": "task-cell" + (inCoreTime ? " core" : "")
+            }).appendTo(cell);
+        }
     }
 
     taskGrid.append(fragment);
@@ -104,12 +108,11 @@ var addTask = function () {
     if (selectedCells.length <= 0)
         return;
 
-    var timeBegin = (selectedCells.first().top() / taskGridHeight / 2.0);
-    var timeEnd = timeBegin + selectedCells.length / 2.0;
+    var timeBegin = selectedCells.first().data("time");
+    var timeEnd = timeBegin.putForward(1);
 
     taskElementContainer.saveState();
 
-    // var newTask = createNewTask(top, height, taskTemplate);
     var newTask = new TaskElement(new TimeSpan(timeBegin, timeEnd));
 
     selectedCells.removeClass("ui-selected");

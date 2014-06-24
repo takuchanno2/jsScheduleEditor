@@ -72,7 +72,7 @@ class TaskElement {
 
         this.timeBeginLabel.text(value.begin.toString());
         this.timeEndLabel.text(value.end.toString());
-        this.timeSpanLabel.text(value.span.toDecimalHoursString());
+        this.timeSpanLabel.text(String(value.span.deciamlHours));
     }
 
     public get top2(): number {

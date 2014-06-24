@@ -67,19 +67,25 @@ var Balloon = (function () {
             }).appendTo(_this.typeBox);
         });
 
-        for (var i = 0, end = 24 * 2; i <= end; i++) {
-            var currTime = (i / 2.0);
+        for (var i = 0; i < 24; i++) {
+            for (var j = 0; j < 60; j += 60 / Time.cellsPerHour) {
+                var currTime = new Time(i, j);
 
-            var option = $("<option>", {
-                "text": TimeSpan.timeToString(currTime),
-                "value": String(currTime)
-            });
+                var option = $("<option>", {
+                    "text": currTime.toString(),
+                    "value": currTime.toString(),
+                    "class": "balloon-time-option " + (TimeSpan.coretime.includes(currTime) ? "coretime" : "flextime"),
+                    "data": {
+                        "time": currTime
+                    }
+                });
 
-            if (i < end) {
-                option.clone().appendTo(this.timeBeginBox);
-            }
-            if (i > 0) {
-                option.clone().appendTo(this.timeEndBox);
+                if (i == 23 && j == 60 * (Time.cellsPerHour - 1) / Time.cellsPerHour) {
+                    option.clone(true).appendTo(this.timeBeginBox);
+                }
+                if (i == 0 && j == 0) {
+                    option.clone(true).appendTo(this.timeEndBox);
+                }
             }
         }
     }
@@ -102,9 +108,9 @@ var Balloon = (function () {
         this.typeBox.val(String(element.type));
         this.updateAutoCompleteCandidates();
 
-        this.timeBeginBox.val(String(element.timeSpan.begin));
-        this.timeEndBox.val(String(element.timeSpan.end));
-        this.timeSpanLabel.text(element.timeSpan.span.toFixed(1));
+        this.timeBeginBox.val(element.timeSpan.begin.toString());
+        this.timeEndBox.val(element.timeSpan.end.toString());
+        this.timeSpanLabel.text(String(element.timeSpan.span.deciamlHours));
 
         this.jQueryElement.css("top", element.top + taskGridHeight);
     };
@@ -137,20 +143,21 @@ var Balloon = (function () {
     };
 
     Balloon.prototype.onTimeBoxChanged = function (e) {
-        var timeBegin = Number(this.timeBeginBox.val());
-        var timeEnd = Number(this.timeEndBox.val());
+        var timeBegin = this.timeBeginBox.children(":selected").data("time");
+        var timeEnd = this.timeEndBox.children(":selected").data("time");
+        ;
 
-        if (timeBegin > timeEnd) {
+        if (timeBegin.totalMinutes > timeEnd.totalMinutes) {
             // beginとendを交換
             var tmp = timeBegin;
             timeBegin = timeEnd;
             timeEnd = tmp;
-        } else if (timeBegin === timeEnd) {
+        } else if (timeBegin.totalMinutes === timeEnd.totalMinutes) {
             // 今ユーザが弄った方とは違う方のコンボボックスの値を変更する
             if (e.target === this.timeBeginBox[0]) {
-                timeEnd = timeBegin + 0.5;
+                timeEnd = timeBegin.putForward(1);
             } else {
-                timeBegin = timeEnd - 0.5;
+                timeBegin = timeEnd.putForward(-1);
             }
         }
 
@@ -158,18 +165,17 @@ var Balloon = (function () {
         this.timeEndBox.val(String(timeEnd));
 
         // 時間修正前の開始時間・終了時間
-        var newTop = 2.0 * taskGridHeight * timeBegin;
-        var newHeight = 2.0 * taskGridHeight * (timeEnd - timeBegin);
+        //var newTop = 2.0 * taskGridHeight * timeBegin;
+        //var newHeight = 2.0 * taskGridHeight * (timeEnd - timeBegin);
         var element = this.activeTaskElement;
 
-        if (timeBegin < element.timeSpan.begin) {
-            adjustPositionUpward(element.jQueryElement, newTop, newTop + newHeight);
-        } else if (timeEnd > element.timeSpan.end) {
-            adjustPositionDownward(element.jQueryElement, newTop, newTop + newHeight);
-        }
-
+        //if (timeBegin < element.timeSpan.begin) {
+        //    adjustPositionUpward(element.jQueryElement, newTop, newTop + newHeight);
+        //} else if (timeEnd > element.timeSpan.end) {
+        //    adjustPositionDownward(element.jQueryElement, newTop, newTop + newHeight);
+        //}
         element.timeSpan = new TimeSpan(timeBegin, timeEnd);
-        this.timeSpanLabel.text(String(element.timeSpan.span));
+        this.timeSpanLabel.text(String(element.timeSpan.span.deciamlHours));
     };
     return Balloon;
 })();

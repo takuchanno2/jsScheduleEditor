@@ -2,6 +2,7 @@
 
 class Time {
     public static cellsPerHour: number = 2;
+    public static get minutesPerCell(): number { return 60 / Time.cellsPerHour; }
 
     private _totalMinutes: number;
 
@@ -16,7 +17,7 @@ class Time {
             this._totalMinutes = Time.getTotalMinutes(x, y);
         }
 
-        if (this._totalMinutes < 0 || this._totalMinutes >= 24 * 60) {
+        if (this._totalMinutes < 0 || this._totalMinutes >= 24 * 60 || this._totalMinutes % (60 / Time.cellsPerHour) != 0) {
             throw new Error("Invalid constructor parameters");
         }
     }
@@ -29,6 +30,8 @@ class Time {
     public static subtract(x: Time, y: Time) {
         return new Time(x._totalMinutes - y._totalMinutes);
     }
+
+    public putForward(unitTime: number): Time { return new Time(this._totalMinutes + unitTime * (60 / Time.cellsPerHour)); }
 
     public toString(): string { return String(this.hours) + ":" + String(100 + this.minutes).slice(1); }
     public static fromString(time: string): Time { 
@@ -68,12 +71,16 @@ class TimeSpan {
     public static coretime: TimeSpan = null;
 
     public constructor(private _begin: Time, private _end: Time) {
-        if (_end.totalMinutes - _begin.totalMinutes < (60 / Time.cellsPerHour)) throw new Error("Invalid Argument");
+        if (this.span.totalMinutes < (60 / Time.cellsPerHour)) throw new Error("Invalid Argument");
     }
 
     public get begin(): Time { return this._begin; }
     public get end(): Time { return this._end; }
     public get span(): Time { return Time.subtract(this._end, this._begin); }
+
+    public includes(time: Time): boolean {
+        return (this._begin.totalMinutes <= time.totalMinutes) && (time.totalMinutes <= this._end.totalMinutes);
+    }
 
     public static fromJSONObject(obj: any): TimeSpan {
         return new TimeSpan(obj._begin, obj._end);

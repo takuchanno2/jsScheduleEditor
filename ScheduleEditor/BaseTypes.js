@@ -9,10 +9,18 @@ var Time = (function () {
             this._totalMinutes = Time.getTotalMinutes(x, y);
         }
 
-        if (this._totalMinutes < 0 || this._totalMinutes >= 24 * 60) {
+        if (this._totalMinutes < 0 || this._totalMinutes >= 24 * 60 || this._totalMinutes % (60 / Time.cellsPerHour) != 0) {
             throw new Error("Invalid constructor parameters");
         }
     }
+    Object.defineProperty(Time, "minutesPerCell", {
+        get: function () {
+            return 60 / Time.cellsPerHour;
+        },
+        enumerable: true,
+        configurable: true
+    });
+
     Object.defineProperty(Time.prototype, "hours", {
         get: function () {
             return Math.floor(this._totalMinutes / 60);
@@ -44,6 +52,10 @@ var Time = (function () {
 
     Time.subtract = function (x, y) {
         return new Time(x._totalMinutes - y._totalMinutes);
+    };
+
+    Time.prototype.putForward = function (unitTime) {
+        return new Time(this._totalMinutes + unitTime * (60 / Time.cellsPerHour));
     };
 
     Time.prototype.toString = function () {
@@ -89,7 +101,7 @@ var TimeSpan = (function () {
     function TimeSpan(_begin, _end) {
         this._begin = _begin;
         this._end = _end;
-        if (_end.totalMinutes - _begin.totalMinutes < (60 / Time.cellsPerHour))
+        if (this.span.totalMinutes < (60 / Time.cellsPerHour))
             throw new Error("Invalid Argument");
     }
     Object.defineProperty(TimeSpan.prototype, "begin", {
@@ -113,6 +125,10 @@ var TimeSpan = (function () {
         enumerable: true,
         configurable: true
     });
+
+    TimeSpan.prototype.includes = function (time) {
+        return (this._begin.totalMinutes <= time.totalMinutes) && (time.totalMinutes <= this._end.totalMinutes);
+    };
 
     TimeSpan.fromJSONObject = function (obj) {
         return new TimeSpan(obj._begin, obj._end);

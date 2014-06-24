@@ -137,3 +137,5 @@
 // HTML的に、テーブルは縦方向で要素をまとめたい。(予定/時間/実施)
 
 // TaskElementContainerがcreateメソッドでTaskElement作るようにする
+// ブランチを分けよう
+// knockout.jsで書き直せないかな
