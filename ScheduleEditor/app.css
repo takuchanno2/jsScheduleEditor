@@ -27,9 +27,32 @@ body {
       overflow-y: scroll;*/
   position: relative;
 }
+#schedule-editor .schedule-editor-table #task-grid,
+#schedule-editor .schedule-editor-table #table-header {
+  width: 630px;
+}
+#schedule-editor .schedule-editor-table #task-grid #task-grid-left,
+#schedule-editor .schedule-editor-table #table-header #task-grid-left {
+  width: 300px;
+  float: left;
+}
+#schedule-editor .schedule-editor-table #task-grid #task-grid-right,
+#schedule-editor .schedule-editor-table #table-header #task-grid-right {
+  width: 330px;
+  float: left;
+}
+#schedule-editor .schedule-editor-table #task-grid #task-grid-right:after,
+#schedule-editor .schedule-editor-table #table-header #task-grid-right:after {
+  content: ".";
+  display: block;
+  height: 0;
+  font-size: 0;
+  clear: both;
+  visibility: hidden;
+}
 #schedule-editor .schedule-editor-table #task-grid .grid-cell,
 #schedule-editor .schedule-editor-table #table-header .grid-cell {
-  width: 630px;
+  width: 330px;
   height: 30px;
   overflow: hidden;
 }
@@ -79,14 +102,10 @@ body {
 #schedule-editor .schedule-editor-table #table-header .grid-cell:first-child .task-cell {
   border-top-width: 0px;
 }
-#schedule-editor .schedule-editor-table #task-grid .grid-cell.ui-selecting .half-hour-cell,
-#schedule-editor .schedule-editor-table #table-header .grid-cell.ui-selecting .half-hour-cell,
 #schedule-editor .schedule-editor-table #task-grid .grid-cell.ui-selecting .task-cell,
 #schedule-editor .schedule-editor-table #table-header .grid-cell.ui-selecting .task-cell {
   background-color: #FC4;
 }
-#schedule-editor .schedule-editor-table #task-grid .grid-cell.ui-selected .half-hour-cell,
-#schedule-editor .schedule-editor-table #table-header .grid-cell.ui-selected .half-hour-cell,
 #schedule-editor .schedule-editor-table #task-grid .grid-cell.ui-selected .task-cell,
 #schedule-editor .schedule-editor-table #table-header .grid-cell.ui-selected .task-cell {
   background-color: #F91;

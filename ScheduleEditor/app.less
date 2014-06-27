@@ -40,7 +40,7 @@ body {
     box-sizing: border-box;
     .default-border();
     border-width: @border-width-bold;
-
+    
     #table-content {
       // とりあえず完成するまではスクロールはナシ
       /*height: 300px;
@@ -50,8 +50,30 @@ body {
     }
 
     #task-grid, #table-header {
+      width: @hour-area-width + @task-width + @task-width;
+
+      #task-grid-left {
+        width: @task-width;
+        float: left;
+      }
+
+      #task-grid-right {
+        width: @hour-area-width + @task-width;
+        float: left;
+
+        // clearfix
+        &:after {
+          content: ".";
+          display: block;
+          height: 0;
+          font-size: 0;
+          clear: both;
+          visibility: hidden;
+        }
+      }
+
       .grid-cell {
-        width: @hour-area-width + @task-width + @task-width;
+        width: @hour-area-width + @task-width;
         height: @task-grid-height;
         overflow: hidden;
 
@@ -96,13 +118,10 @@ body {
           border-top-width: 0px;
         }
 
-
-        &.ui-selecting .half-hour-cell,
         &.ui-selecting .task-cell {
           background-color: #FC4;
         }
 
-        &.ui-selected .half-hour-cell,
         &.ui-selected .task-cell {
           background-color: #F91;
         }
@@ -113,7 +132,6 @@ body {
       .grid-cell {
         width: 100%;
         height: @task-grid-header-height;
-
         .default-border();
         border-width: 0px 0px @border-width-bold 0px;
 
@@ -249,7 +267,7 @@ body {
         }
       }
 
-      .balloon-time-option{
+      .balloon-time-option {
         .coretime {
           background-color: hsl(160, 30%, 92%);
         }

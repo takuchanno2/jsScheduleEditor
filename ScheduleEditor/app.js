@@ -56,44 +56,54 @@ $(function () {
 });
 
 var initTable = function () {
-    var taskGrid = $("#task-grid");
     var nbsp = String.fromCharCode(160);
+    var taskGridLeft = $("#task-grid-left");
+    var taskGridRight = $("#task-grid-right");
+    var fragmentLeft = $(document.createDocumentFragment());
+    var fragmentRight = $(document.createDocumentFragment());
 
-    var fragment = $(document.createDocumentFragment());
     for (var i = 0; i < 24; i++) {
         for (var j = 0; j < 60; j += 60 / Time.cellsPerHour) {
             var time = new Time(i, j);
             var inCoreTime = TimeSpan.coretime.includes(time);
             var hourStarts = (j == 0);
 
-            var cell = $("<div />", {
+            var leftCells = $("<div />", {
                 "class": "grid-cell",
                 "data": {
                     "time": time
                 }
-            }).appendTo(fragment);
+            }).appendTo(fragmentLeft);
 
             $("<div />", {
                 "class": "task-cell" + (inCoreTime ? " core" : "")
-            }).appendTo(cell);
+            }).appendTo(leftCells);
+
+            var rightCells = $("<div />", {
+                "class": "grid-cell",
+                "data": {
+                    "time": time
+                }
+            }).appendTo(fragmentRight);
 
             $("<div />", {
                 "text": (hourStarts ? String(i) : nbsp),
                 "class": "half-hour-cell" + (inCoreTime ? " core" : "") + (hourStarts ? " hour-starts" : "")
-            }).appendTo(cell);
+            }).appendTo(rightCells);
 
             $("<div />", {
                 "class": "task-cell" + (inCoreTime ? " core" : "")
-            }).appendTo(cell);
+            }).appendTo(rightCells);
         }
     }
 
-    taskGrid.append(fragment);
+    taskGridLeft.append(fragmentLeft);
+    taskGridRight.append(fragmentRight);
 
     taskGridHeight = Math.round($("#table-content .grid-cell:first").outerHeight());
-    taskGridHeightTotal = Math.round(taskGrid.height());
+    taskGridHeightTotal = Math.round(taskGridRight.height());
 
-    taskGrid.selectable({
+    taskGridRight.selectable({
         "filter": ".grid-cell",
         // .schedule-editorのmouseupでタスクを非アクティブにされないように
         "start": function (e, ui) {
