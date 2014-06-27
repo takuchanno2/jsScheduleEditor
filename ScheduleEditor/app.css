@@ -102,10 +102,14 @@ body {
 #schedule-editor .schedule-editor-table #table-header .grid-cell:first-child .task-cell {
   border-top-width: 0px;
 }
+#schedule-editor .schedule-editor-table #task-grid .grid-cell.ui-selecting .half-hour-cell,
+#schedule-editor .schedule-editor-table #table-header .grid-cell.ui-selecting .half-hour-cell,
 #schedule-editor .schedule-editor-table #task-grid .grid-cell.ui-selecting .task-cell,
 #schedule-editor .schedule-editor-table #table-header .grid-cell.ui-selecting .task-cell {
   background-color: #FC4;
 }
+#schedule-editor .schedule-editor-table #task-grid .grid-cell.ui-selected .half-hour-cell,
+#schedule-editor .schedule-editor-table #table-header .grid-cell.ui-selected .half-hour-cell,
 #schedule-editor .schedule-editor-table #task-grid .grid-cell.ui-selected .task-cell,
 #schedule-editor .schedule-editor-table #table-header .grid-cell.ui-selected .task-cell {
   background-color: #F91;

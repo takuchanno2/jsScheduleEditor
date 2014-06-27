@@ -34,13 +34,13 @@ class TaskElementContainer {
             var succeedingElement: TaskElement = null;
 
             // 最初は、新しく追加する要素よりも開始時間が早いタスクについて、被りの解消をする
-            for (i = 0; i < this.elements.length && this.elements[i].timeSpan.end < element.timeSpan.begin; i++);
+            for (i = 0; i < this.elements.length && this.elements[i].timeSpan.end.totalMinutes < element.timeSpan.begin.totalMinutes; i++);
             if (i < this.elements.length) {
                 var overlapTop = this.elements[i];
-                if (overlapTop.timeSpan.begin < element.timeSpan.begin) {
+                if (overlapTop.timeSpan.begin.totalMinutes < element.timeSpan.begin.totalMinutes) {
                     // もし被っている要素が新しく追加する要素を完全に含むような時間設定だったら、
                     // 新要素の下に、新要素の終了時間～被り要素の元々の終了時間を埋めるタスクを新規作成
-                    if (overlapTop.timeSpan.end > element.timeSpan.end) {
+                    if (overlapTop.timeSpan.end.totalMinutes > element.timeSpan.end.totalMinutes) {
                         succeedingElement = element.clone();
                         succeedingElement.timeSpan = new TimeSpan(element.timeSpan.end, overlapTop.timeSpan.end);
                         this.registerElementEvents(succeedingElement);
@@ -59,10 +59,10 @@ class TaskElementContainer {
             }
 
             // 続いて、新しく追加する要素よりも開始時間が遅いタスクについて、被りの解消をする
-            for (; i < this.elements.length && this.elements[i].timeSpan.begin < element.timeSpan.end; i++) {
+            for (; i < this.elements.length && this.elements[i].timeSpan.begin.totalMinutes < element.timeSpan.end.totalMinutes; i++) {
                 var overlapBottom = this.elements[i];
 
-                if (overlapBottom.timeSpan.end <= element.timeSpan.end) {
+                if (overlapBottom.timeSpan.end.totalMinutes <= element.timeSpan.end.totalMinutes) {
                     // 新しい要素が確保する時間の方が長い (既にある要素が新しい要素に完全に内包されている)
                     // 場合は、内包されている要素を削除
                     this.elements.splice(i, 1);
