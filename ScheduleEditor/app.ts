@@ -58,9 +58,9 @@ $(() => {
         taskElementContainer.activeElement = null;
     });
 
-    //JSON.parse($("#initial-schedule").html()).forEach((v: any) => {
-    //    initialTasks.push(Task.fromJSONObject(v));
-    //});
+    JSON.parse($("#initial-schedule").html()).forEach((v: any) => {
+        initialTasks.push(Task.fromJSONObject(v));
+    });
 
     
     taskElementContainer = new TaskElementContainer($("#task-list"));
@@ -121,7 +121,7 @@ var addTask = function () {
     if (selectedCells.length <= 0) return;
 
     var timeBegin: Time = selectedCells.first().data("time");
-    var timeEnd = timeBegin.putForward(1);
+    var timeEnd = selectedCells.last().data("time").putForward(1);
 
     taskElementContainer.saveState();
 

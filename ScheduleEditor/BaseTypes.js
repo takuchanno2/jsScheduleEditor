@@ -127,7 +127,7 @@ var TimeSpan = (function () {
     });
 
     TimeSpan.prototype.includes = function (time) {
-        return (this._begin.totalMinutes <= time.totalMinutes) && (time.totalMinutes <= this._end.totalMinutes);
+        return (this._begin.totalMinutes <= time.totalMinutes) && (time.totalMinutes < this._end.totalMinutes);
     };
 
     TimeSpan.fromJSONObject = function (obj) {

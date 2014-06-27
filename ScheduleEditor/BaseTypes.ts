@@ -79,7 +79,7 @@ class TimeSpan {
     public get span(): Time { return Time.subtract(this._end, this._begin); }
 
     public includes(time: Time): boolean {
-        return (this._begin.totalMinutes <= time.totalMinutes) && (time.totalMinutes <= this._end.totalMinutes);
+        return (this._begin.totalMinutes <= time.totalMinutes) && (time.totalMinutes < this._end.totalMinutes);
     }
 
     public static fromJSONObject(obj: any): TimeSpan {

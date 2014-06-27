@@ -94,7 +94,7 @@ var TaskElement = (function () {
 
             this.timeBeginLabel.text(value.begin.toString());
             this.timeEndLabel.text(value.end.toString());
-            this.timeSpanLabel.text(String(value.span.deciamlHours));
+            this.timeSpanLabel.text(value.span.deciamlHours.toFixed(1));
         },
         enumerable: true,
         configurable: true
@@ -268,7 +268,6 @@ var TaskElement = (function () {
         this.jQueryElementTemplate.find(".task-memo").empty();
         this.jQueryElementTemplate.remove();
     };
-    TaskElement.minutesPerCell = 60;
     return TaskElement;
 })();
 

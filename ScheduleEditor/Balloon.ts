@@ -105,7 +105,7 @@ class Balloon {
 
         this.timeBeginBox.val(element.timeSpan.begin.toString());
         this.timeEndBox.val(element.timeSpan.end.toString());
-        this.timeSpanLabel.text(String(element.timeSpan.span.deciamlHours));
+        this.timeSpanLabel.text(element.timeSpan.span.deciamlHours.toFixed(1));
 
         this.jQueryElement.css("top", element.top + taskGridHeight);
     }

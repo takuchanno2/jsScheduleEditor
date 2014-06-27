@@ -44,9 +44,10 @@ $(function () {
         taskElementContainer.activeElement = null;
     });
 
-    //JSON.parse($("#initial-schedule").html()).forEach((v: any) => {
-    //    initialTasks.push(Task.fromJSONObject(v));
-    //});
+    JSON.parse($("#initial-schedule").html()).forEach(function (v) {
+        initialTasks.push(Task.fromJSONObject(v));
+    });
+
     taskElementContainer = new TaskElementContainer($("#task-list"));
 
     initTable();
@@ -110,7 +111,7 @@ var addTask = function () {
         return;
 
     var timeBegin = selectedCells.first().data("time");
-    var timeEnd = timeBegin.putForward(1);
+    var timeEnd = selectedCells.last().data("time").putForward(1);
 
     taskElementContainer.saveState();
 

@@ -10,7 +10,6 @@ enum GeometricRelation {
 }
 
 class TaskElement {
-    public static minutesPerCell: number = 60; // 1セルあたり何分を示すか
     private static jQueryElementTemplate: JQuery;
 
     private _taskType: number;
@@ -72,7 +71,7 @@ class TaskElement {
 
         this.timeBeginLabel.text(value.begin.toString());
         this.timeEndLabel.text(value.end.toString());
-        this.timeSpanLabel.text(String(value.span.deciamlHours));
+        this.timeSpanLabel.text(value.span.deciamlHours.toFixed(1));
     }
 
     public get top2(): number {

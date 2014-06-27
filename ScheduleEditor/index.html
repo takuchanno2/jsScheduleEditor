@@ -9,10 +9,6 @@
   <link rel="stylesheet" href="Content/themes/base/jquery-ui.css" type="text/css" />
   <link rel="stylesheet" href="app.css" type="text/css" />
 
-  <script>
-    const coreTimeSpan = [9.5, 16.5];
-  </script>
-
   <script type="application/json" id="config">
     {
       "coretimeSpan":{
@@ -43,45 +39,60 @@
 
   <script type="application/json" id="initial-schedule">
     [
-    
+    {
+    "type": "1",
+    "name": "",
+    "timeSpan": {
+    "_begin": {
+    "_totalMinutes": 660
+    },
+    "_end": {
+    "_totalMinutes": 750
+    }
+    },
+    "memo": ""
+    },
+    {
+    "type": "2",
+    "name": "",
+    "timeSpan": {
+    "_begin": {
+    "_totalMinutes": 750
+    },
+    "_end": {
+    "_totalMinutes": 840
+    }
+    },
+    "memo": ""
+    },
+    {
+    "type": "3",
+    "name": "",
+    "timeSpan": {
+    "_begin": {
+    "_totalMinutes": 840
+    },
+    "_end": {
+    "_totalMinutes": 930
+    }
+    },
+    "memo": ""
+    },
+    {
+    "type": 0,
+    "name": "",
+    "timeSpan": {
+    "_begin": {
+    "_totalMinutes": 570
+    },
+    "_end": {
+    "_totalMinutes": 660
+    }
+    },
+    "memo": ""
+    }
     ]
   </script>
-
-  <!--{
-  "type": 0,
-  "name": "Kenkyu-kei",
-  "timeSpan": {
-  "_begin": 9.5,
-  "_end": 11
-  },
-  "memo": "hogehoge"
-  },
-  {
-  "type": "1",
-  "name": "Benkyo-kei",
-  "timeSpan": {
-  "_begin": 11,
-  "_end": 12.5
-  },
-  "memo": "piyopiyo"
-  },
-  {
-  "type": "2",
-  "name": "Fuyu no Sonota",
-  "timeSpan": {
-  "_begin": 12.5,
-  "_end": 14
-  }, "memo": "foofoo"
-  },
-  {
-  "type": "3",
-  "name": "Jitsudo-gai",
-  "timeSpan": {
-  "_begin": 14,
-  "_end": 15.5
-  },
-  "memo": "barbar"
-  }-->
 
   <script type="text/template" id="task-template">
     <div class="task" data-task-type="0">
