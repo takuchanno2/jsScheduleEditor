@@ -79,6 +79,7 @@ var initTable = function () {
         for (var j = 0; j < 60; j += 60 / Time.cellsPerHour) {
             var time = new Time(i, j);
             var inCoreTime = TimeSpan.coretime.includes(time);
+            var hourStarts = (j == 0);
 
             var cell = $("<div />", {
                 "class": "grid-cell",
@@ -89,12 +90,11 @@ var initTable = function () {
 
             $("<div />", {
                 "class": "task-cell" + (inCoreTime ? " core" : ""),
-                
             }).appendTo(cell);
 
             $("<div />", {
-                "text": ((i % Time.cellsPerHour) ? nbsp : String(i / Time.cellsPerHour)),
-                "class": "half-hour-cell" + (inCoreTime ? " core" : ""),
+                "text": (hourStarts ? String(i) : nbsp),
+                "class": "half-hour-cell" + (inCoreTime ? " core" : "") + (hourStarts ? " hour-starts" : ""),
             }).appendTo(cell);
 
             $("<div />", {

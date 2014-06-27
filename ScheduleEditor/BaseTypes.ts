@@ -83,7 +83,7 @@ class TimeSpan {
     }
 
     public static fromJSONObject(obj: any): TimeSpan {
-        return new TimeSpan(obj._begin, obj._end);
+        return new TimeSpan(Time.fromJSONObject(obj._begin), Time.fromJSONObject(obj._end));
     }
 }
 

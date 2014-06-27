@@ -139,3 +139,6 @@
 // TaskElementContainerがcreateメソッドでTaskElement作るようにする
 // ブランチを分けよう
 // knockout.jsで書き直せないかな
+
+// Timeにindex関係のメソッドを持っているのは正直きもい
+// コンストラクタにpublic...で指定するのはやめて、出来るだけプロパティでラップする

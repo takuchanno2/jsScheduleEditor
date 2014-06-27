@@ -67,11 +67,15 @@ body {
           float: left;
           text-align: center;
           .default-border();
-          border-width: @border-width @border-width-bold 0px @border-width-bold;
+          border-width: 0px @border-width-bold 0px @border-width-bold;
           background-color: @grid-hour-background;
 
           &.core {
             background-color: @grid-hour-background-core;
+          }
+
+          &.hour-starts {
+            border-top-width: @border-width;
           }
         }
 
@@ -92,9 +96,6 @@ body {
           border-top-width: 0px;
         }
 
-        &:nth-child(even) .half-hour-cell {
-          border-top-width: 0px;
-        }
 
         &.ui-selecting .half-hour-cell,
         &.ui-selecting .task-cell {
