@@ -61,28 +61,29 @@ class Balloon {
             }).appendTo(this.typeBox);
         });
 
+        var makeOption = (t: Time) => $("<option>", {
+            "text": t.toString(),
+            "value": t.toString(),
+            "class": "balloon-time-option " + (TimeSpan.coretime.includes(t) ? "coretime" : "flextime"),
+            "data": { "time": t, }
+        });
+
         // 時間を選択するコンボボックスを作る
         for (var i = 0; i < 24; i++) {
             for (var j = 0; j < 60; j += TaskTable.minutesPerCell) {
-                var currTime = new Time(i, j);
+                var time = new Time(i, j);
+                var option = makeOption(time);
 
-                var option = $("<option>", {
-                    "text": currTime.toString(),
-                    "value": currTime.toString(),
-                    "class": "balloon-time-option " + (TimeSpan.coretime.includes(currTime) ? "coretime" : "flextime"),
-                    "data": {
-                        "time": currTime,
-                    }
-                });
-
-                if (i == 23 && j == TaskTable.minutesPerCell * (TaskTable.cellsPerHour - 1)) {
-                    option.clone(true).appendTo(this.timeBeginBox);
+                if (time.totalMinutes < 24 * 60) {
+                    this.timeBeginBox.append(option.clone(true));
                 }
-                if (i == 0 && j == 0) {
-                    option.clone(true).appendTo(this.timeEndBox);
+                if (time.totalMinutes > 0) {
+                    this.timeEndBox.append(option.clone(true));
                 }
             }
         }
+
+        this.timeEndBox.append(makeOption(new Time(24, 0)));
     }
 
     public show(element: TaskElement) {

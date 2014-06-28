@@ -44,9 +44,7 @@ class TaskTable {
 
                 var leftCells = $("<div />", {
                     "class": "grid-cell",
-                    "data": {
-                        "time": time,
-                    }
+                    "data": { "time": time, }
                 }).appendTo(fragmentLeft);
 
                 $("<div />", {
@@ -55,9 +53,7 @@ class TaskTable {
 
                 var rightCells = $("<div />", {
                     "class": "grid-cell",
-                    "data": {
-                        "time": time,
-                    }
+                    "data": { "time": time, }
                 }).appendTo(fragmentRight);
 
                 $("<div />", {
@@ -74,7 +70,7 @@ class TaskTable {
         this.jQueryLeftGrid.append(fragmentLeft);
         this.jQueryRightGrid.append(fragmentRight);
 
-        taskGridHeight = Math.round($("#table-content .grid-cell:first").outerHeight());
+        taskGridHeight = Math.round(this.jQueryTable.find("#table-content .grid-cell:first").outerHeight());
         taskGridHeightTotal = Math.round(this.jQueryRightGrid.height());
 
         this.jQueryRightGrid.selectable({

@@ -14,7 +14,8 @@ class Time {
             this._totalMinutes = Time.getTotalMinutes(x, y);
         }
 
-        if (this._totalMinutes < 0 || this._totalMinutes >= 24 * 60 || this._totalMinutes % TaskTable.minutesPerCell != 0) {
+        // 24 * 60は明日の0:00を示すこととして、例外的に設定可
+        if (this._totalMinutes < 0 || this._totalMinutes > 24 * 60 || this._totalMinutes % TaskTable.minutesPerCell != 0) {
             throw new Error("Invalid constructor parameters");
         }
     }
