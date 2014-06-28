@@ -147,3 +147,9 @@
 // balloon表示中はselectableをdisableにすべきかも
 
 // balloonのセレクトボックスが腐ってる
+
+// 現状、TaskTableのコンストラクタにJQueryの要素を突っ込んでるので、TaskTableはページ上に複数存在できそうだが、それは出来ない。
+// それはきもいので、変にStaticを使わないようにとか、TimeがTaskTableのcellPerHourに依存しないようにするとか、色々方法を考える必要がある
+
+// coretime外の時間グリッドは縮める
+// そのために、ResizableとDraggableはゴーストを使うようにする

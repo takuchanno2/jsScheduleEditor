@@ -52,72 +52,8 @@ $(function () {
     });
 
     taskElementContainer = new TaskElementContainer($("#task-list"));
-
-    initTable();
-
     taskElementContainer.restore(initialTasks);
 });
-
-var initTable = function () {
-    var nbsp = String.fromCharCode(160);
-    var taskGridLeft = $("#task-grid-left");
-    var taskGridRight = $("#task-grid-right");
-    var fragmentLeft = $(document.createDocumentFragment());
-    var fragmentRight = $(document.createDocumentFragment());
-
-    for (var i = 0; i < 24; i++) {
-        for (var j = 0; j < 60; j += TaskTable.minutesPerCell) {
-            var time = new Time(i, j);
-            var inCoreTime = TimeSpan.coretime.includes(time);
-            var hourStarts = (j == 0);
-
-            var leftCells = $("<div />", {
-                "class": "grid-cell",
-                "data": {
-                    "time": time
-                }
-            }).appendTo(fragmentLeft);
-
-            $("<div />", {
-                "class": "task-cell" + (inCoreTime ? " core" : "")
-            }).appendTo(leftCells);
-
-            var rightCells = $("<div />", {
-                "class": "grid-cell",
-                "data": {
-                    "time": time
-                }
-            }).appendTo(fragmentRight);
-
-            $("<div />", {
-                "text": (hourStarts ? String(i) : nbsp),
-                "class": "half-hour-cell" + (inCoreTime ? " core" : "") + (hourStarts ? " hour-starts" : "")
-            }).appendTo(rightCells);
-
-            $("<div />", {
-                "class": "task-cell" + (inCoreTime ? " core" : "")
-            }).appendTo(rightCells);
-        }
-    }
-
-    taskGridLeft.append(fragmentLeft);
-    taskGridRight.append(fragmentRight);
-
-    taskGridHeight = Math.round($("#table-content .grid-cell:first").outerHeight());
-    taskGridHeightTotal = Math.round(taskGridRight.height());
-
-    taskGridRight.selectable({
-        "filter": ".grid-cell",
-        // .schedule-editorのmouseupでタスクを非アクティブにされないように
-        "start": function (e, ui) {
-            taskElementContainer.activeElement = null;
-        },
-        "stop": function (e, ui) {
-            addTask();
-            return false;
-        }
-    });
-};
 
 var addTask = function () {
     var selectedCells = $(".ui-selected");

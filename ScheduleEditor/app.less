@@ -37,7 +37,7 @@ body {
     padding: 0px;
     position: relative;
     display: inline-block;
-    box-sizing: border-box;
+    // box-sizing: border-box;
     .default-border();
     border-width: @border-width-bold;
 
@@ -55,6 +55,8 @@ body {
       #task-grid-left {
         width: @task-width;
         float: left;
+        .default-border();
+        border-width: 0px @border-width-bold 0px 0px;
       }
 
       #task-grid-right {
@@ -86,7 +88,7 @@ body {
           float: left;
           text-align: center;
           .default-border();
-          border-width: 0px @border-width-bold 0px @border-width-bold;
+          border-width: 0px @border-width-bold 0px 0px;
           background-color: @grid-hour-background;
 
           &.core {
