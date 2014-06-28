@@ -51,21 +51,19 @@ class TaskTable {
                 var inCoreTime = TimeSpan.coretime.includes(time);
                 var hourStarts = (j == 0);
 
-                $("<div />", {
+                var taskCell = $("<div />", {
                     "class": "task-cell" + (inCoreTime ? " core" : ""),
                     "data": { "time": time, }
-                }).appendTo(fragmentLeft);
+                });
+
+                fragmentLeft.append(taskCell.clone(true));
+                fragmentRight.append(taskCell.clone(true));
 
                 $("<div />", {
                     "text": (hourStarts ? String(i) : ""),
-                    "class": "half-hour-cell" + (inCoreTime ? " core" : "") + (hourStarts ? " hour-starts" : ""),
+                    "class": "time-cell" + (inCoreTime ? " core" : "") + (hourStarts ? " hour-starts" : ""),
                     "data": { "time": time, }
                 }).appendTo(fragmentHours);
-
-                $("<div />", {
-                    "class": "task-cell" + (inCoreTime ? " core" : ""),
-                    "data": { "time": time, }
-                }).appendTo(fragmentRight);
             }
         }
 

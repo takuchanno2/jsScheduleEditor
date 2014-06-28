@@ -36,16 +36,22 @@ body {
     border-style: solid;
   }
 
+  .disable-user-select {
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
   #schedule-editor-table {
     text-align: left;
     padding: 0px;
     position: relative;
     display: inline-block;
     box-sizing: content-box;
-
     .default-border();
     border-width: @border-width-bold;
-    
+
     #table-content {
       // とりあえず完成するまではスクロールはナシ
       /*height: 300px;
@@ -55,76 +61,80 @@ body {
     }
 
     #task-grid, #table-header {
+      .disable-user-select();
+
       #task-grid-left, #task-grid-time, #task-grid-right {
         float: left;
-
         .default-border();
         border-width: 0px @border-width-bold 0px 0px;
       }
 
-      #task-grid-left, #task-grid-right { width: @task-cell-width; }
-      #task-grid-time { width: @time-cell-width; }
-      #task-grid-right { 
+      #task-grid-left, #task-grid-right {
+        width: @task-cell-width;
+      }
+
+      #task-grid-time {
+        width: @time-cell-width;
+      }
+
+      #task-grid-right {
         border-width: 0px;
         .clearfix();
       }
 
-        .half-hour-cell, .task-cell {
-          box-sizing: border-box;
-          height: @task-grid-height;
-          vertical-align: top;
-          cursor: default;
+      .time-cell, .task-cell {
+        box-sizing: border-box;
+        height: @task-grid-height;
+        vertical-align: top;
+        cursor: default;
+      }
+
+      .time-cell {
+        width: @time-cell-width;
+        padding: 5px;
+        float: left;
+        text-align: center;
+        background-color: @grid-hour-background;
+        .default-border();
+        border-width: 0px;
+
+        &.core {
+          background-color: @grid-hour-background-core;
         }
 
-        .half-hour-cell {
-          width: @time-cell-width;
-          padding: 5px;
-          float: left;
-          text-align: center;
-          background-color: @grid-hour-background;
-
+        &.hour-starts {
           .default-border();
-          border-width: 0px;
-
-          &.core {
-            background-color: @grid-hour-background-core;
-          }
-
-          &.hour-starts {
-            .default-border();
-            border-top-width: @border-width;
-          }
+          border-top-width: @border-width;
         }
+      }
 
-        .task-cell {
-          width: @task-cell-width;
-          float: left;
-          background-color: @grid-background;
+      .task-cell {
+        width: @task-cell-width;
+        float: left;
+        background-color: @grid-background;
+        .default-border();
+        border-width: @border-width 0px 0px 0px;
 
-          .default-border();
-          border-width: @border-width 0px 0px 0px;
-
-          &.core {
-            background-color: @grid-background-core;
-          }
+        &.core {
+          background-color: @grid-background-core;
         }
+      }
 
-        .half-hour-cell:first-child ,
-        .task-cell:first-child {
-          border-top-width: 0px;
-        }
+      .time-cell:first-child,
+      .task-cell:first-child {
+        border-top-width: 0px;
+      }
 
-        .half-hour-cell.ui-selecting,
-        .task-cell.ui-selecting {
-          background-color: #FC4;
-        }
+      .time-cell.ui-selecting,
+      .task-cell.ui-selecting {
+        background-color: #FC4;
+      }
     }
 
     #table-header {
       .grid-cell {
         width: 100%;
         height: @task-grid-header-height;
-
         .default-border();
         border-width: 0px 0px @border-width-bold 0px;
 
@@ -169,7 +179,6 @@ body {
           padding: 5px;
           word-wrap: break-word;
           overflow: hidden;
-
           .default-border();
           border-width: @border-width 0px 0px 0px;
 
