@@ -19,16 +19,16 @@ body {
   border-color: black;
   border-style: solid;
   border-width: 2px;
+  box-sizing: content-box;
+}
+#schedule-editor #schedule-editor-table * {
+  box-sizing: content-box;
 }
 #schedule-editor #schedule-editor-table #table-content {
   /*height: 300px;
       overflow-x: hidden;
       overflow-y: scroll;*/
   position: relative;
-}
-#schedule-editor #schedule-editor-table #task-grid,
-#schedule-editor #schedule-editor-table #table-header {
-  width: 630px;
 }
 #schedule-editor #schedule-editor-table #task-grid #task-grid-left,
 #schedule-editor #schedule-editor-table #table-header #task-grid-left {
@@ -54,6 +54,11 @@ body {
   width: 330px;
   height: 30px;
   overflow: hidden;
+  box-sizing: border-box;
+}
+#schedule-editor #schedule-editor-table #task-grid .grid-cell *,
+#schedule-editor #schedule-editor-table #table-header .grid-cell * {
+  box-sizing: border-box;
 }
 #schedule-editor #schedule-editor-table #task-grid .grid-cell .half-hour-cell,
 #schedule-editor #schedule-editor-table #table-header .grid-cell .half-hour-cell,
@@ -146,6 +151,10 @@ body {
   padding: 0px;
   pointer-events: auto;
   z-index: 10;
+  box-sizing: border-box;
+}
+#schedule-editor #schedule-editor-table #task-list .task * {
+  box-sizing: border-box;
 }
 #schedule-editor #schedule-editor-table #task-list .task.active {
   z-index: 15;
@@ -214,6 +223,10 @@ body {
   border: 1px solid #888888;
   border-radius: 10px;
   box-shadow: 1px 1px 3px #000;
+  box-sizing: border-box;
+}
+#schedule-editor #schedule-editor-table #edit-balloon * {
+  box-sizing: border-box;
 }
 #schedule-editor #schedule-editor-table #edit-balloon [class*="col-"] {
   padding-left: 2px;

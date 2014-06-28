@@ -37,9 +37,13 @@ body {
     padding: 0px;
     position: relative;
     display: inline-block;
-    // box-sizing: border-box;
     .default-border();
     border-width: @border-width-bold;
+    box-sizing: content-box;
+
+    * {
+      box-sizing: content-box;
+    }
 
     #table-content {
       // とりあえず完成するまではスクロールはナシ
@@ -50,8 +54,7 @@ body {
     }
 
     #task-grid, #table-header {
-      width: @hour-area-width + @task-width + @task-width;
-
+      // width: @hour-area-width + @task-width + @task-width;
       #task-grid-left {
         width: @task-width;
         float: left;
@@ -62,7 +65,6 @@ body {
       #task-grid-right {
         width: @hour-area-width + @task-width;
         float: left;
-
         // clearfix
         &:after {
           display: table;
@@ -75,6 +77,11 @@ body {
         width: @hour-area-width + @task-width;
         height: @task-grid-height;
         overflow: hidden;
+        box-sizing: border-box;
+
+        * {
+          box-sizing: border-box;
+        }
 
         .half-hour-cell, .task-cell {
           height: 100%;
@@ -165,6 +172,11 @@ body {
         padding: 0px;
         pointer-events: auto;
         z-index: 10;
+        box-sizing: border-box;
+
+        * {
+          box-sizing: border-box;
+        }
 
         &.active {
           z-index: 15;
@@ -244,6 +256,11 @@ body {
       border: @balloon-border-width solid @balloon-border-color;
       border-radius: 10px;
       box-shadow: 1px 1px 3px #000;
+
+      box-sizing: border-box;
+      * {
+        box-sizing: border-box;
+      }
 
       [class*="col-"] {
         padding-left: 2px;

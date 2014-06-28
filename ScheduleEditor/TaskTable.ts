@@ -27,6 +27,8 @@ class TaskTable {
         jQueryTable.find("#task-grid-right").click(function () { return false; });
 
         this.generateCells();
+
+        jQueryTable.width(this.jQueryLeftGrid.outerWidth() + this.jQueryRightGrid.outerWidth());
     }
 
     private generateCells() {
