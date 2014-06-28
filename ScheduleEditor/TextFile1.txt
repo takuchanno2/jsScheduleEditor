@@ -135,6 +135,7 @@
 
 // Time, TimeSpanは純粋に時間だけを管理する。テーブルの何行目というのを示す値は、TaskElementとTableだけが感知する
 // HTML的に、テーブルは縦方向で要素をまとめたい。(予定/時間/実施)
+// 最終的には、Time, TimeSpanはTaskTableのcellsPerHourに依存しないように
 
 // TaskElementContainerがcreateメソッドでTaskElement作るようにする
 // ブランチを分けよう

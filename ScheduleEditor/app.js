@@ -36,18 +36,16 @@ $(function () {
         window.collectGarbage();
     });
 
-    $("#task-grid-right").click(function () {
-        console.log("right!");
-        return false;
-    });
+    var config = JSON.parse($("#config").html());
 
-    // グリッドの外側をクリックしたら、タスクを非アクティブに
-    $("#schedule-editor-table").click(function () {
-        console.log("table!");
+    TaskTable.init(config);
+    TimeSpan.init(config);
+    Task.init(config);
+    TaskElement.prepareTemplate();
 
-        // このイベントが呼ばれるとタスクが非アクティブになるので、適宜stopPropagationすること
-        taskElementContainer.activeElement = null;
-    });
+    Task.taskTypes = JSON.parse($("#task-types").html());
+
+    taskTable = new TaskTable($("#schedule-editor-table"));
 
     JSON.parse($("#initial-schedule").html()).forEach(function (v) {
         initialTasks.push(Task.fromJSONObject(v));
@@ -68,7 +66,7 @@ var initTable = function () {
     var fragmentRight = $(document.createDocumentFragment());
 
     for (var i = 0; i < 24; i++) {
-        for (var j = 0; j < 60; j += 60 / Time.cellsPerHour) {
+        for (var j = 0; j < 60; j += TaskTable.minutesPerCell) {
             var time = new Time(i, j);
             var inCoreTime = TimeSpan.coretime.includes(time);
             var hourStarts = (j == 0);
@@ -116,6 +114,7 @@ var initTable = function () {
         },
         "stop": function (e, ui) {
             addTask();
+            return false;
         }
     });
 };

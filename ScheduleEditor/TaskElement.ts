@@ -75,15 +75,15 @@ class TaskElement {
     }
 
     public get top2(): number {
-        return Math.floor(this._timeSpan.begin.totalMinutes * Time.cellsPerHour / 60);
+        return Math.floor(this._timeSpan.begin.totalMinutes / TaskTable.minutesPerCell);
     }
 
     public get bottom2(): number {
-        return Math.floor(this._timeSpan.end.totalMinutes * Time.cellsPerHour / 60);
+        return Math.floor(this._timeSpan.end.totalMinutes / TaskTable.minutesPerCell);
     }
 
     public get height2(): number {
-        return Math.floor(this._timeSpan.span.totalMinutes * Time.cellsPerHour / 60);
+        return Math.floor(this._timeSpan.span.totalMinutes / TaskTable.minutesPerCell);
     }
 
     public applyPositionToTimeSpan() {
@@ -213,6 +213,3 @@ class TaskElement {
     }
 }
 
-$(function () {
-    TaskElement.prepareTemplate();
-});

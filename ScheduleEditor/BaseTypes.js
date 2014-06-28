@@ -9,18 +9,10 @@ var Time = (function () {
             this._totalMinutes = Time.getTotalMinutes(x, y);
         }
 
-        if (this._totalMinutes < 0 || this._totalMinutes >= 24 * 60 || this._totalMinutes % (60 / Time.cellsPerHour) != 0) {
+        if (this._totalMinutes < 0 || this._totalMinutes >= 24 * 60 || this._totalMinutes % TaskTable.minutesPerCell != 0) {
             throw new Error("Invalid constructor parameters");
         }
     }
-    Object.defineProperty(Time, "minutesPerCell", {
-        get: function () {
-            return 60 / Time.cellsPerHour;
-        },
-        enumerable: true,
-        configurable: true
-    });
-
     Object.defineProperty(Time.prototype, "hours", {
         get: function () {
             return Math.floor(this._totalMinutes / 60);
@@ -55,7 +47,7 @@ var Time = (function () {
     };
 
     Time.prototype.putForward = function (unitTime) {
-        return new Time(this._totalMinutes + unitTime * (60 / Time.cellsPerHour));
+        return new Time(this._totalMinutes + unitTime * TaskTable.minutesPerCell);
     };
 
     Time.prototype.toString = function () {
@@ -79,7 +71,7 @@ var Time = (function () {
     });
 
     Time.fromTableIndex = function (tx) {
-        return new Time(tx * 60 / Time.cellsPerHour);
+        return new Time(tx * TaskTable.minutesPerCell);
     };
 
     Time.getTotalMinutes = function (hours, minutes) {
@@ -88,12 +80,11 @@ var Time = (function () {
 
     Time.getTableIndex = function (x, y) {
         if (y === undefined) {
-            return Math.floor(x * Time.cellsPerHour / 60);
+            return Math.floor(x / TaskTable.minutesPerCell);
         } else {
             return Time.getTableIndex(x, y);
         }
     };
-    Time.cellsPerHour = 2;
     return Time;
 })();
 
@@ -101,9 +92,13 @@ var TimeSpan = (function () {
     function TimeSpan(_begin, _end) {
         this._begin = _begin;
         this._end = _end;
-        if (this.span.totalMinutes < (60 / Time.cellsPerHour))
+        if (this.span.totalMinutes < TaskTable.minutesPerCell)
             throw new Error("Invalid Argument");
     }
+    TimeSpan.init = function (config) {
+        TimeSpan.coretime = TimeSpan.fromJSONObject(config.coretimeSpan);
+    };
+
     Object.defineProperty(TimeSpan.prototype, "begin", {
         get: function () {
             return this._begin;
@@ -144,6 +139,10 @@ var Task = (function () {
         this.timeSpan = timeSpan;
         this.memo = memo;
     }
+    Task.init = function (config) {
+        Task.taskTypes = JSON.parse($("#task-types").html());
+    };
+
     Object.defineProperty(Task.prototype, "typeString", {
         get: function () {
             return Task.taskTypes[this.type].name;
@@ -158,13 +157,4 @@ var Task = (function () {
     Task.taskTypes = null;
     return Task;
 })();
-
-$(function () {
-    var config = JSON.parse($("#config").html());
-
-    TimeSpan.coretime = TimeSpan.fromJSONObject(config.coretimeSpan);
-    Time.cellsPerHour = config.cellsPerHour;
-
-    Task.taskTypes = JSON.parse($("#task-types").html());
-});
 //# sourceMappingURL=BaseTypes.js.map

@@ -102,7 +102,7 @@ var TaskElement = (function () {
 
     Object.defineProperty(TaskElement.prototype, "top2", {
         get: function () {
-            return Math.floor(this._timeSpan.begin.totalMinutes * Time.cellsPerHour / 60);
+            return Math.floor(this._timeSpan.begin.totalMinutes / TaskTable.minutesPerCell);
         },
         enumerable: true,
         configurable: true
@@ -110,7 +110,7 @@ var TaskElement = (function () {
 
     Object.defineProperty(TaskElement.prototype, "bottom2", {
         get: function () {
-            return Math.floor(this._timeSpan.end.totalMinutes * Time.cellsPerHour / 60);
+            return Math.floor(this._timeSpan.end.totalMinutes / TaskTable.minutesPerCell);
         },
         enumerable: true,
         configurable: true
@@ -118,7 +118,7 @@ var TaskElement = (function () {
 
     Object.defineProperty(TaskElement.prototype, "height2", {
         get: function () {
-            return Math.floor(this._timeSpan.span.totalMinutes * Time.cellsPerHour / 60);
+            return Math.floor(this._timeSpan.span.totalMinutes / TaskTable.minutesPerCell);
         },
         enumerable: true,
         configurable: true
@@ -270,8 +270,4 @@ var TaskElement = (function () {
     };
     return TaskElement;
 })();
-
-$(function () {
-    TaskElement.prepareTemplate();
-});
 //# sourceMappingURL=TaskElement.js.map

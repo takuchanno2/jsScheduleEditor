@@ -1,9 +1,6 @@
 ﻿"use strict";
 
 class Time {
-    public static cellsPerHour: number = 2;
-    public static get minutesPerCell(): number { return 60 / Time.cellsPerHour; }
-
     private _totalMinutes: number;
 
     public constructor(totalMinutes: number);
@@ -17,7 +14,7 @@ class Time {
             this._totalMinutes = Time.getTotalMinutes(x, y);
         }
 
-        if (this._totalMinutes < 0 || this._totalMinutes >= 24 * 60 || this._totalMinutes % (60 / Time.cellsPerHour) != 0) {
+        if (this._totalMinutes < 0 || this._totalMinutes >= 24 * 60 || this._totalMinutes % TaskTable.minutesPerCell != 0) {
             throw new Error("Invalid constructor parameters");
         }
     }
@@ -31,7 +28,7 @@ class Time {
         return new Time(x._totalMinutes - y._totalMinutes);
     }
 
-    public putForward(unitTime: number): Time { return new Time(this._totalMinutes + unitTime * (60 / Time.cellsPerHour)); }
+    public putForward(unitTime: number): Time { return new Time(this._totalMinutes + unitTime * TaskTable.minutesPerCell); }
 
     public toString(): string { return String(this.hours) + ":" + String(100 + this.minutes).slice(1); }
     public static fromString(time: string): Time { 
@@ -48,7 +45,7 @@ class Time {
     }
 
     public static fromTableIndex(tx: number): Time {
-        return new Time(tx * 60 / Time.cellsPerHour); 
+        return new Time(tx * TaskTable.minutesPerCell); 
     }
 
     public static getTotalMinutes(hours: number, minutes: number) {
@@ -59,7 +56,7 @@ class Time {
     public static getTableIndex(hours: number, minutes: number): number;
     public static getTableIndex(x: number, y?: number): number {
         if (y === undefined) {
-            return Math.floor(x * Time.cellsPerHour / 60);
+            return Math.floor(x / TaskTable.minutesPerCell);
         } else {
             return Time.getTableIndex(x, y);
         }
@@ -70,8 +67,12 @@ class Time {
 class TimeSpan {
     public static coretime: TimeSpan = null;
 
+    public static init(config: any) {
+        TimeSpan.coretime = TimeSpan.fromJSONObject(config.coretimeSpan);
+    }
+
     public constructor(private _begin: Time, private _end: Time) {
-        if (this.span.totalMinutes < (60 / Time.cellsPerHour)) throw new Error("Invalid Argument");
+        if (this.span.totalMinutes < TaskTable.minutesPerCell) throw new Error("Invalid Argument");
     }
 
     public get begin(): Time { return this._begin; }
@@ -90,6 +91,10 @@ class TimeSpan {
 class Task {
     public static taskTypes: { name: string; taskNameCandidates: string[]; }[] = null;
 
+    public static init(config: any) {
+        Task.taskTypes = JSON.parse($("#task-types").html());
+    }
+
     public constructor(
         public type: number,
         public name: string,
@@ -105,12 +110,3 @@ class Task {
         return new Task(obj.type, obj.name, TimeSpan.fromJSONObject(obj.timeSpan), obj.memo);
     }
 }
-
-$(() => {
-    var config = JSON.parse($("#config").html());
-
-    TimeSpan.coretime = TimeSpan.fromJSONObject(config.coretimeSpan);
-    Time.cellsPerHour = config.cellsPerHour;
-
-    Task.taskTypes = JSON.parse($("#task-types").html());
-});

@@ -69,7 +69,7 @@ var Balloon = (function () {
         });
 
         for (var i = 0; i < 24; i++) {
-            for (var j = 0; j < 60; j += 60 / Time.cellsPerHour) {
+            for (var j = 0; j < 60; j += TaskTable.minutesPerCell) {
                 var currTime = new Time(i, j);
 
                 var option = $("<option>", {
@@ -81,7 +81,7 @@ var Balloon = (function () {
                     }
                 });
 
-                if (i == 23 && j == 60 * (Time.cellsPerHour - 1) / Time.cellsPerHour) {
+                if (i == 23 && j == TaskTable.minutesPerCell * (TaskTable.cellsPerHour - 1)) {
                     option.clone(true).appendTo(this.timeBeginBox);
                 }
                 if (i == 0 && j == 0) {
