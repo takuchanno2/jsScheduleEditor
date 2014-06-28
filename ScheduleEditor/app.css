@@ -61,23 +61,17 @@ body {
   content: " ";
   clear: both;
 }
-#schedule-editor #schedule-editor-table #task-grid .grid-cell,
-#schedule-editor #schedule-editor-table #table-header .grid-cell {
-  width: 330px;
-  height: 30px;
-  overflow: hidden;
+#schedule-editor #schedule-editor-table #task-grid .half-hour-cell,
+#schedule-editor #schedule-editor-table #table-header .half-hour-cell,
+#schedule-editor #schedule-editor-table #task-grid .task-cell,
+#schedule-editor #schedule-editor-table #table-header .task-cell {
   box-sizing: border-box;
-}
-#schedule-editor #schedule-editor-table #task-grid .grid-cell .half-hour-cell,
-#schedule-editor #schedule-editor-table #table-header .grid-cell .half-hour-cell,
-#schedule-editor #schedule-editor-table #task-grid .grid-cell .task-cell,
-#schedule-editor #schedule-editor-table #table-header .grid-cell .task-cell {
-  height: 100%;
+  height: 30px;
   vertical-align: top;
   cursor: default;
 }
-#schedule-editor #schedule-editor-table #task-grid .grid-cell .half-hour-cell,
-#schedule-editor #schedule-editor-table #table-header .grid-cell .half-hour-cell {
+#schedule-editor #schedule-editor-table #task-grid .half-hour-cell,
+#schedule-editor #schedule-editor-table #table-header .half-hour-cell {
   width: 30px;
   padding: 5px;
   float: left;
@@ -87,18 +81,18 @@ body {
   border-style: solid;
   border-width: 0px;
 }
-#schedule-editor #schedule-editor-table #task-grid .grid-cell .half-hour-cell.core,
-#schedule-editor #schedule-editor-table #table-header .grid-cell .half-hour-cell.core {
+#schedule-editor #schedule-editor-table #task-grid .half-hour-cell.core,
+#schedule-editor #schedule-editor-table #table-header .half-hour-cell.core {
   background-color: #cdeee3;
 }
-#schedule-editor #schedule-editor-table #task-grid .grid-cell .half-hour-cell.hour-starts,
-#schedule-editor #schedule-editor-table #table-header .grid-cell .half-hour-cell.hour-starts {
+#schedule-editor #schedule-editor-table #task-grid .half-hour-cell.hour-starts,
+#schedule-editor #schedule-editor-table #table-header .half-hour-cell.hour-starts {
   border-color: black;
   border-style: solid;
   border-top-width: 1px;
 }
-#schedule-editor #schedule-editor-table #task-grid .grid-cell .task-cell,
-#schedule-editor #schedule-editor-table #table-header .grid-cell .task-cell {
+#schedule-editor #schedule-editor-table #task-grid .task-cell,
+#schedule-editor #schedule-editor-table #table-header .task-cell {
   width: 300px;
   float: left;
   background-color: #f6f6ee;
@@ -106,27 +100,21 @@ body {
   border-style: solid;
   border-width: 1px 0px 0px 0px;
 }
-#schedule-editor #schedule-editor-table #task-grid .grid-cell .task-cell.core,
-#schedule-editor #schedule-editor-table #table-header .grid-cell .task-cell.core {
+#schedule-editor #schedule-editor-table #task-grid .task-cell.core,
+#schedule-editor #schedule-editor-table #table-header .task-cell.core {
   background-color: #e4f1ed;
 }
-#schedule-editor #schedule-editor-table #task-grid .grid-cell:first-child .half-hour-cell,
-#schedule-editor #schedule-editor-table #table-header .grid-cell:first-child .half-hour-cell,
-#schedule-editor #schedule-editor-table #task-grid .grid-cell:first-child .task-cell,
-#schedule-editor #schedule-editor-table #table-header .grid-cell:first-child .task-cell {
+#schedule-editor #schedule-editor-table #task-grid .half-hour-cell:first-child,
+#schedule-editor #schedule-editor-table #table-header .half-hour-cell:first-child,
+#schedule-editor #schedule-editor-table #task-grid .task-cell:first-child,
+#schedule-editor #schedule-editor-table #table-header .task-cell:first-child {
   border-top-width: 0px;
 }
-#schedule-editor #schedule-editor-table #task-grid .grid-cell.ui-selecting .half-hour-cell,
-#schedule-editor #schedule-editor-table #table-header .grid-cell.ui-selecting .half-hour-cell,
-#schedule-editor #schedule-editor-table #task-grid .grid-cell.ui-selecting .task-cell,
-#schedule-editor #schedule-editor-table #table-header .grid-cell.ui-selecting .task-cell {
+#schedule-editor #schedule-editor-table #task-grid .half-hour-cell.ui-selecting,
+#schedule-editor #schedule-editor-table #table-header .half-hour-cell.ui-selecting,
+#schedule-editor #schedule-editor-table #task-grid .task-cell.ui-selecting,
+#schedule-editor #schedule-editor-table #table-header .task-cell.ui-selecting {
   background-color: #FC4;
-}
-#schedule-editor #schedule-editor-table #task-grid .grid-cell.ui-selected .half-hour-cell,
-#schedule-editor #schedule-editor-table #table-header .grid-cell.ui-selected .half-hour-cell,
-#schedule-editor #schedule-editor-table #task-grid .grid-cell.ui-selected .task-cell,
-#schedule-editor #schedule-editor-table #table-header .grid-cell.ui-selected .task-cell {
-  background-color: #F91;
 }
 #schedule-editor #schedule-editor-table #table-header .grid-cell {
   width: 100%;

@@ -69,14 +69,9 @@ body {
         .clearfix();
       }
 
-      .grid-cell {
-        width: @time-cell-width + @task-cell-width;
-        height: @task-grid-height;
-        overflow: hidden;
-        box-sizing: border-box;
-
         .half-hour-cell, .task-cell {
-          height: 100%;
+          box-sizing: border-box;
+          height: @task-grid-height;
           vertical-align: top;
           cursor: default;
         }
@@ -114,21 +109,15 @@ body {
           }
         }
 
-        &:first-child .half-hour-cell,
-        &:first-child .task-cell {
+        .half-hour-cell:first-child ,
+        .task-cell:first-child {
           border-top-width: 0px;
         }
 
-        &.ui-selecting .half-hour-cell,
-        &.ui-selecting .task-cell {
+        .half-hour-cell.ui-selecting,
+        .task-cell.ui-selecting {
           background-color: #FC4;
         }
-
-        &.ui-selected .half-hour-cell,
-        &.ui-selected .task-cell {
-          background-color: #F91;
-        }
-      }
     }
 
     #table-header {

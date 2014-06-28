@@ -36,13 +36,11 @@ class TaskTable {
 
         jQueryTable.width(this.jQueryLeftGrid.outerWidth() + this.jQueryTimeGrid.outerWidth()+ this.jQueryRightGrid.outerWidth());
 
-        
         this.rightContainer = new TaskElementContainer(jQueryTable.find("#task-list"));
         taskElementContainer = this.rightContainer;
     }
 
     private generateCells() {
-        var nbsp = String.fromCharCode(160);
         var fragmentLeft = $(document.createDocumentFragment());
         var fragmentHours = $(document.createDocumentFragment());
         var fragmentRight = $(document.createDocumentFragment());
@@ -53,33 +51,21 @@ class TaskTable {
                 var inCoreTime = TimeSpan.coretime.includes(time);
                 var hourStarts = (j == 0);
 
-                var leftCells = $("<div />", {
-                    "class": "grid-cell",
+                $("<div />", {
+                    "class": "task-cell" + (inCoreTime ? " core" : ""),
                     "data": { "time": time, }
                 }).appendTo(fragmentLeft);
 
                 $("<div />", {
-                    "class": "task-cell" + (inCoreTime ? " core" : ""),
-                }).appendTo(leftCells);
-
-                var hourCells = $("<div />", {
-                    "class": "grid-cell",
+                    "text": (hourStarts ? String(i) : ""),
+                    "class": "half-hour-cell" + (inCoreTime ? " core" : "") + (hourStarts ? " hour-starts" : ""),
                     "data": { "time": time, }
                 }).appendTo(fragmentHours);
 
                 $("<div />", {
-                    "text": (hourStarts ? String(i) : nbsp),
-                    "class": "half-hour-cell" + (inCoreTime ? " core" : "") + (hourStarts ? " hour-starts" : ""),
-                }).appendTo(hourCells);
-
-                var rightCells = $("<div />", {
-                    "class": "grid-cell",
+                    "class": "task-cell" + (inCoreTime ? " core" : ""),
                     "data": { "time": time, }
                 }).appendTo(fragmentRight);
-
-                $("<div />", {
-                    "class": "task-cell" + (inCoreTime ? " core" : ""),
-                }).appendTo(rightCells);
             }
         }
 
@@ -87,11 +73,11 @@ class TaskTable {
         this.jQueryTimeGrid.append(fragmentHours);
         this.jQueryRightGrid.append(fragmentRight);
 
-        taskGridHeight = Math.round(this.jQueryTable.find("#table-content .grid-cell:first").outerHeight());
+        taskGridHeight = Math.round(this.jQueryTable.find("#table-content .task-cell:first").outerHeight());
         taskGridHeightTotal = Math.round(this.jQueryRightGrid.height());
 
         this.jQueryRightGrid.selectable({
-            "filter": ".grid-cell",
+            "filter": ".task-cell",
             // .schedule-editorのmouseupでタスクを非アクティブにされないように
             "start": (e: any, ui: any) => {
                 // this.leftContainer.activeElement = null;
