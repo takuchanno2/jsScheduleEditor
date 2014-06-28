@@ -8,8 +8,6 @@
 var taskGridHeight;
 var taskGridHeightTotal;
 
-var initialTasks = [];
-
 var taskTable;
 var taskElementContainer;
 
@@ -47,12 +45,13 @@ $(function () {
 
     taskTable = new TaskTable($("#schedule-editor-table"));
 
+    var initialTasks = [];
     JSON.parse($("#initial-schedule").html()).forEach(function (v) {
         initialTasks.push(Task.fromJSONObject(v));
     });
 
-    taskElementContainer = new TaskElementContainer($("#task-list"));
-    taskElementContainer.restore(initialTasks);
+    // taskTable.leftContainer.restore(initialTasks);
+    taskTable.rightContainer.restore(initialTasks);
 });
 
 var addTask = function () {

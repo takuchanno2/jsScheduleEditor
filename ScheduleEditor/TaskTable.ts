@@ -7,7 +7,10 @@ class TaskTable {
     public static get minutesPerCell(): number { return 60 / TaskTable.cellsPerHour; }
 
     private jQueryLeftGrid: JQuery;
+    public leftContainer: TaskElementContainer;
+
     private jQueryRightGrid: JQuery;
+    public rightContainer: TaskElementContainer;
 
     public static init(config: any) {
         TaskTable.cellsPerHour = config.cellsPerHour;
@@ -29,6 +32,10 @@ class TaskTable {
         this.generateCells();
 
         jQueryTable.width(this.jQueryLeftGrid.outerWidth() + this.jQueryRightGrid.outerWidth());
+
+        
+        this.rightContainer = new TaskElementContainer(jQueryTable.find("#task-list"));
+        taskElementContainer = this.rightContainer;
     }
 
     private generateCells() {
@@ -76,8 +83,11 @@ class TaskTable {
         this.jQueryRightGrid.selectable({
             "filter": ".grid-cell",
             // .schedule-editorのmouseupでタスクを非アクティブにされないように
-            "start": function (e: any, ui: any) { taskElementContainer.activeElement = null; },
-            "stop": function (e: any, ui: any) { addTask(); return false },
+            "start": (e: any, ui: any) => {
+                // this.leftContainer.activeElement = null;
+                this.rightContainer.activeElement = null;
+            },
+            "stop": (e: any, ui: any) => { addTask(); return false },
         });
     }
 }
