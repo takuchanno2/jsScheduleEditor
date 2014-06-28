@@ -5,7 +5,7 @@
 /// <reference path="Balloon.ts" />
 "use strict";
 var TaskElementContainer = (function () {
-    function TaskElementContainer(jQueryContainer) {
+    function TaskElementContainer(jQueryContainer /*, private timeToTopFunc: (t:Time) => number*/ ) {
         var _this = this;
         this.jQueryContainer = jQueryContainer;
         // 早い時間で始まるタスクが先に来るように、常にソートされている
@@ -23,6 +23,13 @@ var TaskElementContainer = (function () {
         };
         this.onElementCloseButtonClicked = function (el, ev) {
             _this.remove(el);
+        };
+        this.onElementTimeSpanChanged = function (el, oldts, newts) {
+            if (_this.elements.indexOf(el) == -1)
+                throw new Error("Invalid Argument");
+
+            el.top = taskGridHeight * el.top2;
+            el.height = taskGridHeight * el.height2;
         };
         this.onBalloonOkButtonClicked = function (el, ev) {
             _this.activeElement = null;
@@ -43,7 +50,15 @@ var TaskElementContainer = (function () {
     TaskElementContainer.prototype.add = function (element, active) {
         if (typeof active === "undefined") { active = true; }
         this.registerElementEvents(element);
+        this.intertToAppropriateIndex(element);
 
+        if (active) {
+            this.activeElement = element;
+        }
+    };
+
+    // タスクの開始が早い順で並んでいる状態を崩さないように、要素を配列の適切な場所に挿入する
+    TaskElementContainer.prototype.intertToAppropriateIndex = function (element) {
         // 前後の要素との時間調整
         if ($.isEmptyObject(this.elements)) {
             this.elements.push(element);
@@ -91,10 +106,6 @@ var TaskElementContainer = (function () {
                 }
             }
         }
-
-        if (active) {
-            this.activeElement = element;
-        }
     };
 
     TaskElementContainer.prototype.registerElementEvents = function (element) {
@@ -102,6 +113,7 @@ var TaskElementContainer = (function () {
         element.onMousePressed = this.onElementMousePressed;
         element.onClicked = this.onElementClicked;
         element.onCloseButtonClicked = this.onElementCloseButtonClicked;
+        element.onTimeSpanChanged = this.onElementTimeSpanChanged;
 
         this.jQueryContainer.append(element.jQueryElement);
         element.registerDefaultEvents();

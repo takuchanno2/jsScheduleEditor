@@ -20,6 +20,7 @@ var TaskElement = (function () {
         this.onClicked = $.noop;
         this.onMousePressed = $.noop;
         this.onCloseButtonClicked = $.noop;
+        this.onTimeSpanChanged = $.noop;
         if (!this.jQueryElement) {
             this.jQueryElement = TaskElement.jQueryElementTemplate.clone();
         }
@@ -87,6 +88,7 @@ var TaskElement = (function () {
             return this._timeSpan;
         },
         set: function (value) {
+            var oldTimeSpan = this._timeSpan;
             this._timeSpan = value;
 
             this.top = taskGridHeight * this.top2;
@@ -95,6 +97,8 @@ var TaskElement = (function () {
             this.timeBeginLabel.text(value.begin.toString());
             this.timeEndLabel.text(value.end.toString());
             this.timeSpanLabel.text(value.span.deciamlHours.toFixed(1));
+
+            this.onTimeSpanChanged(this, oldTimeSpan, value);
         },
         enumerable: true,
         configurable: true

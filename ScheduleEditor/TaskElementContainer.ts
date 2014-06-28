@@ -15,7 +15,7 @@ class TaskElementContainer {
 
     public balloon: Balloon;
 
-    public constructor(private jQueryContainer: JQuery) {
+    public constructor(private jQueryContainer: JQuery/*, private timeToTopFunc: (t:Time) => number*/) {
         this.balloon = new Balloon();
         this.balloon.onOkButtonClicked = this.onBalloonOkButtonClicked;
         this.balloon.onCancelButtonClicked = this.onBalloonCancelButtonClicked;
@@ -25,7 +25,15 @@ class TaskElementContainer {
     // やっぱaddAll的なメソッド追加する
     public add(element: TaskElement, active = true) {
         this.registerElementEvents(element);
+        this.intertToAppropriateIndex(element);
 
+        if (active) {
+            this.activeElement = element;
+        }
+    }
+
+    // タスクの開始が早い順で並んでいる状態を崩さないように、要素を配列の適切な場所に挿入する
+    private intertToAppropriateIndex(element: TaskElement) {
         // 前後の要素との時間調整
         if ($.isEmptyObject(this.elements)) {
             this.elements.push(element);
@@ -74,10 +82,6 @@ class TaskElementContainer {
                 }
             }
         }
-
-        if (active) {
-            this.activeElement = element;
-        }
     }
 
     private registerElementEvents(element: TaskElement) {
@@ -85,6 +89,7 @@ class TaskElementContainer {
         element.onMousePressed = this.onElementMousePressed;
         element.onClicked = this.onElementClicked;
         element.onCloseButtonClicked = this.onElementCloseButtonClicked;
+        element.onTimeSpanChanged = this.onElementTimeSpanChanged;
 
         this.jQueryContainer.append(element.jQueryElement);
         element.registerDefaultEvents();
@@ -162,6 +167,13 @@ class TaskElementContainer {
 
     private onElementCloseButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
         this.remove(el);
+    };
+
+    private onElementTimeSpanChanged = (el: TaskElement, oldts: TimeSpan, newts: TimeSpan) => {
+        if (this.elements.indexOf(el) == -1) throw new Error("Invalid Argument");
+
+        el.top = taskGridHeight * el.top2;
+        el.height = taskGridHeight * el.height2;
     };
 
     private onBalloonOkButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {

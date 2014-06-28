@@ -25,6 +25,7 @@ class TaskElement {
     public onClicked: (el: TaskElement, ev: JQueryEventObject) => any = $.noop;
     public onMousePressed: (el: TaskElement, ev: JQueryMouseEventObject) => any = $.noop;
     public onCloseButtonClicked: (el: TaskElement, ev: JQueryEventObject) => any = $.noop;
+    public onTimeSpanChanged: (el: TaskElement, oldts: TimeSpan, newts: TimeSpan) => any = $.noop;
 
     public constructor(timeSpan: TimeSpan, public jQueryElement: JQuery = null) {
         if (!this.jQueryElement) {
@@ -64,6 +65,7 @@ class TaskElement {
 
     public get timeSpan(): TimeSpan {　return this._timeSpan;　}
     public set timeSpan(value: TimeSpan) {
+        var oldTimeSpan = this._timeSpan;
         this._timeSpan = value;
 
         this.top = taskGridHeight * this.top2;
@@ -72,6 +74,8 @@ class TaskElement {
         this.timeBeginLabel.text(value.begin.toString());
         this.timeEndLabel.text(value.end.toString());
         this.timeSpanLabel.text(value.span.deciamlHours.toFixed(1));
+
+        this.onTimeSpanChanged(this, oldTimeSpan, value);
     }
 
     public get top2(): number {

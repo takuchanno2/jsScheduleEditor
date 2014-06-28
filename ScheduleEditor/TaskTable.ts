@@ -74,14 +74,18 @@ class TaskTable {
         taskGridHeight = Math.round(this.jQueryTable.find("#table-content .task-cell:first").outerHeight());
         taskGridHeightTotal = Math.round(this.jQueryRightGrid.height());
 
+        this.jQueryTimeGrid.selectable({
+            "start": (e: any, ui: any) => {},
+            "stop": (e: any, ui: any) => { return false; },
+        });
+
         this.jQueryRightGrid.selectable({
-            "filter": ".task-cell",
             // .schedule-editorのmouseupでタスクを非アクティブにされないように
             "start": (e: any, ui: any) => {
                 // this.leftContainer.activeElement = null;
                 this.rightContainer.activeElement = null;
             },
-            "stop": (e: any, ui: any) => { addTask(); return false },
+            "stop": (e: any, ui: any) => { addTask(); return false; },
         });
     }
 }
