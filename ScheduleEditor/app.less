@@ -1,11 +1,11 @@
 ﻿@border-width: 1px;
 @border-width-bold: 2px;
 
-@hour-area-width: 30px;
+@time-cell-width: 30px;
 @task-grid-header-height: 30px;
 @task-grid-height: 30px;
 
-@task-width: 300px;
+@task-cell-width: 300px;
 
 /*** カラーリング ***/
 @grid-background: hsl(60, 30%, 95%);
@@ -55,22 +55,22 @@ body {
     }
 
     #task-grid, #table-header {
-      #task-grid-left {
-        width: @task-width;
+      #task-grid-left, #task-grid-time, #task-grid-right {
         float: left;
 
         .default-border();
         border-width: 0px @border-width-bold 0px 0px;
       }
 
-      #task-grid-right {
-        width: @hour-area-width + @task-width;
-        float: left;
+      #task-grid-left, #task-grid-right { width: @task-cell-width; }
+      #task-grid-time { width: @time-cell-width; }
+      #task-grid-right { 
+        border-width: 0px;
         .clearfix();
       }
 
       .grid-cell {
-        width: @hour-area-width + @task-width;
+        width: @time-cell-width + @task-cell-width;
         height: @task-grid-height;
         overflow: hidden;
         box-sizing: border-box;
@@ -82,26 +82,27 @@ body {
         }
 
         .half-hour-cell {
-          width: @hour-area-width;
+          width: @time-cell-width;
           padding: 5px;
           float: left;
           text-align: center;
           background-color: @grid-hour-background;
 
           .default-border();
-          border-width: 0px @border-width-bold 0px 0px;
+          border-width: 0px;
 
           &.core {
             background-color: @grid-hour-background-core;
           }
 
           &.hour-starts {
+            .default-border();
             border-top-width: @border-width;
           }
         }
 
         .task-cell {
-          width: @task-width;
+          width: @task-cell-width;
           float: left;
           background-color: @grid-background;
 
@@ -152,7 +153,7 @@ body {
     }
 
     #task-list {
-      width: @task-width;
+      width: @task-cell-width;
       height: 100%;
       position: absolute;
       pointer-events: none;
@@ -162,7 +163,7 @@ body {
 
       .task {
         position: absolute;
-        width: @task-width;
+        width: @task-cell-width;
         border-width: 0px;
         padding: 0px;
         pointer-events: auto;

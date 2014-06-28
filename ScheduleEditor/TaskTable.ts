@@ -9,6 +9,8 @@ class TaskTable {
     private jQueryLeftGrid: JQuery;
     public leftContainer: TaskElementContainer;
 
+    private jQueryTimeGrid: JQuery;
+
     private jQueryRightGrid: JQuery;
     public rightContainer: TaskElementContainer;
 
@@ -18,6 +20,7 @@ class TaskTable {
 
     public constructor(private jQueryTable: JQuery) {
         this.jQueryLeftGrid = jQueryTable.find("#task-grid-left");
+        this.jQueryTimeGrid = jQueryTable.find("#task-grid-time");
         this.jQueryRightGrid = jQueryTable.find("#task-grid-right");
 
         // テーブルの一番下のイベントで、タスクのアクティブ化解除
@@ -31,7 +34,7 @@ class TaskTable {
 
         this.generateCells();
 
-        jQueryTable.width(this.jQueryLeftGrid.outerWidth() + this.jQueryRightGrid.outerWidth());
+        jQueryTable.width(this.jQueryLeftGrid.outerWidth() + this.jQueryTimeGrid.outerWidth()+ this.jQueryRightGrid.outerWidth());
 
         
         this.rightContainer = new TaskElementContainer(jQueryTable.find("#task-list"));
@@ -41,6 +44,7 @@ class TaskTable {
     private generateCells() {
         var nbsp = String.fromCharCode(160);
         var fragmentLeft = $(document.createDocumentFragment());
+        var fragmentHours = $(document.createDocumentFragment());
         var fragmentRight = $(document.createDocumentFragment());
 
         for (var i = 0; i < 24; i++) {
@@ -58,15 +62,20 @@ class TaskTable {
                     "class": "task-cell" + (inCoreTime ? " core" : ""),
                 }).appendTo(leftCells);
 
-                var rightCells = $("<div />", {
+                var hourCells = $("<div />", {
                     "class": "grid-cell",
                     "data": { "time": time, }
-                }).appendTo(fragmentRight);
+                }).appendTo(fragmentHours);
 
                 $("<div />", {
                     "text": (hourStarts ? String(i) : nbsp),
                     "class": "half-hour-cell" + (inCoreTime ? " core" : "") + (hourStarts ? " hour-starts" : ""),
-                }).appendTo(rightCells);
+                }).appendTo(hourCells);
+
+                var rightCells = $("<div />", {
+                    "class": "grid-cell",
+                    "data": { "time": time, }
+                }).appendTo(fragmentRight);
 
                 $("<div />", {
                     "class": "task-cell" + (inCoreTime ? " core" : ""),
@@ -75,6 +84,7 @@ class TaskTable {
         }
 
         this.jQueryLeftGrid.append(fragmentLeft);
+        this.jQueryTimeGrid.append(fragmentHours);
         this.jQueryRightGrid.append(fragmentRight);
 
         taskGridHeight = Math.round(this.jQueryTable.find("#table-content .grid-cell:first").outerHeight());
