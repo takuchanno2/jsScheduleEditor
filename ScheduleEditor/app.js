@@ -3,12 +3,14 @@
 /// <reference path="TaskElement.ts" />
 /// <reference path="TaskElementContainer.ts" />
 /// <reference path="Balloon.ts" />
+/// <reference path="TaskTable.ts" />
 "use strict";
 var taskGridHeight;
 var taskGridHeightTotal;
 
 var initialTasks = [];
 
+var taskTable;
 var taskElementContainer;
 
 $(function () {
@@ -34,12 +36,15 @@ $(function () {
         window.collectGarbage();
     });
 
-    $(".schedule-editor-table").click(function () {
+    $("#task-grid-right").click(function () {
+        console.log("right!");
         return false;
     });
 
     // グリッドの外側をクリックしたら、タスクを非アクティブに
-    $("#schedule-editor").click(function () {
+    $("#schedule-editor-table").click(function () {
+        console.log("table!");
+
         // このイベントが呼ばれるとタスクが非アクティブになるので、適宜stopPropagationすること
         taskElementContainer.activeElement = null;
     });

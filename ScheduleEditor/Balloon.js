@@ -50,7 +50,8 @@ var Balloon = (function () {
         });
 
         this.okButton.click(function (e) {
-            return _this.onOkButtonClicked(_this.activeTaskElement, e);
+            _this.onOkButtonClicked(_this.activeTaskElement, e);
+            return false;
         });
         this.cancelButton.click(function (e) {
             return _this.onCancelButtonClicked(_this.activeTaskElement, e);

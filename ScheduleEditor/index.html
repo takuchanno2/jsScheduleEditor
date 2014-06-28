@@ -122,6 +122,7 @@
   <script src="TaskElement.js"></script>
   <script src="Balloon.js"></script>
   <script src="TaskElementContainer.js"></script>
+  <script src="TaskTable.js"></script>
   <script src="app.js"></script>
 </head>
 <body>
@@ -135,7 +136,7 @@
         <button class="bench">べんち</button>
 
         <div id="schedule-editor">
-          <div class="schedule-editor-table">
+          <div id="schedule-editor-table">
             <div id="table-header">
               <div class="grid-cell">
                 <div class="task-cell">予定</div>
@@ -145,7 +146,7 @@
             <div id="table-content">
               <div id="task-grid">
                 <div id="task-grid-left"></div>
-                <div id="task-grid-right" class="clearfix"></div>
+                <div id="task-grid-right"></div>
               </div>
               <div id="task-list">
               </div>

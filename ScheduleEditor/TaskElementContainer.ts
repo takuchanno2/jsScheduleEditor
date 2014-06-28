@@ -157,6 +157,7 @@ class TaskElementContainer {
 
     private onElementClicked = (el: TaskElement, ev: JQueryEventObject) => {
         this.balloon.show(el);
+        return false;
     };
 
     private onElementCloseButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {

@@ -19,6 +19,7 @@ var TaskElementContainer = (function () {
         };
         this.onElementClicked = function (el, ev) {
             _this.balloon.show(el);
+            return false;
         };
         this.onElementCloseButtonClicked = function (el, ev) {
             _this.remove(el);

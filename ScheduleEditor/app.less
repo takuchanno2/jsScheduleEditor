@@ -32,7 +32,7 @@ body {
     border-style: solid;
   }
 
-  .schedule-editor-table {
+  #schedule-editor-table {
     text-align: left;
     padding: 0px;
     position: relative;
@@ -40,7 +40,7 @@ body {
     box-sizing: border-box;
     .default-border();
     border-width: @border-width-bold;
-    
+
     #table-content {
       // とりあえず完成するまではスクロールはナシ
       /*height: 300px;
@@ -63,12 +63,9 @@ body {
 
         // clearfix
         &:after {
-          content: ".";
-          display: block;
-          height: 0;
-          font-size: 0;
+          display: table;
+          content: " ";
           clear: both;
-          visibility: hidden;
         }
       }
 

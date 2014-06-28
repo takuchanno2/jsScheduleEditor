@@ -48,7 +48,7 @@ class Balloon {
         this.timeBeginBox.change((e) => { this.onTimeBoxChanged(e); });
         this.timeEndBox.change((e) => { this.onTimeBoxChanged(e); });
 
-        this.okButton.click((e) => this.onOkButtonClicked(this.activeTaskElement, e));
+        this.okButton.click((e) => { this.onOkButtonClicked(this.activeTaskElement, e); return false; });
         this.cancelButton.click((e) => this.onCancelButtonClicked(this.activeTaskElement, e));
         this.deleteButton.click((e) => this.onDeleteButtonClicked(this.activeTaskElement, e));
 
