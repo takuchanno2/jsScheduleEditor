@@ -20,6 +20,9 @@ var Balloon = (function () {
         this.cancelButton = $("#balloon-cancel-button");
         this.deleteButton = $("#balloon-delete-button");
 
+        this.jQueryElement.click(function () {
+            return false;
+        });
         this.typeBox.change(function (ev) {
             _this.onTypeBoxChanged(ev);
         });

@@ -9,17 +9,20 @@ body {
 }
 #schedule-editor * {
   box-sizing: inherit;
+}
+#schedule-editor .default-border {
   border-color: black;
   border-style: solid;
-  border-width: 0px;
 }
 #schedule-editor #schedule-editor-table {
   text-align: left;
   padding: 0px;
   position: relative;
   display: inline-block;
-  border-width: 2px;
   box-sizing: content-box;
+  border-color: black;
+  border-style: solid;
+  border-width: 2px;
 }
 #schedule-editor #schedule-editor-table #table-content {
   /*height: 300px;
@@ -31,6 +34,8 @@ body {
 #schedule-editor #schedule-editor-table #table-header #task-grid-left {
   width: 300px;
   float: left;
+  border-color: black;
+  border-style: solid;
   border-width: 0px 2px 0px 0px;
 }
 #schedule-editor #schedule-editor-table #task-grid #task-grid-right,
@@ -65,8 +70,10 @@ body {
   padding: 5px;
   float: left;
   text-align: center;
-  border-width: 0px 2px 0px 0px;
   background-color: #f2f2ca;
+  border-color: black;
+  border-style: solid;
+  border-width: 0px 2px 0px 0px;
 }
 #schedule-editor #schedule-editor-table #task-grid .grid-cell .half-hour-cell.core,
 #schedule-editor #schedule-editor-table #table-header .grid-cell .half-hour-cell.core {
@@ -80,8 +87,10 @@ body {
 #schedule-editor #schedule-editor-table #table-header .grid-cell .task-cell {
   width: 300px;
   float: left;
-  border-width: 1px 0px 0px 0px;
   background-color: #f6f6ee;
+  border-color: black;
+  border-style: solid;
+  border-width: 1px 0px 0px 0px;
 }
 #schedule-editor #schedule-editor-table #task-grid .grid-cell .task-cell.core,
 #schedule-editor #schedule-editor-table #table-header .grid-cell .task-cell.core {
@@ -108,6 +117,8 @@ body {
 #schedule-editor #schedule-editor-table #table-header .grid-cell {
   width: 100%;
   height: 30px;
+  border-color: black;
+  border-style: solid;
   border-width: 0px 0px 2px 0px;
 }
 #schedule-editor #schedule-editor-table #table-header .grid-cell .task-cell {
@@ -147,10 +158,17 @@ body {
   padding: 5px;
   word-wrap: break-word;
   overflow: hidden;
+  border-color: black;
+  border-style: solid;
   border-width: 1px 0px 0px 0px;
 }
 #schedule-editor #schedule-editor-table #task-list .task .task-content .task-head {
   margin-bottom: 10px;
+}
+#schedule-editor #schedule-editor-table #task-list .task .task-content .task-head:after {
+  display: table;
+  content: " ";
+  clear: both;
 }
 #schedule-editor #schedule-editor-table #task-list .task .task-content .task-head .task-title {
   margin: 0px 25px 2px 0px;
@@ -189,10 +207,9 @@ body {
   background-color: #ff7bff;
 }
 #schedule-editor #schedule-editor-table #edit-balloon {
-  box-sizing: content-box;
   position: absolute;
   left: 100px;
-  width: 300px;
+  width: 350px;
   z-index: 100;
   display: none;
   padding: 20px;
@@ -201,9 +218,6 @@ body {
   border: 1px solid #888888;
   border-radius: 10px;
   box-shadow: 1px 1px 3px #000;
-  box-sizing: border-box;
-}
-#schedule-editor #schedule-editor-table #edit-balloon * {
   box-sizing: border-box;
 }
 #schedule-editor #schedule-editor-table #edit-balloon [class*="col-"] {
@@ -252,9 +266,6 @@ body {
   border-bottom-color: #888888;
   border-width: 21px;
   margin-left: -21px;
-}
-#schedule-editor #schedule-editor-table #task-template {
-  display: none;
 }
 #schedule-editor .clearfix:after {
   display: table;

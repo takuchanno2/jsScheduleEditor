@@ -35,6 +35,7 @@ class Balloon {
         this.cancelButton = $("#balloon-cancel-button");
         this.deleteButton = $("#balloon-delete-button");
 
+        this.jQueryElement.click(() => false);
         this.typeBox.change((ev) => { this.onTypeBoxChanged(ev); });
         this.nameBox.focus(() => { this.nameBox.autocomplete("search"); });
 

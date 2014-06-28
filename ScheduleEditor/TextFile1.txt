@@ -154,3 +154,5 @@
 
 // coretime外の時間グリッドは縮める
 // そのために、ResizableとDraggableはゴーストを使うようにする
+
+// balloonクリックすると閉じる
