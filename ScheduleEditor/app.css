@@ -129,6 +129,12 @@ body {
 #schedule-editor #schedule-editor-table #table-header .task-cell.ui-selecting {
   background-color: #FC4;
 }
+#schedule-editor #schedule-editor-table #task-grid .time-cell.ui-selected,
+#schedule-editor #schedule-editor-table #table-header .time-cell.ui-selected,
+#schedule-editor #schedule-editor-table #task-grid .task-cell.ui-selected,
+#schedule-editor #schedule-editor-table #table-header .task-cell.ui-selected {
+  background-color: #666;
+}
 #schedule-editor #schedule-editor-table #table-header .grid-cell {
   width: 100%;
   height: 30px;
