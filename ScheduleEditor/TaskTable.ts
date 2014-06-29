@@ -1,6 +1,14 @@
 ﻿/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
+/// <reference path="Scripts/typings/jqueryui/jqueryui.d.ts" />
 
 "use strict";
+
+class TaskTableColumn {
+    public leftCell: JQuery;
+    public timeCell: JQuery;
+    public rightCell: JQuery;
+    public time: Time;
+}
 
 class TaskTable {
     public static cellsPerHour: number;
@@ -47,23 +55,32 @@ class TaskTable {
 
         for (var i = 0; i < 24; i++) {
             for (var j = 0; j < 60; j += TaskTable.minutesPerCell) {
-                var time = new Time(i, j);
-                var inCoreTime = TimeSpan.coretime.includes(time);
+                var column = new TaskTableColumn();
+                column.time = new Time(i, j);
+
+                var inCoreTime = TimeSpan.coretime.includes(column.time);
                 var hourStarts = (j == 0);
+                
 
-                var taskCell = $("<div />", {
+                column.leftCell = $("<div />", {
                     "class": "task-cell" + (inCoreTime ? " core" : ""),
-                    "data": { "time": time, }
+                    "data": {
+                        "column": column,
+                    }
                 });
+                column.rightCell = column.leftCell.clone(true);
 
-                fragmentLeft.append(taskCell.clone(true));
-                fragmentRight.append(taskCell.clone(true));
-
-                $("<div />", {
+                column.timeCell = $("<div />", {
                     "text": (hourStarts ? String(i) : ""),
                     "class": "time-cell" + (inCoreTime ? " core" : "") + (hourStarts ? " hour-starts" : ""),
-                    "data": { "time": time, }
-                }).appendTo(fragmentHours);
+                    "data": {
+                        "column": column,
+                    }
+                })
+
+                fragmentLeft.append(column.leftCell);
+                fragmentRight.append(column.rightCell);
+                fragmentHours.append(column.timeCell);
             }
         }
 
@@ -75,8 +92,9 @@ class TaskTable {
         taskGridHeightTotal = Math.round(this.jQueryRightGrid.height());
 
         this.jQueryTimeGrid.selectable({
-            "start": (e: any, ui: any) => {},
-            "stop": (e: any, ui: any) => { return false; },
+            "start": (e: any, ui: any) => { },
+            "stop": (e: any, ui: any) => { this.addTask(); return false; },
+            "selecting": this.onTimeGridSelecting,
         });
 
         this.jQueryRightGrid.selectable({
@@ -85,8 +103,46 @@ class TaskTable {
                 // this.leftContainer.activeElement = null;
                 this.rightContainer.activeElement = null;
             },
-            "stop": (e: any, ui: any) => { addTask(); return false; },
+            "stop": (e: any, ui: any) => { this.addTask(); return false; },
+            "selecting": (ev: Event, ui: any) => { syncSelectableState(); },
         });
     }
+
+    private syncSelectableState(from: JQuery, to: JQuery) {
+        ["ui-selecting", "ui-selected"].forEach((cls) => {
+            (from.hasClass(cls) ? to.addClass : to.removeClass)(cls);
+        });
+    }
+
+    private onTimeGridSelecting(ev: Event, ui: any) { 
+        var selectingColumn: TaskTableColumn = $(ui.selecting).data("column");
+        selectingColumn.rightCell.addClass("ui-selecting");
+    }
+
+    private onRightGridSelecting(ev: Event, ui: any) {
+        var selectingColumn: TaskTableColumn = $(ui.selecting).data("column");
+        selectingColumn.timeCell.addClass("ui-selecting");
+    }
+
+    private addTask() {
+        var selectedCells = $(".ui-selected");
+        if (selectedCells.length <= 0) return;
+
+        var selectedColumnBegin: TaskTableColumn = <TaskTableColumn>selectedCells.first().data("column");
+        var selectedColumnEnd: TaskTableColumn = <TaskTableColumn>selectedCells.last().data("column");
+
+        var timeBegin = selectedColumnBegin.time;
+        var timeEnd = selectedColumnEnd.time.putForward(1);
+
+        taskElementContainer.saveState();
+
+        var newTask = new TaskElement(new TimeSpan(timeBegin, timeEnd));
+
+        selectedCells.removeClass("ui-selected");
+
+        taskElementContainer.add(newTask, true);
+        taskElementContainer.balloon.show(newTask);
+    }
+
 }
 

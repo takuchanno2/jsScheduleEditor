@@ -38,7 +38,6 @@ $(() => {
         "taskElement": fn_taskElement,
     });
 
-    $(".add-task").click(addTask);
     $(".output").click(output);
     $(".input").click(input);
     $(".clear").click(() => { taskElementContainer.clear(); });
@@ -70,22 +69,6 @@ $(() => {
     taskTable.rightContainer.restore(initialTasks);
 });
 
-var addTask = function () {
-    var selectedCells = $(".ui-selected");
-    if (selectedCells.length <= 0) return;
-
-    var timeBegin: Time = selectedCells.first().data("time");
-    var timeEnd = selectedCells.last().data("time").putForward(1);
-
-    taskElementContainer.saveState();
-
-    var newTask = new TaskElement(new TimeSpan(timeBegin, timeEnd));
-
-    selectedCells.removeClass("ui-selected");
-
-    taskElementContainer.add(newTask, true);
-    taskElementContainer.balloon.show(newTask);
-};
 
 var startDragEvent = function (e: any, ui: any) {
     var curr: JQuery = ui.helper;

@@ -142,7 +142,7 @@ var Balloon = (function () {
             "source": Task.taskTypes[this.activeTaskElement.type].taskNameCandidates,
             "minLength": 0,
             // 何故かJQueryUI.AutocompleteUIParamsの定義が空……
-            // "select": (ev: JQueryEventObject, ui: JQueryUI.AutocompleteUIParams) => { this.activeTaskElement.name = ui.item.value; }
+            // "select": (ev: Event, ui: JQueryUI.AutocompleteUIParams) => { this.activeTaskElement.name = ui.item.value; }
             "select": function (ev, ui) {
                 _this.activeTaskElement.name = ui.item.value;
             }

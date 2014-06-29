@@ -40,6 +40,7 @@ class TaskElementContainer {
         } else {
             var i = 0, j = 0;
 
+            // 挿入位置を決定
             for (; i < this.elements.length; i++) {
                 if (this.elements[i].timeSpan.begin.totalMinutes < element.timeSpan.end.totalMinutes) {
                     if (element.timeSpan.begin.totalMinutes <= this.elements[i].timeSpan.begin.totalMinutes) {
