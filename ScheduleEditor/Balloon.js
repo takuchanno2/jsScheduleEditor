@@ -132,7 +132,7 @@ var Balloon = (function () {
 
     Balloon.prototype.onTypeBoxChanged = function (ev) {
         if (typeof ev === "undefined") { ev = null; }
-        this.activeTaskElement.type = $(ev.currentTarget).val();
+        this.activeTaskElement.type = Number($(ev.currentTarget).val());
         this.updateAutoCompleteCandidates();
     };
 

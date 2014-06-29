@@ -117,7 +117,7 @@ class Balloon {
     }
 
     private onTypeBoxChanged(ev: JQueryEventObject = null) {
-        this.activeTaskElement.type = $(ev.currentTarget).val();
+        this.activeTaskElement.type = Number($(ev.currentTarget).val());
         this.updateAutoCompleteCandidates();
     }
 

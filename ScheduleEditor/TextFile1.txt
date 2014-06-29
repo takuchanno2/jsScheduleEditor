@@ -95,3 +95,6 @@
 // テーブルの色んなところ、選択できないように
 
 // tableのheaderはdisplay: tableにして、自動的に分割してくれるように (width:50%とか指定しなくても)
+
+// JSONで吐き出すと、何故かtypeが文字列になってる
+// intertToAppropriateIndex作成中 (周りがずれる)

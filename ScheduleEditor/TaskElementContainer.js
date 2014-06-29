@@ -63,46 +63,31 @@ var TaskElementContainer = (function () {
         if ($.isEmptyObject(this.elements)) {
             this.elements.push(element);
         } else {
-            var i;
-            var succeedingElement = null;
+            var i = 0, j = 0;
 
-            for (i = 0; i < this.elements.length && this.elements[i].timeSpan.end.totalMinutes < element.timeSpan.begin.totalMinutes; i++)
-                ;
-            if (i < this.elements.length) {
-                var overlapTop = this.elements[i];
-                if (overlapTop.timeSpan.begin.totalMinutes < element.timeSpan.begin.totalMinutes) {
-                    // もし被っている要素が新しく追加する要素を完全に含むような時間設定だったら、
-                    // 新要素の下に、新要素の終了時間～被り要素の元々の終了時間を埋めるタスクを新規作成
-                    if (overlapTop.timeSpan.end.totalMinutes > element.timeSpan.end.totalMinutes) {
-                        succeedingElement = element.clone();
-                        succeedingElement.timeSpan = new TimeSpan(element.timeSpan.end, overlapTop.timeSpan.end);
-                        this.registerElementEvents(succeedingElement);
+            for (; i < this.elements.length; i++) {
+                if (this.elements[i].timeSpan.begin.totalMinutes < element.timeSpan.end.totalMinutes) {
+                    if (element.timeSpan.begin.totalMinutes <= this.elements[i].timeSpan.begin.totalMinutes) {
+                        break;
                     }
-
-                    // 被っている要素の終了時間を早くする
-                    overlapTop.timeSpan = new TimeSpan(overlapTop.timeSpan.begin, element.timeSpan.begin);
-                    i++;
+                } else {
+                    break;
                 }
             }
 
-            // この位置に新しい要素を追加
-            this.elements.splice(i++, 0, element);
-            if (succeedingElement) {
-                this.elements.splice(i++, 0, succeedingElement);
-            }
+            this.elements.splice(i, 0, element);
 
-            for (; i < this.elements.length && this.elements[i].timeSpan.begin.totalMinutes < element.timeSpan.end.totalMinutes; i++) {
-                var overlapBottom = this.elements[i];
+            for (j = i - 1; j >= 0; j--) {
+                var curr = this.elements[j];
+                var following = this.elements[j + 1];
 
-                if (overlapBottom.timeSpan.end.totalMinutes <= element.timeSpan.end.totalMinutes) {
-                    // 新しい要素が確保する時間の方が長い (既にある要素が新しい要素に完全に内包されている)
-                    // 場合は、内包されている要素を削除
-                    this.elements.splice(i, 1);
-                    overlapBottom.jQueryElement.remove();
-                    i--;
-                } else {
-                    // 被っている要素の開始時間を遅くする
-                    overlapBottom.timeSpan = new TimeSpan(element.timeSpan.end, overlapBottom.timeSpan.end);
+                if (following.timeSpan.begin.totalMinutes < curr.timeSpan.end.totalMinutes) {
+                    var newBegin = following.timeSpan.begin.totalMinutes - curr.timeSpan.span.totalMinutes;
+                    if (following.timeSpan.begin.totalMinutes > 0 || newBegin > 0) {
+                        curr.timeSpan = new TimeSpan(new Time(Math.max(newBegin, 0)), following.timeSpan.begin);
+                    } else {
+                        this.remove(j);
+                    }
                 }
             }
         }
@@ -119,13 +104,28 @@ var TaskElementContainer = (function () {
         element.registerDefaultEvents();
     };
 
-    TaskElementContainer.prototype.remove = function (element) {
+    TaskElementContainer.prototype.remove = function (x) {
+        var index;
+        var element;
+
+        if (typeof (x) === "number") {
+            index = x;
+            element = this.elements[x];
+        } else {
+            index = this.elements.indexOf(x);
+            element = x;
+        }
+
+        if (index < 0 || index >= this.elements.length) {
+            throw new Error("Invalid Argument");
+        }
+
         if (this.activeElement === element) {
             this.activeElement = null;
             this.balloon.hide();
         }
 
-        this.elements.splice(this.elements.indexOf(element), 1);
+        this.elements.splice(index, 1);
         element.jQueryElement.remove();
     };
 
