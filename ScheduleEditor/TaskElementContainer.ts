@@ -50,16 +50,36 @@ class TaskElementContainer {
                 }
             }
 
-            this.elements.splice(i, 0, element);
+            var insertIndex = i;
+            this.elements.splice(insertIndex, 0, element);
 
-            for (j = i - 1; j >= 0; j--) {
+            // 上方向にズラスす
+            for (j = insertIndex - 1; j >= 0; j--) {
                 var curr = this.elements[j];
-                var following = this.elements[j + 1];
+                var next = this.elements[j + 1];
 
-                if (following.timeSpan.begin.totalMinutes < curr.timeSpan.end.totalMinutes) {
-                    var newBegin = following.timeSpan.begin.totalMinutes - curr.timeSpan.span.totalMinutes;
-                    if (following.timeSpan.begin.totalMinutes > 0 || newBegin > 0) {
-                        curr.timeSpan = new TimeSpan(new Time(Math.max(newBegin, 0)), following.timeSpan.begin);
+                if (next.timeSpan.begin.totalMinutes < curr.timeSpan.end.totalMinutes) {
+                    var newBegin = Math.max(0, next.timeSpan.begin.totalMinutes - curr.timeSpan.span.totalMinutes);
+                    var timeSpan = new TimeSpan(new Time(newBegin), next.timeSpan.begin);
+                    if (timeSpan.span.totalMinutes > 0) {
+                        curr.timeSpan = timeSpan;
+                    } else {
+                        this.remove(j);
+                    }
+                }
+            }
+
+            // 下方向にズラスす
+            for (j = insertIndex + 1; j < this.elements.length; j++) {
+                var prev = this.elements[j - 1];
+                var curr = this.elements[j];
+
+                if (curr.timeSpan.begin.totalMinutes < prev.timeSpan.end.totalMinutes) {
+                    var newEnd = Math.min(24 * 60, prev.timeSpan.end.totalMinutes + curr.timeSpan.span.totalMinutes);
+                    var timeSpan = new TimeSpan(prev.timeSpan.end, new Time(newEnd));
+
+                    if (timeSpan.span.totalMinutes > 0) {
+                        curr.timeSpan = timeSpan;
                     } else {
                         this.remove(j);
                     }
