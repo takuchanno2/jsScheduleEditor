@@ -200,7 +200,6 @@ class TaskElementContainer {
 
     private onBalloonOkButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
         this.activeElement = null;
-        this.balloon.hide();
     };
 
     private onBalloonCancelButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {

@@ -33,7 +33,6 @@ var TaskElementContainer = (function () {
         };
         this.onBalloonOkButtonClicked = function (el, ev) {
             _this.activeElement = null;
-            _this.balloon.hide();
         };
         this.onBalloonCancelButtonClicked = function (el, ev) {
             _this.rollbackState();
