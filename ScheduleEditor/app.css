@@ -36,6 +36,9 @@ body {
       overflow-y: scroll;*/
   position: relative;
 }
+#schedule-editor #schedule-editor-table #task-grid {
+  height: 100%;
+}
 #schedule-editor #schedule-editor-table #task-grid,
 #schedule-editor #schedule-editor-table #table-header {
   -moz-user-select: none;

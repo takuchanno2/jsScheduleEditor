@@ -150,37 +150,25 @@ class TaskElementContainer {
         this.previousState = null;
     }
 
-    public onElementMousePressed = (el: TaskElement, ev: JQueryMouseEventObject) => {
+    public onElementMousePressed(el: TaskElement, ev: JQueryMouseEventObject){
         this.saveState();
         this.taskTable.onElementMousePressed(el, ev);
-    };
+    }
 
-    public onElementClicked = (el: TaskElement, ev: JQueryEventObject) => {
+    public onElementClicked(el: TaskElement, ev: JQueryEventObject){
         this.taskTable.onElementClicked(el, ev);
         return false;
-    };
+    }
 
-    public onElementCloseButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
+    public onElementCloseButtonClicked(el: TaskElement, ev: JQueryEventObject){
         this.remove(el);
         this.onElementCloseButtonClicked(el, ev);
-    };
+    }
 
-    public onElementTimeSpanChanged = (el: TaskElement, oldts: TimeSpan, newts: TimeSpan) => {
+    public onElementTimeSpanChanged(el: TaskElement, oldts: TimeSpan, newts: TimeSpan){
         if (this.elements.indexOf(el) == -1) throw new Error("Invalid Argument");
 
         el.top = taskGridHeight * el.top2;
         el.height = taskGridHeight * el.height2;
-    };
-
-    //private onBalloonOkButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
-    //    this.activeElement = null;
-    //};
-
-    //private onBalloonCancelButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
-    //    this.rollbackState();
-    //};
-
-    //private onBalloonDeleteButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
-    //    this.remove(el);
-    //};
+    }
 }

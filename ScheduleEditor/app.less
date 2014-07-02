@@ -2,8 +2,8 @@
 @border-width-bold: 2px;
 
 @time-cell-width: 30px;
-@task-grid-header-height: 30px;
-@task-grid-height: 30px;
+@task-cell-header-height: 30px;
+@cell-height: 30px;
 
 @task-cell-width: 300px;
 
@@ -60,6 +60,10 @@ body {
       position: relative;
     }
 
+    #task-grid {
+      height: 100%;
+    }
+
     #task-grid, #table-header {
       .disable-user-select();
 
@@ -84,7 +88,7 @@ body {
 
       .time-cell, .task-cell {
         box-sizing: border-box;
-        height: @task-grid-height;
+        height: @cell-height;
         vertical-align: top;
         cursor: default;
       }
@@ -139,7 +143,7 @@ body {
     #table-header {
       .grid-cell {
         width: 100%;
-        height: @task-grid-header-height;
+        height: @task-cell-header-height;
         .default-border();
         border-width: 0px 0px @border-width-bold 0px;
 
@@ -150,7 +154,7 @@ body {
           font-weight: bold;
           text-align: center;
           font-size: 110%;
-          line-height: @task-grid-header-height;
+          line-height: @task-cell-header-height;
           border-width: 0px;
         }
       }

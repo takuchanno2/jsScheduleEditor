@@ -33,7 +33,7 @@ class TaskTable {
 
         // テーブルの一番下のイベントで、タスクのアクティブ化解除
         // アクティブ化を解除されたくない場合は、適宜プロパゲーションを止めること
-        jQueryTable.click(function () {this.activeElement = null; });
+        jQueryTable.click(function () { this.activeElement = null; });
 
         // 新しくタスクを追加するためにグリッド選択後は、アクティブ化解除されませんように
         [this.jQueryTimeGrid, this.jQueryEditableGrid].forEach((grid) => {
@@ -42,7 +42,7 @@ class TaskTable {
 
         this.generateCells();
 
-        jQueryTable.width(this.jQueryFixedGrid.outerWidth() + this.jQueryTimeGrid.outerWidth()+ this.jQueryEditableGrid.outerWidth());
+        jQueryTable.width(this.jQueryFixedGrid.outerWidth() + this.jQueryTimeGrid.outerWidth() + this.jQueryEditableGrid.outerWidth());
 
         this.editableElementContainer = new TaskElementContainer(this, jQueryTable.find("#task-list"));
         taskElementContainer = this.editableElementContainer;
@@ -88,6 +88,8 @@ class TaskTable {
         this.jQueryFixedGrid.append(fragmentLeft);
         this.jQueryTimeGrid.append(fragmentHours);
         this.jQueryEditableGrid.append(fragmentRight);
+
+        this.jQueryTable.find("#task-grid").height(this.jQueryEditableGrid.height());
 
         taskGridHeight = Math.round(this.jQueryTable.find("#table-content .task-cell:first").outerHeight());
         taskGridHeightTotal = Math.round(this.jQueryEditableGrid.height());
@@ -144,33 +146,33 @@ class TaskTable {
         this.editableElementContainer.clear();
     }
 
-    public onElementMousePressed = (el: TaskElement, ev: JQueryMouseEventObject) => {
+    public onElementMousePressed(el: TaskElement, ev: JQueryMouseEventObject) {
         this.balloon.hide();
         this.activeElement = el;
         el.active = true;
-    };
+    }
 
-    public onElementClicked = (el: TaskElement, ev: JQueryEventObject) => {
+    public onElementClicked(el: TaskElement, ev: JQueryEventObject) {
         this.balloon.show(el);
         return false;
-    };
+    }
 
-    public onElementCloseButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
-    };
+    public onElementCloseButtonClicked(el: TaskElement, ev: JQueryEventObject) {
+    }
 
-    private onBalloonOkButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
+    private onBalloonOkButtonClicked(el: TaskElement, ev: JQueryEventObject) {
         this.activeElement = null;
-    };
+    }
 
-    private onBalloonCancelButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
+    private onBalloonCancelButtonClicked(el: TaskElement, ev: JQueryEventObject) {
         // ここら辺は後ほどうまいことやる
         this.editableElementContainer.rollbackState();
-    };
+    }
 
-    private onBalloonDeleteButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
+    private onBalloonDeleteButtonClicked(el: TaskElement, ev: JQueryEventObject) {
         // ここら辺は後ほどうまいことやる
         this.editableElementContainer.remove(el);
-    };
+    }
 
     public get activeElement(): TaskElement {
         return this._activeElement;

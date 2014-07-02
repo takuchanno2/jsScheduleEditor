@@ -3,30 +3,7 @@
 "use strict";
 var TaskTable = (function () {
     function TaskTable(jQueryTable) {
-        var _this = this;
         this.jQueryTable = jQueryTable;
-        this.onElementMousePressed = function (el, ev) {
-            _this.balloon.hide();
-            _this.activeElement = el;
-            el.active = true;
-        };
-        this.onElementClicked = function (el, ev) {
-            _this.balloon.show(el);
-            return false;
-        };
-        this.onElementCloseButtonClicked = function (el, ev) {
-        };
-        this.onBalloonOkButtonClicked = function (el, ev) {
-            _this.activeElement = null;
-        };
-        this.onBalloonCancelButtonClicked = function (el, ev) {
-            // ここら辺は後ほどうまいことやる
-            _this.editableElementContainer.rollbackState();
-        };
-        this.onBalloonDeleteButtonClicked = function (el, ev) {
-            // ここら辺は後ほどうまいことやる
-            _this.editableElementContainer.remove(el);
-        };
         this.jQueryFixedGrid = jQueryTable.find("#task-grid-fixed");
         this.jQueryTimeGrid = jQueryTable.find("#task-grid-time");
         this.jQueryEditableGrid = jQueryTable.find("#task-grid-editable");
@@ -106,9 +83,13 @@ var TaskTable = (function () {
             }
         }
 
+        alert("hello!");
+
         this.jQueryFixedGrid.append(fragmentLeft);
         this.jQueryTimeGrid.append(fragmentHours);
         this.jQueryEditableGrid.append(fragmentRight);
+
+        this.jQueryTable.find("#task-grid").height(this.jQueryEditableGrid.height());
 
         taskGridHeight = Math.round(this.jQueryTable.find("#table-content .task-cell:first").outerHeight());
         taskGridHeightTotal = Math.round(this.jQueryEditableGrid.height());
@@ -174,6 +155,34 @@ var TaskTable = (function () {
         }
 
         this.editableElementContainer.clear();
+    };
+
+    TaskTable.prototype.onElementMousePressed = function (el, ev) {
+        this.balloon.hide();
+        this.activeElement = el;
+        el.active = true;
+    };
+
+    TaskTable.prototype.onElementClicked = function (el, ev) {
+        this.balloon.show(el);
+        return false;
+    };
+
+    TaskTable.prototype.onElementCloseButtonClicked = function (el, ev) {
+    };
+
+    TaskTable.prototype.onBalloonOkButtonClicked = function (el, ev) {
+        this.activeElement = null;
+    };
+
+    TaskTable.prototype.onBalloonCancelButtonClicked = function (el, ev) {
+        // ここら辺は後ほどうまいことやる
+        this.editableElementContainer.rollbackState();
+    };
+
+    TaskTable.prototype.onBalloonDeleteButtonClicked = function (el, ev) {
+        // ここら辺は後ほどうまいことやる
+        this.editableElementContainer.remove(el);
     };
 
     Object.defineProperty(TaskTable.prototype, "activeElement", {

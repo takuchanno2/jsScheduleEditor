@@ -6,31 +6,11 @@
 "use strict";
 var TaskElementContainer = (function () {
     function TaskElementContainer(taskTable, jQueryContainer) {
-        var _this = this;
         this.taskTable = taskTable;
         this.jQueryContainer = jQueryContainer;
         // 早い時間で始まるタスクが先に来るように、常にソートされている
         this.elements = [];
         this.previousState = null;
-        this.onElementMousePressed = function (el, ev) {
-            _this.saveState();
-            _this.taskTable.onElementMousePressed(el, ev);
-        };
-        this.onElementClicked = function (el, ev) {
-            _this.taskTable.onElementClicked(el, ev);
-            return false;
-        };
-        this.onElementCloseButtonClicked = function (el, ev) {
-            _this.remove(el);
-            _this.onElementCloseButtonClicked(el, ev);
-        };
-        this.onElementTimeSpanChanged = function (el, oldts, newts) {
-            if (_this.elements.indexOf(el) == -1)
-                throw new Error("Invalid Argument");
-
-            el.top = taskGridHeight * el.top2;
-            el.height = taskGridHeight * el.height2;
-        };
     }
     // やっぱaddAll的なメソッド追加する
     TaskElementContainer.prototype.add = function (element) {
@@ -168,6 +148,29 @@ var TaskElementContainer = (function () {
 
         this.restore(this.previousState);
         this.previousState = null;
+    };
+
+    TaskElementContainer.prototype.onElementMousePressed = function (el, ev) {
+        this.saveState();
+        this.taskTable.onElementMousePressed(el, ev);
+    };
+
+    TaskElementContainer.prototype.onElementClicked = function (el, ev) {
+        this.taskTable.onElementClicked(el, ev);
+        return false;
+    };
+
+    TaskElementContainer.prototype.onElementCloseButtonClicked = function (el, ev) {
+        this.remove(el);
+        this.onElementCloseButtonClicked(el, ev);
+    };
+
+    TaskElementContainer.prototype.onElementTimeSpanChanged = function (el, oldts, newts) {
+        if (this.elements.indexOf(el) == -1)
+            throw new Error("Invalid Argument");
+
+        el.top = taskGridHeight * el.top2;
+        el.height = taskGridHeight * el.height2;
     };
     return TaskElementContainer;
 })();
