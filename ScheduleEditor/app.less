@@ -63,13 +63,13 @@ body {
     #task-grid, #table-header {
       .disable-user-select();
 
-      #task-grid-left, #task-grid-time, #task-grid-right {
+      #task-grid-fixed, #task-grid-time, #task-grid-editable {
         float: left;
         .default-border();
         border-width: 0px @border-width-bold 0px 0px;
       }
 
-      #task-grid-left, #task-grid-right {
+      #task-grid-fixed, #task-grid-editable {
         width: @task-cell-width;
       }
 
@@ -77,7 +77,7 @@ body {
         width: @time-cell-width;
       }
 
-      #task-grid-right {
+      #task-grid-editable {
         border-width: 0px;
         .clearfix();
       }

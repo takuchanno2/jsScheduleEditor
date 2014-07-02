@@ -66,7 +66,7 @@ $(() => {
     });
 
     // taskTable.leftContainer.restore(initialTasks);
-    taskTable.rightContainer.restore(initialTasks);
+    taskTable.editableElementContainer.restore(initialTasks);
 });
 
 

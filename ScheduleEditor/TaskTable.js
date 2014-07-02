@@ -4,9 +4,9 @@
 var TaskTable = (function () {
     function TaskTable(jQueryTable) {
         this.jQueryTable = jQueryTable;
-        this.jQueryLeftGrid = jQueryTable.find("#task-grid-left");
+        this.jQueryFixedGrid = jQueryTable.find("#task-grid-fixed");
         this.jQueryTimeGrid = jQueryTable.find("#task-grid-time");
-        this.jQueryRightGrid = jQueryTable.find("#task-grid-right");
+        this.jQueryEditableGrid = jQueryTable.find("#task-grid-editable");
 
         // テーブルの一番下のイベントで、タスクのアクティブ化解除
         // アクティブ化を解除されたくない場合は、適宜プロパゲーションを止めること
@@ -15,16 +15,18 @@ var TaskTable = (function () {
         });
 
         // 新しくタスクを追加するためにグリッド選択後は、アクティブ化解除されませんように
-        jQueryTable.find("#task-grid-right").click(function () {
-            return false;
+        [this.jQueryTimeGrid, this.jQueryEditableGrid].forEach(function (grid) {
+            grid.click(function () {
+                return false;
+            });
         });
 
         this.generateCells();
 
-        jQueryTable.width(this.jQueryLeftGrid.outerWidth() + this.jQueryTimeGrid.outerWidth() + this.jQueryRightGrid.outerWidth());
+        jQueryTable.width(this.jQueryFixedGrid.outerWidth() + this.jQueryTimeGrid.outerWidth() + this.jQueryEditableGrid.outerWidth());
 
-        this.rightContainer = new TaskElementContainer(jQueryTable.find("#task-list"));
-        taskElementContainer = this.rightContainer;
+        this.editableElementContainer = new TaskElementContainer(jQueryTable.find("#task-list"));
+        taskElementContainer = this.editableElementContainer;
     }
     Object.defineProperty(TaskTable, "minutesPerCell", {
         get: function () {
@@ -76,15 +78,16 @@ var TaskTable = (function () {
             }
         }
 
-        this.jQueryLeftGrid.append(fragmentLeft);
+        this.jQueryFixedGrid.append(fragmentLeft);
         this.jQueryTimeGrid.append(fragmentHours);
-        this.jQueryRightGrid.append(fragmentRight);
+        this.jQueryEditableGrid.append(fragmentRight);
 
         taskGridHeight = Math.round(this.jQueryTable.find("#table-content .task-cell:first").outerHeight());
-        taskGridHeightTotal = Math.round(this.jQueryRightGrid.height());
+        taskGridHeightTotal = Math.round(this.jQueryEditableGrid.height());
 
         this.jQueryTimeGrid.selectable({
             "start": function (e, ui) {
+                _this.editableElementContainer.activeElement = null;
             },
             "stop": function (e, ui) {
                 _this.addTask();
@@ -92,11 +95,11 @@ var TaskTable = (function () {
             }
         });
 
-        this.jQueryRightGrid.selectable({
+        this.jQueryEditableGrid.selectable({
             // .schedule-editorのmouseupでタスクを非アクティブにされないように
             "start": function (e, ui) {
                 // this.leftContainer.activeElement = null;
-                _this.rightContainer.activeElement = null;
+                _this.editableElementContainer.activeElement = null;
             },
             "stop": function (e, ui) {
                 _this.addTask();
@@ -104,7 +107,7 @@ var TaskTable = (function () {
             }
         });
 
-        [this.jQueryTimeGrid, this.jQueryRightGrid].forEach(function (grid) {
+        [this.jQueryTimeGrid, this.jQueryEditableGrid].forEach(function (grid) {
             ["selecting", "selected", "unselecting", "unselected"].forEach(function (evstr) {
                 grid.on("selectable" + evstr, function (ev, ui) {
                     _this.syncSelectableState($(ui[evstr]));

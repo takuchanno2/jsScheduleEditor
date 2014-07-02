@@ -43,33 +43,33 @@ body {
   -webkit-user-select: none;
   user-select: none;
 }
-#schedule-editor #schedule-editor-table #task-grid #task-grid-left,
-#schedule-editor #schedule-editor-table #table-header #task-grid-left,
+#schedule-editor #schedule-editor-table #task-grid #task-grid-fixed,
+#schedule-editor #schedule-editor-table #table-header #task-grid-fixed,
 #schedule-editor #schedule-editor-table #task-grid #task-grid-time,
 #schedule-editor #schedule-editor-table #table-header #task-grid-time,
-#schedule-editor #schedule-editor-table #task-grid #task-grid-right,
-#schedule-editor #schedule-editor-table #table-header #task-grid-right {
+#schedule-editor #schedule-editor-table #task-grid #task-grid-editable,
+#schedule-editor #schedule-editor-table #table-header #task-grid-editable {
   float: left;
   border-color: black;
   border-style: solid;
   border-width: 0px 2px 0px 0px;
 }
-#schedule-editor #schedule-editor-table #task-grid #task-grid-left,
-#schedule-editor #schedule-editor-table #table-header #task-grid-left,
-#schedule-editor #schedule-editor-table #task-grid #task-grid-right,
-#schedule-editor #schedule-editor-table #table-header #task-grid-right {
+#schedule-editor #schedule-editor-table #task-grid #task-grid-fixed,
+#schedule-editor #schedule-editor-table #table-header #task-grid-fixed,
+#schedule-editor #schedule-editor-table #task-grid #task-grid-editable,
+#schedule-editor #schedule-editor-table #table-header #task-grid-editable {
   width: 300px;
 }
 #schedule-editor #schedule-editor-table #task-grid #task-grid-time,
 #schedule-editor #schedule-editor-table #table-header #task-grid-time {
   width: 30px;
 }
-#schedule-editor #schedule-editor-table #task-grid #task-grid-right,
-#schedule-editor #schedule-editor-table #table-header #task-grid-right {
+#schedule-editor #schedule-editor-table #task-grid #task-grid-editable,
+#schedule-editor #schedule-editor-table #table-header #task-grid-editable {
   border-width: 0px;
 }
-#schedule-editor #schedule-editor-table #task-grid #task-grid-right:after,
-#schedule-editor #schedule-editor-table #table-header #task-grid-right:after {
+#schedule-editor #schedule-editor-table #task-grid #task-grid-editable:after,
+#schedule-editor #schedule-editor-table #table-header #task-grid-editable:after {
   display: table;
   content: " ";
   clear: both;

@@ -110,3 +110,4 @@
 // びろーっと下まで選択した後にドラッグしたまま上に戻すと、時間バーは選択したままに
 
 // BalloonはTaskTableに直属であるべきなきがする
+// ActiveElementもTaskTableに直属
