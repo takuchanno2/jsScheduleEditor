@@ -89,8 +89,6 @@ class TaskTable {
         this.jQueryTimeGrid.append(fragmentHours);
         this.jQueryEditableGrid.append(fragmentRight);
 
-        this.jQueryTable.find("#task-grid").height(this.jQueryEditableGrid.height());
-
         taskGridHeight = Math.round(this.jQueryTable.find("#table-content .task-cell:first").outerHeight());
         taskGridHeightTotal = Math.round(this.jQueryEditableGrid.height());
 
