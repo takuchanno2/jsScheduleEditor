@@ -51,7 +51,7 @@ class TaskTable {
                 var time = new Time(i, j);
                 var inCoreTime = TimeSpan.coretime.includes(time);
                 var hourStarts = (j == 0);
-                
+
                 var leftCell = $("<div />", {
                     "class": "task-cell" + (inCoreTime ? " core" : ""),
                     "data": {
@@ -88,8 +88,6 @@ class TaskTable {
         this.jQueryTimeGrid.selectable({
             "start": (e: any, ui: any) => { },
             "stop": (e: any, ui: any) => { this.addTask(); return false; },
-            "selecting": (ev: Event, ui: any) => { this.syncSelectableState($(ui.selecting)); },
-            "selected": (ev: Event, ui: any) => { this.syncSelectableState($(ui.selected)); },
         });
 
         this.jQueryRightGrid.selectable({
@@ -99,8 +97,12 @@ class TaskTable {
                 this.rightContainer.activeElement = null;
             },
             "stop": (e: any, ui: any) => { this.addTask(); return false; },
-            "selecting": (ev: Event, ui: any) => { this.syncSelectableState($(ui.selecting)); },
-            "selected": (ev: Event, ui: any) => { this.syncSelectableState($(ui.selected)); },
+        });
+
+        [this.jQueryTimeGrid, this.jQueryRightGrid].forEach((grid) => {
+            ["selecting", "selected", "unselecting", "unselected"].forEach((evstr) => {
+                grid.on("selectable" + evstr, (ev: Event, ui: any) => { this.syncSelectableState($(ui[evstr])); });
+            });
         });
     }
 
@@ -113,7 +115,7 @@ class TaskTable {
             //    counterCell.removeClass(cls);
             //}
 
-            (obj.hasClass(cls) ? jQuery.prototype.addClass : jQuery.prototype.removeClass).call(counterCell, cls);
+            (obj.hasClass(cls) ? $.fn.addClass : $.fn.removeClass).call(counterCell, cls);
         });
     }
 
