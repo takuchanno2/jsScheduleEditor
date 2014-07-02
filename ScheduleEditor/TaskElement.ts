@@ -182,17 +182,17 @@ class TaskElement {
         var taskWidth = this.jQueryElement.width();
 
         this.jQueryElement.draggable($.extend(commonOption, {
-            "start": startDragEvent,
-            "stop": stopEditingEvent,
-            "drag": editTaskEvent,
+            //"start": startDragEvent,
+            //"stop": stopEditingEvent,
+            //"drag": editTaskEvent,
             "scroll": true,
         }));
 
         this.jQueryElement.resizable($.extend(commonOption, {
             "handles": "n, s, ne, se, sw, nw",
-            "start": startResizeEvent,
-            "stop": stopEditingEvent,
-            "resize": editTaskEvent,
+            //"start": startResizeEvent,
+            //"stop": stopEditingEvent,
+            //"resize": editTaskEvent,
             "maxWidth": taskWidth,
             "minWidth": taskWidth,
         }));

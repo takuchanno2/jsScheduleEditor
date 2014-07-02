@@ -8,10 +8,15 @@ var TaskTable = (function () {
         this.jQueryTimeGrid = jQueryTable.find("#task-grid-time");
         this.jQueryEditableGrid = jQueryTable.find("#task-grid-editable");
 
+        this.balloon = new Balloon();
+        this.balloon.onOkButtonClicked = this.onBalloonOkButtonClicked;
+        this.balloon.onCancelButtonClicked = this.onBalloonCancelButtonClicked;
+        this.balloon.onDeleteButtonClicked = this.onBalloonDeleteButtonClicked;
+
         // テーブルの一番下のイベントで、タスクのアクティブ化解除
         // アクティブ化を解除されたくない場合は、適宜プロパゲーションを止めること
         jQueryTable.click(function () {
-            taskElementContainer.activeElement = null;
+            this.activeElement = null;
         });
 
         // 新しくタスクを追加するためにグリッド選択後は、アクティブ化解除されませんように
@@ -25,7 +30,7 @@ var TaskTable = (function () {
 
         jQueryTable.width(this.jQueryFixedGrid.outerWidth() + this.jQueryTimeGrid.outerWidth() + this.jQueryEditableGrid.outerWidth());
 
-        this.editableElementContainer = new TaskElementContainer(jQueryTable.find("#task-list"));
+        this.editableElementContainer = new TaskElementContainer(this, jQueryTable.find("#task-list"));
         taskElementContainer = this.editableElementContainer;
     }
     Object.defineProperty(TaskTable, "minutesPerCell", {
@@ -87,7 +92,7 @@ var TaskTable = (function () {
 
         this.jQueryTimeGrid.selectable({
             "start": function (e, ui) {
-                _this.editableElementContainer.activeElement = null;
+                _this.activeElement = null;
             },
             "stop": function (e, ui) {
                 _this.addTask();
@@ -98,8 +103,7 @@ var TaskTable = (function () {
         this.jQueryEditableGrid.selectable({
             // .schedule-editorのmouseupでタスクを非アクティブにされないように
             "start": function (e, ui) {
-                // this.leftContainer.activeElement = null;
-                _this.editableElementContainer.activeElement = null;
+                _this.activeElement = null;
             },
             "stop": function (e, ui) {
                 _this.addTask();
@@ -119,11 +123,6 @@ var TaskTable = (function () {
     TaskTable.prototype.syncSelectableState = function (obj) {
         var counterCell = obj.data("counter-cell");
         ["ui-selecting", "ui-selected"].forEach(function (cls) {
-            //if (obj.hasClass(cls)) {
-            //    counterCell.addClass(cls);
-            //} else {
-            //    counterCell.removeClass(cls);
-            //}
             (obj.hasClass(cls) ? $.fn.addClass : $.fn.removeClass).call(counterCell, cls);
         });
     };
@@ -142,9 +141,57 @@ var TaskTable = (function () {
 
         selectedCells.removeClass("ui-selected");
 
-        taskElementContainer.add(newTask, true);
-        taskElementContainer.balloon.show(newTask);
+        this.editableElementContainer.add(newTask);
+        this.activeElement = newTask;
     };
+
+    TaskTable.prototype.clearEditingTaskElements = function () {
+        if (this.activeElement && this.activeElement.container === this.editableElementContainer) {
+            this.activeElement = null;
+        }
+
+        this.editableElementContainer.clear();
+    };
+
+    TaskTable.prototype.onBalloonOkButtonClicked = function (el, ev) {
+        this.activeElement = null;
+    };
+
+    TaskTable.prototype.onBalloonCancelButtonClicked = function (el, ev) {
+        // ここら辺は後ほどうまいことやる
+        this.editableElementContainer.rollbackState();
+    };
+
+    TaskTable.prototype.onBalloonDeleteButtonClicked = function (el, ev) {
+        if (el === this.activeElement && el.container === this.editableElementContainer) {
+            this.activeElement = null;
+        }
+
+        // ここら辺は後ほどうまいことやる
+        this.editableElementContainer.remove(el);
+    };
+
+    Object.defineProperty(TaskTable.prototype, "activeElement", {
+        get: function () {
+            return this._activeElement;
+        },
+        set: function (value) {
+            if (this._activeElement) {
+                this._activeElement.active = false;
+            }
+
+            this._activeElement = value;
+            if (value) {
+                this._activeElement.active = true;
+                this.balloon.show(value);
+            } else {
+                this.balloon.hide();
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+
     return TaskTable;
 })();
 //# sourceMappingURL=TaskTable.js.map

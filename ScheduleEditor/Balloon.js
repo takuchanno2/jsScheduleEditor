@@ -97,16 +97,6 @@ var Balloon = (function () {
         this.timeEndBox.append(makeOption(new Time(24, 0)));
     }
     Balloon.prototype.show = function (element) {
-        this.update(element);
-        this.jQueryElement.show();
-        this.okButton.focus();
-    };
-
-    Balloon.prototype.hide = function () {
-        this.jQueryElement.hide();
-    };
-
-    Balloon.prototype.update = function (element) {
         this.activeTaskElement = element;
 
         this.nameBox.val(element.name);
@@ -120,6 +110,13 @@ var Balloon = (function () {
         this.timeSpanLabel.text(element.timeSpan.span.deciamlHours.toFixed(1));
 
         this.jQueryElement.css("top", element.top + taskGridHeight);
+
+        this.jQueryElement.show();
+        this.okButton.focus();
+    };
+
+    Balloon.prototype.hide = function () {
+        this.jQueryElement.hide();
     };
 
     Object.defineProperty(Balloon.prototype, "visible", {

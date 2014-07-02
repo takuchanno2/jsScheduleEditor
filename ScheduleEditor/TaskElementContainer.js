@@ -5,20 +5,41 @@
 /// <reference path="Balloon.ts" />
 "use strict";
 var TaskElementContainer = (function () {
-    function TaskElementContainer(jQueryContainer /*, private timeToTopFunc: (t:Time) => number*/ ) {
+    // public balloon: Balloon;
+    function TaskElementContainer(taskTable, jQueryContainer) {
         var _this = this;
+        this.taskTable = taskTable;
         this.jQueryContainer = jQueryContainer;
         // 早い時間で始まるタスクが先に来るように、常にソートされている
         this.elements = [];
-        this._activeElement = null;
+        // private _activeElement: TaskElement = null;
         this.previousState = null;
+        //public get activeElement(): TaskElement {
+        //    return this._activeElement;
+        //}
+        //public set activeElement(value: TaskElement) {
+        //    if (this._activeElement) {
+        //        this._activeElement.active = false;
+        //    }
+        //    this._activeElement = value;
+        //    if (value) {
+        //        this._activeElement.active = true;
+        //        if (this.balloon.visible) {
+        //            this.balloon.update(value);
+        //        }
+        //    } else {
+        //        if (this.balloon.visible) {
+        //            this.balloon.hide();
+        //        }
+        //    }
+        //}
         this.onElementMousePressed = function (el, ev) {
-            _this.activeElement = el;
             _this.saveState();
-            _this.balloon.hide();
+            _this.taskTable.activeElement = null;
+            el.active = true;
         };
         this.onElementClicked = function (el, ev) {
-            _this.balloon.show(el);
+            _this.taskTable.activeElement = el;
             return false;
         };
         this.onElementCloseButtonClicked = function (el, ev) {
@@ -31,29 +52,15 @@ var TaskElementContainer = (function () {
             el.top = taskGridHeight * el.top2;
             el.height = taskGridHeight * el.height2;
         };
-        this.onBalloonOkButtonClicked = function (el, ev) {
-            _this.activeElement = null;
-        };
-        this.onBalloonCancelButtonClicked = function (el, ev) {
-            _this.rollbackState();
-        };
-        this.onBalloonDeleteButtonClicked = function (el, ev) {
-            _this.remove(el);
-        };
-        this.balloon = new Balloon();
-        this.balloon.onOkButtonClicked = this.onBalloonOkButtonClicked;
-        this.balloon.onCancelButtonClicked = this.onBalloonCancelButtonClicked;
-        this.balloon.onDeleteButtonClicked = this.onBalloonDeleteButtonClicked;
+        //this.balloon = new Balloon();
+        //this.balloon.onOkButtonClicked = this.onBalloonOkButtonClicked;
+        //this.balloon.onCancelButtonClicked = this.onBalloonCancelButtonClicked;
+        //this.balloon.onDeleteButtonClicked = this.onBalloonDeleteButtonClicked;
     }
     // やっぱaddAll的なメソッド追加する
-    TaskElementContainer.prototype.add = function (element, active) {
-        if (typeof active === "undefined") { active = true; }
+    TaskElementContainer.prototype.add = function (element) {
         this.intertToAppropriateIndex(element);
         this.addElementToJQueryContainer(element);
-
-        if (active) {
-            this.activeElement = element;
-        }
     };
 
     TaskElementContainer.prototype.addElementToJQueryContainer = function (element) {
@@ -145,17 +152,11 @@ var TaskElementContainer = (function () {
             throw new Error("Invalid Argument");
         }
 
-        if (this.activeElement === element) {
-            this.activeElement = null;
-            this.balloon.hide();
-        }
-
         this.elements.splice(index, 1);
         element.jQueryElement.remove();
     };
 
     TaskElementContainer.prototype.clear = function () {
-        this.balloon.hide();
         this.elements.forEach(function (e) {
             e.jQueryElement.remove();
         });
@@ -174,7 +175,7 @@ var TaskElementContainer = (function () {
 
         // すげぇ遅い
         dump.forEach(function (t) {
-            _this.add(TaskElement.fromTask(t), false);
+            _this.add(TaskElement.fromTask(t));
         });
     };
 
@@ -189,32 +190,6 @@ var TaskElementContainer = (function () {
         this.restore(this.previousState);
         this.previousState = null;
     };
-
-    Object.defineProperty(TaskElementContainer.prototype, "activeElement", {
-        get: function () {
-            return this._activeElement;
-        },
-        set: function (value) {
-            if (this._activeElement) {
-                this._activeElement.active = false;
-            }
-
-            this._activeElement = value;
-            if (value) {
-                this._activeElement.active = true;
-                if (this.balloon.visible) {
-                    this.balloon.update(value);
-                }
-            } else {
-                if (this.balloon.visible) {
-                    this.balloon.hide();
-                }
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-
     return TaskElementContainer;
 })();
 //# sourceMappingURL=TaskElementContainer.js.map

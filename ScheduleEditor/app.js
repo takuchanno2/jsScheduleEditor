@@ -23,7 +23,7 @@ $(function () {
     $(".output").click(output);
     $(".input").click(input);
     $(".clear").click(function () {
-        taskElementContainer.clear();
+        taskTable.clearEditingTaskElements();
     });
     $(".bench").click(function () {
         for (var i = 0; i < 1000; i++) {
@@ -53,62 +53,55 @@ $(function () {
     taskTable.editableElementContainer.restore(initialTasks);
 });
 
-var startDragEvent = function (e, ui) {
-    var curr = ui.helper;
-
-    curr.data("original-top", ui.position.top);
-
-    taskElementContainer.balloon.hide();
-    taskElementContainer.activeElement = curr.taskElement();
-};
-
-var startResizeEvent = function (e, ui) {
-    var curr = ui.helper;
-
-    taskElementContainer.balloon.hide();
-    taskElementContainer.activeElement = curr.taskElement();
-};
-
-var editTaskEvent = function (e, ui) {
-    var curr = ui.helper;
-    var originalTop = (e.type === "drag") ? curr.data("original-top") : ui.originalPosition.top;
-
-    if (e.type === "resize") {
-        // なんか下方向にはみ出るので、それを防止
-        if (ui.originalPosition.top <= ui.position.top && ((ui.position.top >= ui.originalPosition.top + ui.originalSize.height) || (ui.size <= 0))) {
-            curr.top(Math.min(ui.position.top, taskGridHeightTotal) - taskGridHeight);
-            curr.height(taskGridHeight);
-            return;
-        }
-    }
-
-    // ここで設定しなくてもjQueryが勝手に設定してくれるが、一応ここで先に設定しておく
-    ui.position.top = taskGridHeight * Math.round(ui.position.top / taskGridHeight);
-    curr.top(ui.position.top);
-    if (e.type === "resize") {
-        curr.height(ui.size.height);
-    }
-
-    if ((e.type === "drag") || ((e.type === "resize") && (ui.size.height > ui.originalSize.height))) {
-        // 高さの小さい要素をマウスでサッと移動させようとすると、一気に移動するために他の要素の中に入り込む可能性がある
-        // そこで、元の位置・サイズから移動先の位置・サイズまでのスペースを考えて、その範囲には今弄っている要素以外に何も要素が来ないよう、他の要素をずらす
-        if (ui.position.top < originalTop) {
-            // 上に伸びる方向に高さが変化したか、上に移動させた
-            adjustPositionUpward(curr, ui.position.top, originalTop + curr.height());
-        } else {
-            // 下に伸びる方向に高さが変化したか、下に移動させた
-            adjustPositionDownward(curr, originalTop, ui.position.top + curr.height());
-        }
-    }
-
-    setTaskBorder(curr, ui.position.top);
-    // refreshTaskTimeText(curr);
-};
-
-var stopEditingEvent = function (e, ui) {
-    taskElementContainer.balloon.show(taskElementContainer.activeElement);
-};
-
+//var startDragEvent = function (e: any, ui: any) {
+//    var curr: JQuery = ui.helper;
+//    curr.data("original-top", ui.position.top);
+//    taskElementContainer.balloon.hide();
+//    taskElementContainer.activeElement = curr.taskElement();
+//};
+//var startResizeEvent = function (e: any, ui: any) {
+//    var curr: JQuery = ui.helper;
+//    taskElementContainer.balloon.hide();
+//    taskElementContainer.activeElement = curr.taskElement();
+//};
+//var editTaskEvent = function (e: any, ui: any) {
+//    var curr = ui.helper; // 今、移動orサイズ変更しようとしている要素
+//    var originalTop = (e.type === "drag") ? curr.data("original-top") : ui.originalPosition.top;
+//    if (e.type === "resize") {
+//        // なんか下方向にはみ出るので、それを防止
+//        if (ui.originalPosition.top <= ui.position.top && ( // 引き下げている途中
+//            (ui.position.top >= ui.originalPosition.top + ui.originalSize.height) || // 元の位置より下に行かない
+//            (ui.size <= 0)
+//            )) {
+//            curr.top(Math.min(ui.position.top, taskGridHeightTotal) - taskGridHeight);
+//            curr.height(taskGridHeight);
+//            return;
+//        }
+//    }
+//    // ここで設定しなくてもjQueryが勝手に設定してくれるが、一応ここで先に設定しておく
+//    ui.position.top = taskGridHeight * Math.round(ui.position.top / taskGridHeight);
+//    curr.top(ui.position.top);
+//    if (e.type === "resize") {
+//        curr.height(ui.size.height);
+//    }
+//    if ((e.type === "drag") ||
+//        ((e.type === "resize") && (ui.size.height > ui.originalSize.height))) {
+//        // 高さの小さい要素をマウスでサッと移動させようとすると、一気に移動するために他の要素の中に入り込む可能性がある
+//        // そこで、元の位置・サイズから移動先の位置・サイズまでのスペースを考えて、その範囲には今弄っている要素以外に何も要素が来ないよう、他の要素をずらす
+//        if (ui.position.top < originalTop) {
+//            // 上に伸びる方向に高さが変化したか、上に移動させた
+//            adjustPositionUpward(curr, ui.position.top, originalTop + curr.height());
+//        } else {
+//            // 下に伸びる方向に高さが変化したか、下に移動させた
+//            adjustPositionDownward(curr, originalTop, ui.position.top + curr.height());
+//        }
+//    }
+//    setTaskBorder(curr, ui.position.top);
+//    // refreshTaskTimeText(curr);
+//};
+//var stopEditingEvent = function (e: any, ui: any) {
+//    taskElementContainer.balloon.show(taskElementContainer.activeElement);
+//};
 var sortByTopInAsc = function (a, b) {
     return ($(a).top() - $(b).top());
 };

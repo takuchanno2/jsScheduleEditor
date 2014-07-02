@@ -10,26 +10,22 @@
 class TaskElementContainer {
     // 早い時間で始まるタスクが先に来るように、常にソートされている
     private elements: TaskElement[] = [];
-    private _activeElement: TaskElement = null;
+    // private _activeElement: TaskElement = null;
     private previousState: Task[] = null;
 
-    public balloon: Balloon;
+    // public balloon: Balloon;
 
-    public constructor(private jQueryContainer: JQuery/*, private timeToTopFunc: (t:Time) => number*/) {
-        this.balloon = new Balloon();
-        this.balloon.onOkButtonClicked = this.onBalloonOkButtonClicked;
-        this.balloon.onCancelButtonClicked = this.onBalloonCancelButtonClicked;
-        this.balloon.onDeleteButtonClicked = this.onBalloonDeleteButtonClicked;
+    public constructor(private taskTable: TaskTable, private jQueryContainer: JQuery) {
+        //this.balloon = new Balloon();
+        //this.balloon.onOkButtonClicked = this.onBalloonOkButtonClicked;
+        //this.balloon.onCancelButtonClicked = this.onBalloonCancelButtonClicked;
+        //this.balloon.onDeleteButtonClicked = this.onBalloonDeleteButtonClicked;
     }
 
     // やっぱaddAll的なメソッド追加する
-    public add(element: TaskElement, active = true) {
+    public add(element: TaskElement) {
         this.intertToAppropriateIndex(element);
         this.addElementToJQueryContainer(element);
-
-        if (active) {
-            this.activeElement = element;
-        }
     }
 
     private addElementToJQueryContainer(element: TaskElement) {
@@ -113,7 +109,7 @@ class TaskElementContainer {
 
     public remove(index: number): void;
     public remove(element: TaskElement): void;
-    public remove(x: any) {
+    public remove(x: any) { 
         var index: number;
         var element: TaskElement;
 
@@ -129,17 +125,11 @@ class TaskElementContainer {
             throw new Error("Invalid Argument");
         }
 
-        if (this.activeElement === element) {
-            this.activeElement = null;
-            this.balloon.hide();
-        }
-
         this.elements.splice(index, 1);
         element.jQueryElement.remove();
     }
 
     public clear() {
-        this.balloon.hide();
         this.elements.forEach((e) => { e.jQueryElement.remove(); });
         this.elements = [];
     }
@@ -151,7 +141,7 @@ class TaskElementContainer {
     public restore(dump: Task[]) {
         this.clear();
         // すげぇ遅い
-        dump.forEach((t) => { this.add(TaskElement.fromTask(t), false); });
+        dump.forEach((t) => { this.add(TaskElement.fromTask(t)); });
     }
 
     public saveState() {
@@ -165,36 +155,36 @@ class TaskElementContainer {
         this.previousState = null;
     }
 
-    public get activeElement(): TaskElement {
-        return this._activeElement;
-    }
+    //public get activeElement(): TaskElement {
+    //    return this._activeElement;
+    //}
 
-    public set activeElement(value: TaskElement) {
-        if (this._activeElement) {
-            this._activeElement.active = false;
-        }
+    //public set activeElement(value: TaskElement) {
+    //    if (this._activeElement) {
+    //        this._activeElement.active = false;
+    //    }
 
-        this._activeElement = value;
-        if (value) {
-            this._activeElement.active = true;
-            if (this.balloon.visible) {
-                this.balloon.update(value);
-            }
-        } else {
-            if (this.balloon.visible) {
-                this.balloon.hide();
-            }
-        }
-    }
+    //    this._activeElement = value;
+    //    if (value) {
+    //        this._activeElement.active = true;
+    //        if (this.balloon.visible) {
+    //            this.balloon.update(value);
+    //        }
+    //    } else {
+    //        if (this.balloon.visible) {
+    //            this.balloon.hide();
+    //        }
+    //    }
+    //}
 
     public onElementMousePressed = (el: TaskElement, ev: JQueryMouseEventObject) => {
-        this.activeElement = el;
         this.saveState();
-        this.balloon.hide();
+        this.taskTable.activeElement = null;
+        el.active = true;
     };
 
     public onElementClicked = (el: TaskElement, ev: JQueryEventObject) => {
-        this.balloon.show(el);
+        this.taskTable.activeElement = el;
         return false;
     };
 
@@ -209,15 +199,15 @@ class TaskElementContainer {
         el.height = taskGridHeight * el.height2;
     };
 
-    private onBalloonOkButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
-        this.activeElement = null;
-    };
+    //private onBalloonOkButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
+    //    this.activeElement = null;
+    //};
 
-    private onBalloonCancelButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
-        this.rollbackState();
-    };
+    //private onBalloonCancelButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
+    //    this.rollbackState();
+    //};
 
-    private onBalloonDeleteButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
-        this.remove(el);
-    };
+    //private onBalloonDeleteButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
+    //    this.remove(el);
+    //};
 }
