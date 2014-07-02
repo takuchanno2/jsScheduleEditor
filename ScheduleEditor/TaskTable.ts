@@ -134,6 +134,7 @@ class TaskTable {
 
         this.editableElementContainer.add(newTask);
         this.activeElement = newTask;
+        this.balloon.show(newTask);
     }
 
     public clearEditingTaskElements() {

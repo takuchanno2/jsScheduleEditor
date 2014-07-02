@@ -143,6 +143,7 @@ var TaskTable = (function () {
 
         this.editableElementContainer.add(newTask);
         this.activeElement = newTask;
+        this.balloon.show(newTask);
     };
 
     TaskTable.prototype.clearEditingTaskElements = function () {
