@@ -17,10 +17,6 @@ var TaskElement = (function () {
     function TaskElement(timeSpan, jQueryElement) {
         if (typeof jQueryElement === "undefined") { jQueryElement = null; }
         this.jQueryElement = jQueryElement;
-        this.onClicked = $.noop;
-        this.onMousePressed = $.noop;
-        this.onCloseButtonClicked = $.noop;
-        this.onTimeSpanChanged = $.noop;
         if (!this.jQueryElement) {
             this.jQueryElement = TaskElement.jQueryElementTemplate.clone();
         }
@@ -98,7 +94,9 @@ var TaskElement = (function () {
             this.timeEndLabel.text(value.end.toString());
             this.timeSpanLabel.text(value.span.deciamlHours.toFixed(1));
 
-            this.onTimeSpanChanged(this, oldTimeSpan, value);
+            if (this.container) {
+                this.container.onElementTimeSpanChanged(this, oldTimeSpan, value);
+            }
         },
         enumerable: true,
         configurable: true
@@ -216,13 +214,16 @@ var TaskElement = (function () {
     TaskElement.prototype.registerDefaultEvents = function () {
         var _this = this;
         this.jQueryElement.mousedown(function (ev) {
-            return _this.onMousePressed(_this, ev);
+            if (_this.container)
+                return _this.container.onElementMousePressed(_this, ev);
         });
         this.jQueryElement.click(function (ev) {
-            return _this.onClicked(_this, ev);
+            if (_this.container)
+                return _this.container.onElementClicked(_this, ev);
         });
         this.jQueryElement.find(".close").click(function (ev) {
-            return _this.onCloseButtonClicked(_this, ev);
+            if (_this.container)
+                return _this.container.onElementCloseButtonClicked(_this, ev);
         });
 
         var commonOption = {

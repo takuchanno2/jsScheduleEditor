@@ -48,7 +48,11 @@ var TaskElementContainer = (function () {
     // やっぱaddAll的なメソッド追加する
     TaskElementContainer.prototype.add = function (element, active) {
         if (typeof active === "undefined") { active = true; }
-        this.registerElementEvents(element);
+        element.container = this;
+
+        this.jQueryContainer.append(element.jQueryElement);
+        element.registerDefaultEvents();
+
         this.intertToAppropriateIndex(element);
 
         if (active) {
@@ -108,17 +112,6 @@ var TaskElementContainer = (function () {
                 }
             }
         }
-    };
-
-    TaskElementContainer.prototype.registerElementEvents = function (element) {
-        // Containerの方で受け取るイベントの登録
-        element.onMousePressed = this.onElementMousePressed;
-        element.onClicked = this.onElementClicked;
-        element.onCloseButtonClicked = this.onElementCloseButtonClicked;
-        element.onTimeSpanChanged = this.onElementTimeSpanChanged;
-
-        this.jQueryContainer.append(element.jQueryElement);
-        element.registerDefaultEvents();
     };
 
     TaskElementContainer.prototype.remove = function (x) {

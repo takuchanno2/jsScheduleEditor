@@ -10,6 +10,8 @@ enum GeometricRelation {
 }
 
 class TaskElement {
+    public container: TaskElementContainer;
+
     private static jQueryElementTemplate: JQuery;
 
     private _taskType: number;
@@ -21,11 +23,6 @@ class TaskElement {
     private timeBeginLabel: JQuery;
     private timeEndLabel: JQuery;
     private timeSpanLabel: JQuery;
-
-    public onClicked: (el: TaskElement, ev: JQueryEventObject) => any = $.noop;
-    public onMousePressed: (el: TaskElement, ev: JQueryMouseEventObject) => any = $.noop;
-    public onCloseButtonClicked: (el: TaskElement, ev: JQueryEventObject) => any = $.noop;
-    public onTimeSpanChanged: (el: TaskElement, oldts: TimeSpan, newts: TimeSpan) => any = $.noop;
 
     public constructor(timeSpan: TimeSpan, public jQueryElement: JQuery = null) {
         if (!this.jQueryElement) {
@@ -75,7 +72,9 @@ class TaskElement {
         this.timeEndLabel.text(value.end.toString());
         this.timeSpanLabel.text(value.span.deciamlHours.toFixed(1));
 
-        this.onTimeSpanChanged(this, oldTimeSpan, value);
+        if (this.container) {
+            this.container.onElementTimeSpanChanged(this, oldTimeSpan, value);
+        }
     }
 
     public get top2(): number {
@@ -164,9 +163,9 @@ class TaskElement {
 
     //　jQueryの要素にイベントを登録する
     public registerDefaultEvents() {
-        this.jQueryElement.mousedown((ev) => this.onMousePressed(this, ev));
-        this.jQueryElement.click((ev) => this.onClicked(this, ev));
-        this.jQueryElement.find(".close").click((ev) => this.onCloseButtonClicked(this, ev));
+        this.jQueryElement.mousedown((ev) => { if(this.container) return this.container.onElementMousePressed(this, ev) });
+        this.jQueryElement.click((ev) => { if (this.container) return this.container.onElementClicked(this, ev) });
+        this.jQueryElement.find(".close").click((ev) => { if (this.container) return this.container.onElementCloseButtonClicked(this, ev) });
 
         var commonOption = {
             "grid": [0, taskGridHeight],

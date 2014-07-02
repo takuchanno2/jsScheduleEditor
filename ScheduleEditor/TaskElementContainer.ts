@@ -24,7 +24,11 @@ class TaskElementContainer {
 
     // やっぱaddAll的なメソッド追加する
     public add(element: TaskElement, active = true) {
-        this.registerElementEvents(element);
+        element.container = this;
+
+        this.jQueryContainer.append(element.jQueryElement);
+        element.registerDefaultEvents();
+
         this.intertToAppropriateIndex(element);
 
         if (active) {
@@ -87,17 +91,6 @@ class TaskElementContainer {
                 }
             }
         }
-    }
-
-    private registerElementEvents(element: TaskElement) {
-        // Containerの方で受け取るイベントの登録
-        element.onMousePressed = this.onElementMousePressed;
-        element.onClicked = this.onElementClicked;
-        element.onCloseButtonClicked = this.onElementCloseButtonClicked;
-        element.onTimeSpanChanged = this.onElementTimeSpanChanged;
-
-        this.jQueryContainer.append(element.jQueryElement);
-        element.registerDefaultEvents();
     }
 
     public remove(index: number): void;
@@ -176,22 +169,22 @@ class TaskElementContainer {
         }
     }
 
-    private onElementMousePressed = (el: TaskElement, ev: JQueryMouseEventObject) => {
+    public onElementMousePressed = (el: TaskElement, ev: JQueryMouseEventObject) => {
         this.activeElement = el;
         this.saveState();
         this.balloon.hide();
     };
 
-    private onElementClicked = (el: TaskElement, ev: JQueryEventObject) => {
+    public onElementClicked = (el: TaskElement, ev: JQueryEventObject) => {
         this.balloon.show(el);
         return false;
     };
 
-    private onElementCloseButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
+    public onElementCloseButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
         this.remove(el);
     };
 
-    private onElementTimeSpanChanged = (el: TaskElement, oldts: TimeSpan, newts: TimeSpan) => {
+    public onElementTimeSpanChanged = (el: TaskElement, oldts: TimeSpan, newts: TimeSpan) => {
         if (this.elements.indexOf(el) == -1) throw new Error("Invalid Argument");
 
         el.top = taskGridHeight * el.top2;
