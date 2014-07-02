@@ -5,45 +5,24 @@
 /// <reference path="Balloon.ts" />
 "use strict";
 var TaskElementContainer = (function () {
-    // public balloon: Balloon;
     function TaskElementContainer(taskTable, jQueryContainer) {
         var _this = this;
         this.taskTable = taskTable;
         this.jQueryContainer = jQueryContainer;
         // 早い時間で始まるタスクが先に来るように、常にソートされている
         this.elements = [];
-        // private _activeElement: TaskElement = null;
         this.previousState = null;
-        //public get activeElement(): TaskElement {
-        //    return this._activeElement;
-        //}
-        //public set activeElement(value: TaskElement) {
-        //    if (this._activeElement) {
-        //        this._activeElement.active = false;
-        //    }
-        //    this._activeElement = value;
-        //    if (value) {
-        //        this._activeElement.active = true;
-        //        if (this.balloon.visible) {
-        //            this.balloon.update(value);
-        //        }
-        //    } else {
-        //        if (this.balloon.visible) {
-        //            this.balloon.hide();
-        //        }
-        //    }
-        //}
         this.onElementMousePressed = function (el, ev) {
             _this.saveState();
-            _this.taskTable.activeElement = null;
-            el.active = true;
+            _this.taskTable.onElementMousePressed(el, ev);
         };
         this.onElementClicked = function (el, ev) {
-            _this.taskTable.activeElement = el;
+            _this.taskTable.onElementClicked(el, ev);
             return false;
         };
         this.onElementCloseButtonClicked = function (el, ev) {
             _this.remove(el);
+            _this.onElementCloseButtonClicked(el, ev);
         };
         this.onElementTimeSpanChanged = function (el, oldts, newts) {
             if (_this.elements.indexOf(el) == -1)
@@ -52,10 +31,6 @@ var TaskElementContainer = (function () {
             el.top = taskGridHeight * el.top2;
             el.height = taskGridHeight * el.height2;
         };
-        //this.balloon = new Balloon();
-        //this.balloon.onOkButtonClicked = this.onBalloonOkButtonClicked;
-        //this.balloon.onCancelButtonClicked = this.onBalloonCancelButtonClicked;
-        //this.balloon.onDeleteButtonClicked = this.onBalloonDeleteButtonClicked;
     }
     // やっぱaddAll的なメソッド追加する
     TaskElementContainer.prototype.add = function (element) {
@@ -153,6 +128,10 @@ var TaskElementContainer = (function () {
         }
 
         this.elements.splice(index, 1);
+
+        if (element.onRemoved) {
+            element.onRemoved(element);
+        }
         element.jQueryElement.remove();
     };
 

@@ -144,23 +144,33 @@ class TaskTable {
         this.editableElementContainer.clear();
     }
 
-    private onBalloonOkButtonClicked(el: TaskElement, ev: JQueryEventObject) {
-        this.activeElement = null;
-    }
+    public onElementMousePressed = (el: TaskElement, ev: JQueryMouseEventObject) => {
+        this.balloon.hide();
+        this.activeElement = el;
+        el.active = true;
+    };
 
-    private onBalloonCancelButtonClicked(el: TaskElement, ev: JQueryEventObject) {
+    public onElementClicked = (el: TaskElement, ev: JQueryEventObject) => {
+        this.balloon.show(el);
+        return false;
+    };
+
+    public onElementCloseButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
+    };
+
+    private onBalloonOkButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
+        this.activeElement = null;
+    };
+
+    private onBalloonCancelButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
         // ここら辺は後ほどうまいことやる
         this.editableElementContainer.rollbackState();
-    }
+    };
 
-    private onBalloonDeleteButtonClicked(el: TaskElement, ev: JQueryEventObject){
-        if (el === this.activeElement && el.container === this.editableElementContainer) {
-            this.activeElement = null;
-        }
-        
-         // ここら辺は後ほどうまいことやる
+    private onBalloonDeleteButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
+        // ここら辺は後ほどうまいことやる
         this.editableElementContainer.remove(el);
-    }
+    };
 
     public get activeElement(): TaskElement {
         return this._activeElement;
@@ -169,15 +179,23 @@ class TaskTable {
     public set activeElement(value: TaskElement) {
         if (this._activeElement) {
             this._activeElement.active = false;
+            this._activeElement.onRemoved = null;
         }
 
         this._activeElement = value;
         if (value) {
             this._activeElement.active = true;
-            this.balloon.show(value);
+            value.onRemoved = this.onActiveElementRemoved;
+            if (this.balloon.visible) {
+                this.balloon.show(value);
+            }
         } else {
             this.balloon.hide();
         }
+    }
+
+    private onActiveElementRemoved(el: TaskElement) {
+        this.balloon.hide();
     }
 }
 

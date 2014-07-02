@@ -10,16 +10,9 @@
 class TaskElementContainer {
     // 早い時間で始まるタスクが先に来るように、常にソートされている
     private elements: TaskElement[] = [];
-    // private _activeElement: TaskElement = null;
     private previousState: Task[] = null;
 
-    // public balloon: Balloon;
-
     public constructor(private taskTable: TaskTable, private jQueryContainer: JQuery) {
-        //this.balloon = new Balloon();
-        //this.balloon.onOkButtonClicked = this.onBalloonOkButtonClicked;
-        //this.balloon.onCancelButtonClicked = this.onBalloonCancelButtonClicked;
-        //this.balloon.onDeleteButtonClicked = this.onBalloonDeleteButtonClicked;
     }
 
     // やっぱaddAll的なメソッド追加する
@@ -126,6 +119,8 @@ class TaskElementContainer {
         }
 
         this.elements.splice(index, 1);
+
+        if (element.onRemoved) { element.onRemoved(element); }
         element.jQueryElement.remove();
     }
 
@@ -155,41 +150,19 @@ class TaskElementContainer {
         this.previousState = null;
     }
 
-    //public get activeElement(): TaskElement {
-    //    return this._activeElement;
-    //}
-
-    //public set activeElement(value: TaskElement) {
-    //    if (this._activeElement) {
-    //        this._activeElement.active = false;
-    //    }
-
-    //    this._activeElement = value;
-    //    if (value) {
-    //        this._activeElement.active = true;
-    //        if (this.balloon.visible) {
-    //            this.balloon.update(value);
-    //        }
-    //    } else {
-    //        if (this.balloon.visible) {
-    //            this.balloon.hide();
-    //        }
-    //    }
-    //}
-
     public onElementMousePressed = (el: TaskElement, ev: JQueryMouseEventObject) => {
         this.saveState();
-        this.taskTable.activeElement = null;
-        el.active = true;
+        this.taskTable.onElementMousePressed(el, ev);
     };
 
     public onElementClicked = (el: TaskElement, ev: JQueryEventObject) => {
-        this.taskTable.activeElement = el;
+        this.taskTable.onElementClicked(el, ev);
         return false;
     };
 
     public onElementCloseButtonClicked = (el: TaskElement, ev: JQueryEventObject) => {
         this.remove(el);
+        this.onElementCloseButtonClicked(el, ev);
     };
 
     public onElementTimeSpanChanged = (el: TaskElement, oldts: TimeSpan, newts: TimeSpan) => {

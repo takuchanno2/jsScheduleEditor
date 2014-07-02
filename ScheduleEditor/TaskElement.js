@@ -17,6 +17,7 @@ var TaskElement = (function () {
     function TaskElement(timeSpan, jQueryElement) {
         if (typeof jQueryElement === "undefined") { jQueryElement = null; }
         this.jQueryElement = jQueryElement;
+        this.onRemoved = null;
         if (!this.jQueryElement) {
             this.jQueryElement = TaskElement.jQueryElementTemplate.clone();
         }

@@ -111,3 +111,5 @@
 
 // BalloonはTaskTableに直属であるべきなきがする
 // ActiveElementもTaskTableに直属
+
+// 今は密結合してるが、いずれObserver Patternで疎結合に

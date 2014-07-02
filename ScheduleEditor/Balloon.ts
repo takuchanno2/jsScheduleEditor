@@ -87,6 +87,20 @@ class Balloon {
     }
 
     public show(element: TaskElement) {
+        this.update(element);
+        this.jQueryElement.show();
+        this.okButton.focus();
+    }
+
+    public hide() {
+        this.jQueryElement.hide();
+    }
+
+    public get visible() {
+        return (this.jQueryElement.css("display") !== "none");
+    }
+
+    public update(element: TaskElement) {
         this.activeTaskElement = element;
 
         this.nameBox.val(element.name);
@@ -100,17 +114,6 @@ class Balloon {
         this.timeSpanLabel.text(element.timeSpan.span.deciamlHours.toFixed(1));
 
         this.jQueryElement.css("top", element.top + taskGridHeight);
-
-        this.jQueryElement.show();
-        this.okButton.focus();
-    }
-
-    public hide() {
-        this.jQueryElement.hide();
-    }
-
-    public get visible() {
-        return (this.jQueryElement.css("display") !== "none");
     }
 
     private onTypeBoxChanged(ev: JQueryEventObject = null) {

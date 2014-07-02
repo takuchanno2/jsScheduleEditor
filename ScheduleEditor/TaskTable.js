@@ -3,7 +3,30 @@
 "use strict";
 var TaskTable = (function () {
     function TaskTable(jQueryTable) {
+        var _this = this;
         this.jQueryTable = jQueryTable;
+        this.onElementMousePressed = function (el, ev) {
+            _this.balloon.hide();
+            _this.activeElement = el;
+            el.active = true;
+        };
+        this.onElementClicked = function (el, ev) {
+            _this.balloon.show(el);
+            return false;
+        };
+        this.onElementCloseButtonClicked = function (el, ev) {
+        };
+        this.onBalloonOkButtonClicked = function (el, ev) {
+            _this.activeElement = null;
+        };
+        this.onBalloonCancelButtonClicked = function (el, ev) {
+            // ここら辺は後ほどうまいことやる
+            _this.editableElementContainer.rollbackState();
+        };
+        this.onBalloonDeleteButtonClicked = function (el, ev) {
+            // ここら辺は後ほどうまいことやる
+            _this.editableElementContainer.remove(el);
+        };
         this.jQueryFixedGrid = jQueryTable.find("#task-grid-fixed");
         this.jQueryTimeGrid = jQueryTable.find("#task-grid-time");
         this.jQueryEditableGrid = jQueryTable.find("#task-grid-editable");
@@ -153,24 +176,6 @@ var TaskTable = (function () {
         this.editableElementContainer.clear();
     };
 
-    TaskTable.prototype.onBalloonOkButtonClicked = function (el, ev) {
-        this.activeElement = null;
-    };
-
-    TaskTable.prototype.onBalloonCancelButtonClicked = function (el, ev) {
-        // ここら辺は後ほどうまいことやる
-        this.editableElementContainer.rollbackState();
-    };
-
-    TaskTable.prototype.onBalloonDeleteButtonClicked = function (el, ev) {
-        if (el === this.activeElement && el.container === this.editableElementContainer) {
-            this.activeElement = null;
-        }
-
-        // ここら辺は後ほどうまいことやる
-        this.editableElementContainer.remove(el);
-    };
-
     Object.defineProperty(TaskTable.prototype, "activeElement", {
         get: function () {
             return this._activeElement;
@@ -178,12 +183,16 @@ var TaskTable = (function () {
         set: function (value) {
             if (this._activeElement) {
                 this._activeElement.active = false;
+                this._activeElement.onRemoved = null;
             }
 
             this._activeElement = value;
             if (value) {
                 this._activeElement.active = true;
-                this.balloon.show(value);
+                value.onRemoved = this.onActiveElementRemoved;
+                if (this.balloon.visible) {
+                    this.balloon.show(value);
+                }
             } else {
                 this.balloon.hide();
             }
@@ -192,6 +201,10 @@ var TaskTable = (function () {
         configurable: true
     });
 
+
+    TaskTable.prototype.onActiveElementRemoved = function (el) {
+        this.balloon.hide();
+    };
     return TaskTable;
 })();
 //# sourceMappingURL=TaskTable.js.map

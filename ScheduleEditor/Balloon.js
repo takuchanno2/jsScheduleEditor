@@ -97,20 +97,7 @@ var Balloon = (function () {
         this.timeEndBox.append(makeOption(new Time(24, 0)));
     }
     Balloon.prototype.show = function (element) {
-        this.activeTaskElement = element;
-
-        this.nameBox.val(element.name);
-        this.memoBox.val(element.memo);
-
-        this.typeBox.val(String(element.type));
-        this.updateAutoCompleteCandidates();
-
-        this.timeBeginBox.val(element.timeSpan.begin.toString());
-        this.timeEndBox.val(element.timeSpan.end.toString());
-        this.timeSpanLabel.text(element.timeSpan.span.deciamlHours.toFixed(1));
-
-        this.jQueryElement.css("top", element.top + taskGridHeight);
-
+        this.update(element);
         this.jQueryElement.show();
         this.okButton.focus();
     };
@@ -126,6 +113,22 @@ var Balloon = (function () {
         enumerable: true,
         configurable: true
     });
+
+    Balloon.prototype.update = function (element) {
+        this.activeTaskElement = element;
+
+        this.nameBox.val(element.name);
+        this.memoBox.val(element.memo);
+
+        this.typeBox.val(String(element.type));
+        this.updateAutoCompleteCandidates();
+
+        this.timeBeginBox.val(element.timeSpan.begin.toString());
+        this.timeEndBox.val(element.timeSpan.end.toString());
+        this.timeSpanLabel.text(element.timeSpan.span.deciamlHours.toFixed(1));
+
+        this.jQueryElement.css("top", element.top + taskGridHeight);
+    };
 
     Balloon.prototype.onTypeBoxChanged = function (ev) {
         if (typeof ev === "undefined") { ev = null; }
