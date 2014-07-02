@@ -10,7 +10,7 @@ var Time = (function () {
         }
 
         // 24 * 60は明日の0:00を示すこととして、例外的に設定可
-        if (this._totalMinutes < 0 || this._totalMinutes > 24 * 60 || this._totalMinutes % TaskTable.minutesPerCell != 0) {
+        if (this._totalMinutes < 0 || this._totalMinutes > 24 * 60) {
             throw new Error("Invalid constructor parameters");
         }
     }
@@ -93,8 +93,6 @@ var TimeSpan = (function () {
     function TimeSpan(_begin, _end) {
         this._begin = _begin;
         this._end = _end;
-        if (this.span.totalMinutes < TaskTable.minutesPerCell)
-            throw new Error("Invalid Argument");
     }
     TimeSpan.init = function (config) {
         TimeSpan.coretime = TimeSpan.fromJSONObject(config.coretimeSpan);

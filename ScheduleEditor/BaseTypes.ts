@@ -15,7 +15,7 @@ class Time {
         }
 
         // 24 * 60は明日の0:00を示すこととして、例外的に設定可
-        if (this._totalMinutes < 0 || this._totalMinutes > 24 * 60 || this._totalMinutes % TaskTable.minutesPerCell != 0) {
+        if (this._totalMinutes < 0 || this._totalMinutes > 24 * 60) {
             throw new Error("Invalid constructor parameters");
         }
     }
@@ -72,9 +72,7 @@ class TimeSpan {
         TimeSpan.coretime = TimeSpan.fromJSONObject(config.coretimeSpan);
     }
 
-    public constructor(private _begin: Time, private _end: Time) {
-        if (this.span.totalMinutes < TaskTable.minutesPerCell) throw new Error("Invalid Argument");
-    }
+    public constructor(private _begin: Time, private _end: Time) {}
 
     public get begin(): Time { return this._begin; }
     public get end(): Time { return this._end; }

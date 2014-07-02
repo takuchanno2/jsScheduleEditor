@@ -84,6 +84,10 @@ var TaskElement = (function () {
             return this._timeSpan;
         },
         set: function (value) {
+            if (value.span.totalMinutes === 0 || value.begin.totalMinutes % TaskTable.minutesPerCell != 0 || value.end.totalMinutes % TaskTable.minutesPerCell != 0) {
+                throw new Error("Invalid TimeSpan");
+            }
+
             var oldTimeSpan = this._timeSpan;
             this._timeSpan = value;
 
