@@ -24,18 +24,19 @@ class TaskElementContainer {
 
     // やっぱaddAll的なメソッド追加する
     public add(element: TaskElement, active = true) {
-        element.container = this;
-
-        this.jQueryContainer.append(element.jQueryElement);
-        element.registerDefaultEvents();
-
         this.intertToAppropriateIndex(element);
+        this.addElementToJQueryContainer(element);
 
         if (active) {
             this.activeElement = element;
         }
     }
 
+    private addElementToJQueryContainer(element: TaskElement) {
+        this.jQueryContainer.append(element.jQueryElement);
+        element.registerDefaultEvents();
+        element.container = this;
+    }
 
     // タスクの開始が早い順で並んでいる状態を崩さないように、要素を配列の適切な場所に挿入する
     private intertToAppropriateIndex(element: TaskElement) {
@@ -55,63 +56,39 @@ class TaskElementContainer {
 
             var insertIndex = i + 1;
             this.elements.splice(insertIndex, 0, element);
-
             
+             // 新しく追加するタスクの時間が、直前のタスクの時間内に完全に含まれているか？
             var prev = this.elements[insertIndex - 1];
             if (insertIndex > 0 &&
                 (prev.timeSpan.begin.totalMinutes <= element.timeSpan.begin.totalMinutes) &&
                 (element.timeSpan.end.totalMinutes <= prev.timeSpan.end.totalMinutes)
             ) {
-                // 新しく追加するタスクの時間が、直前のタスクの時間内に完全に含まれている場合
+                // 直前のタスクを新しく追加するタスクの開始時間まで縮める
                 var oldPrevSpan = prev.timeSpan.span.totalMinutes;
                 var newPrevTimeSpan = new TimeSpan(prev.timeSpan.begin, element.timeSpan.begin);
                 this.setElementTimeSpan(insertIndex - 1, newPrevTimeSpan);
 
+                // 縮めた分の時間を取り戻す長さの同じ内容のタスクを下に追加する
                 var next = prev.clone();
                 var remainingSpan = oldPrevSpan - newPrevTimeSpan.span.totalMinutes;
                 next.timeSpan = new TimeSpan(element.timeSpan.end, new Time(element.timeSpan.end.totalMinutes + remainingSpan));
                 this.elements.splice(insertIndex + 1, 0, next);
-                /*重複コード*/
-                next.container = this;
-                this.jQueryContainer.append(next.jQueryElement);
-                next.registerDefaultEvents();
-                /*ここまで*/
+                this.addElementToJQueryContainer(next);
             }
 
-            // 上方向にズラスす
+            // 上方向にズラす
             for (j = insertIndex - 1; j >= 0; j--) {
                 var curr = this.elements[j];
                 var next = this.elements[j + 1];
 
                 if (next.timeSpan.begin.totalMinutes < curr.timeSpan.end.totalMinutes) {
-                    //if (next.timeSpan.end.totalMinutes <= curr.timeSpan.end.totalMinutes) {
-                    //    // 新しく追加するタスクが前からある何かのタスクの時間内に完全に収まる場合、
-                    //    // とりあえず、前からあるタスクを、新しいタスクでぶった切る感じにする
-
-                    //    // 新しく追加するタスクの下に、元々タスクがぶった切られた残りを新しいタスクとして配置
-                    //    var newElementTimeSpan = new TimeSpan(next.timeSpan.end, new Time(curr.timeSpan.end.totalMinutes + next.timeSpan.span.totalMinutes));
-                    //    var newElement = curr.clone();
-                    //    newElement.timeSpan = newElementTimeSpan;
-
-                    //    /*ここから重複コードの予感*/
-                    //    newElement.container = this;
-                    //    this.jQueryContainer.append(newElement.jQueryElement);
-                    //    newElement.registerDefaultEvents();
-                    //    /*ここまで*/
-
-                    //    // 元々あるタスクの終了時間は、開始時間を新しく追加するタスクの開始時間まで縮める (通称、ぶった切る)
-                    //    var currTimeSpan = new TimeSpan(curr.timeSpan.begin, next.timeSpan.begin);
-                    //    this.setElementTimeSpan(j, currTimeSpan);
-                    //} else {
-                    //    // 
-                        var newBegin = Math.max(0, next.timeSpan.begin.totalMinutes - curr.timeSpan.span.totalMinutes);
-                        var timeSpan = new TimeSpan(new Time(newBegin), next.timeSpan.begin);
-                        this.setElementTimeSpan(j, timeSpan);
-                    //}
+                    var newBegin = Math.max(0, next.timeSpan.begin.totalMinutes - curr.timeSpan.span.totalMinutes);
+                    var timeSpan = new TimeSpan(new Time(newBegin), next.timeSpan.begin);
+                    this.setElementTimeSpan(j, timeSpan);
                 }
             }
 
-            // 下方向にズラスす
+            // 下方向にズラす
             for (j = insertIndex + 1; j < this.elements.length; j++) {
                 var prev = this.elements[j - 1];
                 var curr = this.elements[j];
@@ -133,7 +110,6 @@ class TaskElementContainer {
             this.remove(elementIndex);
         }
     }
-
 
     public remove(index: number): void;
     public remove(element: TaskElement): void;
