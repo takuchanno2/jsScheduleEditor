@@ -31,7 +31,11 @@ class TaskTable {
         });
 
         // 新しくタスクを追加するためにグリッド選択後は、アクティブ化解除されませんように
-        jQueryTable.find("#task-grid-right").click(function () { return false; });
+        [this.jQueryTimeGrid, this.jQueryRightGrid].forEach((grid) => {
+            grid.click(function () {
+                return false;
+            });
+        });
 
         this.generateCells();
 
@@ -86,7 +90,7 @@ class TaskTable {
         taskGridHeightTotal = Math.round(this.jQueryRightGrid.height());
 
         this.jQueryTimeGrid.selectable({
-            "start": (e: any, ui: any) => { },
+            "start": (e: any, ui: any) => { this.rightContainer.activeElement = null; },
             "stop": (e: any, ui: any) => { this.addTask(); return false; },
         });
 
