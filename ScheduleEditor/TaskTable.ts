@@ -89,20 +89,12 @@ class TaskTable {
         taskGridHeight = Math.round(this.jQueryTable.find("#table-content .task-cell:first").outerHeight());
         taskGridHeightTotal = Math.round(this.jQueryEditableGrid.height());
 
-        this.jQueryTimeGrid.selectable({
-            "start": (e: any, ui: any) => { this.activeElement = null; },
-            "stop": (e: any, ui: any) => { this.addTask(); return false; },
-        });
-
-        this.jQueryEditableGrid.selectable({
-            // .schedule-editorのmouseupでタスクを非アクティブにされないように
-            "start": (e: any, ui: any) => {
-                this.activeElement = null;
-            },
-            "stop": (e: any, ui: any) => { this.addTask(); return false; },
-        });
-
         [this.jQueryTimeGrid, this.jQueryEditableGrid].forEach((grid) => {
+            grid.selectable({
+                "start": (e: any, ui: any) => { this.activeElement = null; },
+                "stop": (e: any, ui: any) => { this.addTask(); },
+            });
+
             ["selecting", "selected", "unselecting", "unselected"].forEach((evstr) => {
                 grid.on("selectable" + evstr, (ev: Event, ui: any) => { this.syncSelectableState($(ui[evstr])); });
             });
@@ -117,17 +109,16 @@ class TaskTable {
     }
 
     private addTask() {
-        var selectedCells = $(".ui-selected");
+        var selectedCells = this.jQueryTable.find(".ui-selected");
         if (selectedCells.length <= 0) return;
 
         var timeBegin = <Time>selectedCells.first().data("time");
         var timeEnd = (<Time>selectedCells.last().data("time")).putForward(1);
+        selectedCells.removeClass("ui-selected");
 
-        taskElementContainer.saveState();
+        this.editableElementContainer.saveState();
 
         var newTask = new TaskElement(new TimeSpan(timeBegin, timeEnd));
-
-        selectedCells.removeClass("ui-selected");
 
         this.editableElementContainer.add(newTask);
         this.activeElement = newTask;

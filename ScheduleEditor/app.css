@@ -50,7 +50,7 @@ body {
   float: left;
   border-color: black;
   border-style: solid;
-  border-width: 0px 1px 0px 0px;
+  border-width: 0px 2px 0px 0px;
 }
 #schedule-editor #schedule-editor-table #task-grid #task-grid-fixed,
 #schedule-editor #schedule-editor-table #table-header #task-grid-fixed,
@@ -65,12 +65,6 @@ body {
 #schedule-editor #schedule-editor-table #task-grid #task-grid-editable,
 #schedule-editor #schedule-editor-table #table-header #task-grid-editable {
   border-width: 0px;
-}
-#schedule-editor #schedule-editor-table #task-grid #task-grid-editable:after,
-#schedule-editor #schedule-editor-table #table-header #task-grid-editable:after {
-  display: table;
-  content: "";
-  clear: both;
 }
 #schedule-editor #schedule-editor-table #task-grid .time-cell,
 #schedule-editor #schedule-editor-table #table-header .time-cell,

@@ -87,28 +87,16 @@ var TaskTable = (function () {
         taskGridHeight = Math.round(this.jQueryTable.find("#table-content .task-cell:first").outerHeight());
         taskGridHeightTotal = Math.round(this.jQueryEditableGrid.height());
 
-        this.jQueryTimeGrid.selectable({
-            "start": function (e, ui) {
-                _this.activeElement = null;
-            },
-            "stop": function (e, ui) {
-                _this.addTask();
-                return false;
-            }
-        });
-
-        this.jQueryEditableGrid.selectable({
-            // .schedule-editorのmouseupでタスクを非アクティブにされないように
-            "start": function (e, ui) {
-                _this.activeElement = null;
-            },
-            "stop": function (e, ui) {
-                _this.addTask();
-                return false;
-            }
-        });
-
         [this.jQueryTimeGrid, this.jQueryEditableGrid].forEach(function (grid) {
+            grid.selectable({
+                "start": function (e, ui) {
+                    _this.activeElement = null;
+                },
+                "stop": function (e, ui) {
+                    _this.addTask();
+                }
+            });
+
             ["selecting", "selected", "unselecting", "unselected"].forEach(function (evstr) {
                 grid.on("selectable" + evstr, function (ev, ui) {
                     _this.syncSelectableState($(ui[evstr]));
@@ -125,18 +113,17 @@ var TaskTable = (function () {
     };
 
     TaskTable.prototype.addTask = function () {
-        var selectedCells = $(".ui-selected");
+        var selectedCells = this.jQueryTable.find(".ui-selected");
         if (selectedCells.length <= 0)
             return;
 
         var timeBegin = selectedCells.first().data("time");
         var timeEnd = selectedCells.last().data("time").putForward(1);
+        selectedCells.removeClass("ui-selected");
 
-        taskElementContainer.saveState();
+        this.editableElementContainer.saveState();
 
         var newTask = new TaskElement(new TimeSpan(timeBegin, timeEnd));
-
-        selectedCells.removeClass("ui-selected");
 
         this.editableElementContainer.add(newTask);
         this.activeElement = newTask;
