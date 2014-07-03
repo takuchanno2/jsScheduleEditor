@@ -10,16 +10,6 @@ body {
 #schedule-editor * {
   box-sizing: inherit;
 }
-#schedule-editor .default-border {
-  border-color: black;
-  border-style: solid;
-}
-#schedule-editor .disable-user-select {
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
 #schedule-editor #schedule-editor-table {
   text-align: left;
   padding: 0px;
@@ -41,7 +31,7 @@ body {
 }
 #schedule-editor #schedule-editor-table #task-grid:after {
   display: table;
-  content: " ";
+  content: "";
   clear: both;
 }
 #schedule-editor #schedule-editor-table #task-grid,
@@ -79,7 +69,7 @@ body {
 #schedule-editor #schedule-editor-table #task-grid #task-grid-editable:after,
 #schedule-editor #schedule-editor-table #table-header #task-grid-editable:after {
   display: table;
-  content: " ";
+  content: "";
   clear: both;
 }
 #schedule-editor #schedule-editor-table #task-grid .time-cell,
@@ -125,12 +115,6 @@ body {
 #schedule-editor #schedule-editor-table #table-header .task-cell.core {
   background-color: #e4f1ed;
 }
-#schedule-editor #schedule-editor-table #task-grid .time-cell:first-child,
-#schedule-editor #schedule-editor-table #table-header .time-cell:first-child,
-#schedule-editor #schedule-editor-table #task-grid .task-cell:first-child,
-#schedule-editor #schedule-editor-table #table-header .task-cell:first-child {
-  border-top-width: 0px;
-}
 #schedule-editor #schedule-editor-table #task-grid .time-cell.ui-selecting,
 #schedule-editor #schedule-editor-table #table-header .time-cell.ui-selecting,
 #schedule-editor #schedule-editor-table #task-grid .task-cell.ui-selecting,
@@ -148,7 +132,7 @@ body {
   height: 30px;
   border-color: black;
   border-style: solid;
-  border-width: 0px 0px 2px 0px;
+  border-width: 0px 0px 1px 0px;
 }
 #schedule-editor #schedule-editor-table #table-header .grid-cell .task-cell {
   width: 50%;
@@ -196,7 +180,7 @@ body {
 }
 #schedule-editor #schedule-editor-table #task-list .task .task-content .task-head:after {
   display: table;
-  content: " ";
+  content: "";
   clear: both;
 }
 #schedule-editor #schedule-editor-table #task-list .task .task-content .task-head .task-title {
@@ -295,11 +279,6 @@ body {
   border-bottom-color: #888888;
   border-width: 21px;
   margin-left: -21px;
-}
-#schedule-editor .clearfix:after {
-  display: table;
-  content: " ";
-  clear: both;
 }
 .ui-selectable-helper {
   display: none;

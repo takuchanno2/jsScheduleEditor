@@ -31,16 +31,9 @@ body {
     box-sizing: inherit;
   }
 
-  .default-border {
+  .default-border() {
     border-color: black;
     border-style: solid;
-  }
-
-  .disable-user-select {
-    -moz-user-select: none;
-    -ms-user-select: none;
-    -webkit-user-select: none;
-    user-select: none;
   }
 
   #schedule-editor-table {
@@ -125,11 +118,6 @@ body {
         }
       }
 
-      .time-cell:first-child,
-      .task-cell:first-child {
-        border-top-width: 0px;
-      }
-
       .time-cell.ui-selecting,
       .task-cell.ui-selecting {
         background-color: #FC4;
@@ -146,7 +134,7 @@ body {
         width: 100%;
         height: @task-cell-header-height;
         .default-border();
-        border-width: 0px 0px @border-width-bold 0px;
+        border-width: 0px 0px (@border-width-bold - @border-width) 0px;
 
         .task-cell {
           width: 50%;
@@ -318,12 +306,19 @@ body {
     }
   }
 
-  .clearfix {
+  .clearfix() {
     &:after {
       display: table;
-      content: " ";
+      content: "";
       clear: both;
     }
+  }
+
+  .disable-user-select() {
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
   }
 }
 
