@@ -2,13 +2,12 @@
 /// <reference path="BaseTypes.ts" />
 /// <reference path="TaskElement.ts" />
 /// <reference path="TaskElementContainer.ts" />
+/// <reference path="TaskTable.ts" />
 "use strict";
 var Balloon = (function () {
-    function Balloon() {
+    function Balloon(taskTable) {
         var _this = this;
-        this.onOkButtonClicked = $.noop;
-        this.onCancelButtonClicked = $.noop;
-        this.onDeleteButtonClicked = $.noop;
+        this.taskTable = taskTable;
         this.jQueryElement = $("#edit-balloon");
         this.typeBox = $("#balloon-task-type");
         this.nameBox = $("#balloon-task-name");
@@ -45,22 +44,21 @@ var Balloon = (function () {
             }
         });
 
-        this.timeBeginBox.change(function (e) {
-            _this.onTimeBoxChanged(e);
+        this.timeBeginBox.change(function (ev) {
+            _this.onTimeBoxChanged(ev);
         });
-        this.timeEndBox.change(function (e) {
-            _this.onTimeBoxChanged(e);
+        this.timeEndBox.change(function (ev) {
+            _this.onTimeBoxChanged(ev);
         });
 
-        this.okButton.click(function (e) {
-            _this.onOkButtonClicked(_this.activeTaskElement, e);
-            return false;
+        this.okButton.click(function (ev) {
+            return _this.onOkButtonClicked(ev);
         });
-        this.cancelButton.click(function (e) {
-            return _this.onCancelButtonClicked(_this.activeTaskElement, e);
+        this.cancelButton.click(function (ev) {
+            return _this.onCancelButtonClicked(ev);
         });
-        this.deleteButton.click(function (e) {
-            return _this.onDeleteButtonClicked(_this.activeTaskElement, e);
+        this.deleteButton.click(function (ev) {
+            return _this.onDeleteButtonClicked(ev);
         });
 
         // タスクの種類のコンボボックスを作る
@@ -128,6 +126,22 @@ var Balloon = (function () {
         this.timeSpanLabel.text(element.timeSpan.span.deciamlHours.toFixed(1));
 
         this.jQueryElement.css("top", element.top + taskGridHeight);
+    };
+
+    Balloon.prototype.onOkButtonClicked = function (ev) {
+        this.taskTable.onBalloonOkButtonClicked(this.activeTaskElement, ev);
+        this.hide();
+        return false;
+    };
+
+    Balloon.prototype.onCancelButtonClicked = function (ev) {
+        this.taskTable.onBalloonCancelButtonClicked(this.activeTaskElement, ev);
+        this.hide();
+    };
+
+    Balloon.prototype.onDeleteButtonClicked = function (ev) {
+        this.taskTable.onBalloonDeleteButtonClicked(this.activeTaskElement, ev);
+        this.hide();
     };
 
     Balloon.prototype.onTypeBoxChanged = function (ev) {

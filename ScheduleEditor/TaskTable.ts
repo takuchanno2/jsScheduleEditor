@@ -26,10 +26,7 @@ class TaskTable {
         this.jQueryTimeGrid = jQueryTable.find("#task-grid-time");
         this.jQueryEditableGrid = jQueryTable.find("#task-grid-editable");
 
-        this.balloon = new Balloon();
-        this.balloon.onOkButtonClicked = this.onBalloonOkButtonClicked;
-        this.balloon.onCancelButtonClicked = this.onBalloonCancelButtonClicked;
-        this.balloon.onDeleteButtonClicked = this.onBalloonDeleteButtonClicked;
+        this.balloon = new Balloon(this);
 
         // テーブルの一番下のイベントで、タスクのアクティブ化解除
         // アクティブ化を解除されたくない場合は、適宜プロパゲーションを止めること
@@ -159,16 +156,16 @@ class TaskTable {
     public onElementCloseButtonClicked(el: TaskElement, ev: JQueryEventObject) {
     }
 
-    private onBalloonOkButtonClicked(el: TaskElement, ev: JQueryEventObject) {
+    public onBalloonOkButtonClicked(el: TaskElement, ev: JQueryEventObject) {
         this.activeElement = null;
     }
 
-    private onBalloonCancelButtonClicked(el: TaskElement, ev: JQueryEventObject) {
+    public onBalloonCancelButtonClicked(el: TaskElement, ev: JQueryEventObject) {
         // ここら辺は後ほどうまいことやる
         this.editableElementContainer.rollbackState();
     }
 
-    private onBalloonDeleteButtonClicked(el: TaskElement, ev: JQueryEventObject) {
+    public onBalloonDeleteButtonClicked(el: TaskElement, ev: JQueryEventObject) {
         // ここら辺は後ほどうまいことやる
         this.editableElementContainer.remove(el);
     }
@@ -186,7 +183,7 @@ class TaskTable {
         this._activeElement = value;
         if (value) {
             this._activeElement.active = true;
-            value.onRemoved = this.onActiveElementRemoved;
+            value.onRemoved = (el) => this.onActiveElementRemoved(el);
             if (this.balloon.visible) {
                 this.balloon.show(value);
             }

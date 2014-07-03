@@ -31,9 +31,6 @@ interface Window {
 
 $(() => {
     $.fn.extend({
-        "top": fn_top,
-        "bottom": fn_bottom,
-        "height": fn_height,
         "dataAttr": fn_dataAttr,
         "taskElement": fn_taskElement,
     });
@@ -190,62 +187,6 @@ var adjustPositionUpward = function (elm: JQuery, top: number, bottom: number) {
     }
 };
 
-// 移植済み
-var originalHeight = $.fn.height;
-var fn_height = function (height: number) {
-    if (height !== undefined) {
-        if (height === 0) throw new Error("Try to set zero to height.");
-        return originalHeight.apply(this, arguments);
-    } else {
-        var result = originalHeight.apply(this, arguments);
-        if (height === 0) throw new Error("'height' property is somehow zero.");
-        return result;
-    }
-};
-
-// *** 移植済み？ ***
-// 引数なしの時は、cssのtopを返す
-// 引数があるときは、その値をcssのtopに設定
-// マイナスの値を設定しようとしたり、グリッドの高さを超えそうなときは適宜設定
-var fn_top = function (top: number) {
-    if (top !== undefined) {
-        top = Math.round(top);
-        var newBottom = Math.round(top + this.height());
-
-        if (top <= 0) {
-            var newHeight = newBottom;
-
-            if (newHeight <= 0) {
-                this.remove();
-                return null;
-            } else {
-                this.css("top", 0);
-                this.height(newHeight);
-
-                setTaskBorder(this, 0);
-                return 0;
-            }
-        } else if (newBottom > taskGridHeightTotal) {
-            var newHeight = Math.round(taskGridHeightTotal - top);
-
-            if (newHeight <= 0) {
-                this.remove();
-                return null;
-            } else {
-                this.height(newHeight);
-            }
-        }
-
-        this.css("top", top);
-        setTaskBorder(this, top);
-
-        return this;
-    } else {
-        if (this.css("display") === "none") throw new Error("Try to access 'top' property though this is invisible.");
-        return Math.round(this.position().top);
-    }
-};
-
 var setTaskBorder = function (elm: JQuery, top: number) {
     if (top === undefined) {
         top = elm.top();
@@ -260,12 +201,6 @@ var setTaskBorder = function (elm: JQuery, top: number) {
     }
 };
 
-// *** 移植済み ***
-// top+heightの高さを返す
-var fn_bottom = function () {
-    if (this.css("display") === "none") throw new Error("Try to access 'bottom' property of an invisible element.");
-    return Math.round(this.top() + this.height());
-};
 
 var fn_dataAttr = function (key: string, value: any) {
     if (value !== undefined) {

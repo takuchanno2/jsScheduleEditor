@@ -8,10 +8,7 @@ var TaskTable = (function () {
         this.jQueryTimeGrid = jQueryTable.find("#task-grid-time");
         this.jQueryEditableGrid = jQueryTable.find("#task-grid-editable");
 
-        this.balloon = new Balloon();
-        this.balloon.onOkButtonClicked = this.onBalloonOkButtonClicked;
-        this.balloon.onCancelButtonClicked = this.onBalloonCancelButtonClicked;
-        this.balloon.onDeleteButtonClicked = this.onBalloonDeleteButtonClicked;
+        this.balloon = new Balloon(this);
 
         // テーブルの一番下のイベントで、タスクのアクティブ化解除
         // アクティブ化を解除されたくない場合は、適宜プロパゲーションを止めること
@@ -187,6 +184,7 @@ var TaskTable = (function () {
             return this._activeElement;
         },
         set: function (value) {
+            var _this = this;
             if (this._activeElement) {
                 this._activeElement.active = false;
                 this._activeElement.onRemoved = null;
@@ -195,7 +193,9 @@ var TaskTable = (function () {
             this._activeElement = value;
             if (value) {
                 this._activeElement.active = true;
-                value.onRemoved = this.onActiveElementRemoved;
+                value.onRemoved = function (el) {
+                    return _this.onActiveElementRemoved(el);
+                };
                 if (this.balloon.visible) {
                     this.balloon.show(value);
                 }

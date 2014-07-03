@@ -2,6 +2,7 @@
 /// <reference path="BaseTypes.ts" />
 /// <reference path="TaskElement.ts" />
 /// <reference path="TaskElementContainer.ts" />
+/// <reference path="TaskTable.ts" />
 
 "use strict";
 
@@ -19,11 +20,7 @@ class Balloon {
     private cancelButton: JQuery;
     private deleteButton: JQuery;
 
-    public onOkButtonClicked: (el: TaskElement, ev: JQueryEventObject) => any = $.noop;
-    public onCancelButtonClicked: (el: TaskElement, ev: JQueryEventObject) => any = $.noop;
-    public onDeleteButtonClicked: (el: TaskElement, ev: JQueryEventObject) => any = $.noop;
-
-    public constructor() {
+    public constructor(private taskTable: TaskTable) {
         this.jQueryElement = $("#edit-balloon");
         this.typeBox = $("#balloon-task-type");
         this.nameBox = $("#balloon-task-name");
@@ -46,12 +43,12 @@ class Balloon {
         this.nameBox.on("input", () => { if (this.activeTaskElement) { this.activeTaskElement.name = this.nameBox.val(); } });
         this.memoBox.on("input", () => { if (this.activeTaskElement) { this.activeTaskElement.memo = this.memoBox.val(); } });
         
-        this.timeBeginBox.change((e) => { this.onTimeBoxChanged(e); });
-        this.timeEndBox.change((e) => { this.onTimeBoxChanged(e); });
+        this.timeBeginBox.change((ev) => { this.onTimeBoxChanged(ev); });
+        this.timeEndBox.change((ev) => { this.onTimeBoxChanged(ev); });
 
-        this.okButton.click((e) => { this.onOkButtonClicked(this.activeTaskElement, e); return false; });
-        this.cancelButton.click((e) => this.onCancelButtonClicked(this.activeTaskElement, e));
-        this.deleteButton.click((e) => this.onDeleteButtonClicked(this.activeTaskElement, e));
+        this.okButton.click((ev) => this.onOkButtonClicked(ev) );
+        this.cancelButton.click((ev) => this.onCancelButtonClicked(ev));
+        this.deleteButton.click((ev) => this.onDeleteButtonClicked(ev));
 
         // タスクの種類のコンボボックスを作る
         Task.taskTypes.forEach((v, i) => {
@@ -114,6 +111,22 @@ class Balloon {
         this.timeSpanLabel.text(element.timeSpan.span.deciamlHours.toFixed(1));
 
         this.jQueryElement.css("top", element.top + taskGridHeight);
+    }
+
+    private onOkButtonClicked(ev: JQueryEventObject) {
+        this.taskTable.onBalloonOkButtonClicked(this.activeTaskElement, ev);
+        this.hide();
+        return false;
+    }
+
+    private onCancelButtonClicked(ev: JQueryEventObject) {
+        this.taskTable.onBalloonCancelButtonClicked(this.activeTaskElement, ev);
+        this.hide();
+    }
+
+    private onDeleteButtonClicked(ev: JQueryEventObject) {
+        this.taskTable.onBalloonDeleteButtonClicked(this.activeTaskElement, ev);
+        this.hide();
     }
 
     private onTypeBoxChanged(ev: JQueryEventObject = null) {
