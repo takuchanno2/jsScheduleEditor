@@ -71,7 +71,7 @@ body {
       #task-grid-fixed, #task-grid-time, #task-grid-editable {
         float: left;
         .default-border();
-        border-width: 0px @border-width-bold 0px 0px;
+        border-width: 0px (@border-width-bold - @border-width) 0px 0px;
       }
 
       #task-grid-fixed, #task-grid-editable {
@@ -125,11 +125,6 @@ body {
         }
       }
 
-      .time-cell:first-child,
-      .task-cell:first-child {
-        border-top-width: 0px;
-      }
-
       .time-cell.ui-selecting,
       .task-cell.ui-selecting {
         background-color: #FC4;
@@ -142,11 +137,10 @@ body {
     }
 
     #table-header {
-      .grid-cell {
         width: 100%;
         height: @task-cell-header-height;
         .default-border();
-        border-width: 0px 0px @border-width-bold 0px;
+        border-width: 0px 0px (@border-width-bold - @border-width) 0px;
 
         .task-cell {
           width: 50%;
@@ -158,7 +152,6 @@ body {
           line-height: @task-cell-header-height;
           border-width: 0px;
         }
-      }
     }
 
     #task-list {
